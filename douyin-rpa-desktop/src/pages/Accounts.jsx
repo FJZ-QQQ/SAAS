@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { Plus, Power, RefreshCw, Trash2, QrCode, X, Loader } from 'lucide-react'
 
+const formatStoreName = (id) => `${id}号店铺`
+
 export default function Accounts({ merchantData }) {
   const [liveAccounts, setLiveAccounts] = useState({})
   const [loadingMsg, setLoadingMsg] = useState('')
@@ -142,7 +144,7 @@ export default function Accounts({ merchantData }) {
   const accountsList = Object.entries(liveAccounts)
     .map(([mid, data]) => ({
     id: mid,
-    name: data.nickname && data.nickname !== 'douyin_user' ? data.nickname : `店铺 ${mid}`,
+    name: formatStoreName(mid),
     emoji: data.status === 'running' ? '⚡' : data.status === 'login_expired' ? '🔑' : '💤',
     status: data.status === 'running' ? 'online' 
       : data.status === 'login_expired' ? 'warning'

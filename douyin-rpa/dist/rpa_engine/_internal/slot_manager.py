@@ -2059,12 +2059,14 @@ class SlotManager:
             msgs = s.get("runtime_messages", [])
             ai_count = sum(1 for msg in msgs if msg.get("is_ai"))
             
-            display_name = s.get("nickname")
+            douyin_nickname = s.get("nickname")
+            display_name = f"{m}号店铺"
             result[str(m)] = {
                 "slot_id": m,
                 "owner_merchant_id": owner,
                 "status": status,
                 "nickname": display_name,
+                "douyin_nickname": douyin_nickname,
                 "total_messages": ai_count,
                 "total_leads": self._leads_cache.get((owner, m), 0),
                 # ★ 健康信息

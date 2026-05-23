@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from 'react'
 import { Send, Search, Inbox, MessageSquare, Bot, User, Store, ChevronDown } from 'lucide-react'
 
+const formatStoreName = (id) => `${id}号店铺`
+
 export default function Messages({ merchantData }) {
   const [selectedChat, setSelectedChat] = useState(null)
   const [chats, setChats] = useState([])
@@ -27,7 +29,7 @@ export default function Messages({ merchantData }) {
           const stores = Object.entries(data)
             .map(([id, info]) => ({
               id,
-              name: info.nickname && info.nickname !== 'douyin_user' ? info.nickname : `店铺 ${id}`,
+              name: formatStoreName(id),
               status: info.status,
               msgCount: info.total_messages || 0,
             }))
@@ -133,6 +135,7 @@ export default function Messages({ merchantData }) {
 
   const totalChats = chats.length
   const storeColors = ['#f97316', '#3b82f6', '#10b981', '#8b5cf6', '#ec4899']
+  const getStoreName = (id) => storeList.find(s => s.id === String(id))?.name || formatStoreName(id)
 
   return (
     <>
@@ -194,7 +197,7 @@ export default function Messages({ merchantData }) {
                     background: store.status === 'running' ? '#22c55e' : '#94a3b8',
                     flexShrink: 0,
                   }} />
-                  {store.name === `商户 ${store.id}` ? `店铺${store.id}` : store.name}
+                  {store.name}
                   {count > 0 && (
                     <span style={{
                       fontSize: 10, padding: '0 5px', borderRadius: 10,
@@ -268,7 +271,7 @@ export default function Messages({ merchantData }) {
                         fontSize: 9, padding: '1px 6px', borderRadius: 10,
                         background: dotColor + '18', color: dotColor, fontWeight: 600,
                       }}>
-                        {chat.account.replace('商户 ', '店铺')}
+                        {getStoreName(chat.accountId)}
                       </span>
                     </div>
                     <span style={{ fontSize: 10, color: 'var(--text-muted)' }}>{chat.lastTime}</span>
@@ -300,7 +303,7 @@ export default function Messages({ merchantData }) {
                 }}>{currentChat.name[0]}</div>
                 <div>
                   <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>{currentChat.name}</div>
-                  <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{currentChat.account}</div>
+                  <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{getStoreName(currentChat.accountId)}</div>
                 </div>
               </div>
 

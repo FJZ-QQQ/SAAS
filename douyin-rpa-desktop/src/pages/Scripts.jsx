@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from 'react'
 import { Save, RotateCcw, Plus, Trash2, Sparkles, Loader, Bot, BookOpen, UserCircle, Send, MessageSquare, Eraser, Store, ShieldAlert, X } from 'lucide-react'
 
+const formatStoreName = (id) => `${id}号店铺`
+
 export default function Scripts({ merchantData }) {
   const currentMid = merchantData?.merchant_id || 0
   const [nickname, setNickname] = useState('')
@@ -38,7 +40,7 @@ export default function Scripts({ merchantData }) {
         const storeList = Object.entries(data)
           .map(([id, info]) => ({
             id: parseInt(id),
-            name: info.nickname || `店铺 ${id}`,
+            name: formatStoreName(id),
             status: info.status
           }))
         setStores(storeList)
