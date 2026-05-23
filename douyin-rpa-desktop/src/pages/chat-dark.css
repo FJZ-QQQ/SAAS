@@ -1,0 +1,203 @@
+/* ===== Dark Mode Chat UI (Similar to Pinduoduo) ===== */
+.dark-chat-container {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 10000;
+  background-color: #121212;
+  color: #e0e0e0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.dark-chat-sidebar {
+  width: 280px;
+  background-color: #181818;
+  border-right: 1px solid #2a2a2a;
+  display: flex;
+  flex-direction: column;
+}
+
+.dark-chat-header {
+  height: 60px;
+  min-height: 60px;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #2a2a2a;
+  background-color: #1a1a1a;
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.dark-chat-list {
+  flex: 1;
+  overflow-y: auto;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.dark-chat-item {
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  cursor: pointer;
+  border-bottom: 1px solid #222;
+  transition: background-color 0.2s;
+}
+
+.dark-chat-item:hover {
+  background-color: #242424;
+}
+
+.dark-chat-item.active {
+  background-color: #2a2a2a;
+  border-left: 3px solid #e02e24; /* PDD Red/Pinkish */
+}
+
+.dark-chat-item-name {
+  font-size: 14px;
+  color: #e0e0e0;
+  font-weight: 500;
+}
+
+.dark-chat-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: #121212;
+}
+
+.dark-chat-main-header {
+  height: 60px;
+  min-height: 60px;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #2a2a2a;
+  background-color: #1a1a1a;
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.dark-chat-history {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.dark-chat-bubble-row {
+  display: flex;
+  width: 100%;
+}
+
+.dark-chat-bubble-row.left {
+  justify-content: flex-start;
+}
+
+.dark-chat-bubble-row.right {
+  justify-content: flex-end;
+}
+
+.dark-chat-bubble {
+  max-width: 60%;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 1.5;
+  word-wrap: break-word;
+}
+
+.dark-chat-bubble-row.left .dark-chat-bubble {
+  background-color: #242424;
+  color: #e0e0e0;
+  border-top-left-radius: 2px;
+}
+
+.dark-chat-bubble-row.right .dark-chat-bubble {
+  background-color: #e02e24; /* PDD Red */
+  color: #fff;
+  border-top-right-radius: 2px;
+}
+
+.dark-chat-input-area {
+  height: 160px;
+  min-height: 160px;
+  border-top: 1px solid #2a2a2a;
+  background-color: #181818;
+  display: flex;
+  flex-direction: column;
+  padding: 12px;
+  position: relative;
+}
+
+.dark-chat-textarea {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: #e0e0e0;
+  font-size: 14px;
+  resize: none;
+  outline: none;
+  padding: 8px;
+}
+
+.dark-chat-textarea::placeholder {
+  color: #555;
+}
+
+.dark-chat-send-btn {
+  position: absolute;
+  bottom: 16px;
+  right: 20px;
+  background-color: transparent;
+  color: #aaa;
+  border: 1px solid #444;
+  padding: 6px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+}
+
+.dark-chat-send-btn:hover {
+  background-color: #2a2a2a;
+  color: #fff;
+  border-color: #666;
+}
+
+.dark-chat-send-btn.active {
+  background-color: #e02e24;
+  color: #fff;
+  border-color: #e02e24;
+}
+
+.dark-chat-close {
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  color: #888;
+  cursor: pointer;
+  background: none;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.dark-chat-close:hover {
+  color: #fff;
+}
