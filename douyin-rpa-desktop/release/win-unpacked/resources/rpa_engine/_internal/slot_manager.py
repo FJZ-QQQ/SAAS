@@ -2059,19 +2059,7 @@ class SlotManager:
             msgs = s.get("runtime_messages", [])
             ai_count = sum(1 for msg in msgs if msg.get("is_ai"))
             
-            # ★ 使用智能体配置中的昵称作为显示名称
             display_name = s.get("nickname")
-            try:
-                import json as _json
-                cfg_file = os.path.join(self._script_dir, "agent_configs", f"store_{m}.json")
-                if os.path.exists(cfg_file):
-                    with open(cfg_file, "r", encoding="utf-8") as _f:
-                        cfg = _json.load(_f)
-                        if cfg.get("nickname"):
-                            display_name = cfg["nickname"]
-            except Exception:
-                pass
-            
             result[str(m)] = {
                 "slot_id": m,
                 "owner_merchant_id": owner,
