@@ -1,0 +1,551 @@
+[2026-05-23 11:49:16] [METADATA] 加载已有会话记录: owner=1, slot=1
+[2026-05-23 11:49:16] [METADATA] 加载已有会话记录: owner=2, slot=2
+[2026-05-23 11:49:16] [METADATA] 加载已有会话记录: owner=3, slot=3
+[2026-05-23 11:49:16] [METADATA] 加载已有会话记录: owner=99, slot=99
+[2026-05-23 11:49:16] [METADATA] ★ 共加载 4 个账号记录（浏览器未启动）
+[2026-05-23 11:50:10] [METADATA] 加载已有会话记录: owner=1, slot=1
+[2026-05-23 11:50:10] [METADATA] 加载已有会话记录: owner=2, slot=2
+[2026-05-23 11:50:10] [METADATA] 加载已有会话记录: owner=3, slot=3
+[2026-05-23 11:50:10] [METADATA] 加载已有会话记录: owner=99, slot=99
+[2026-05-23 11:50:10] [METADATA] ★ 共加载 4 个账号记录（浏览器未启动）
+[2026-05-23 11:57:08] [BROWSER] 系统默认浏览器 ProgId: ChromeHTML.ZGVCQUUTUYQKTE7GYWKMOVUU4I
+[2026-05-23 11:57:08] [BROWSER] ✅ 使用 默认浏览器: D:\翻墙\Google\Chrome\Application\chrome.exe
+[2026-05-23 11:57:09] [SLOT 1] ✅ Independent browser instance created (owner=7, session: D:\trea ai\Google\GLM\项目2\douyin-rpa\sessions\merchant_7_slot_1)
+[2026-05-23 11:57:12] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:57:13] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:57:13] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:57:15] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:57:18] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:57:18] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:57:20] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:57:25] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:57:25] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:57:26] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:57:30] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:57:31] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:57:32] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:57:36] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:57:36] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:57:39] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:57:42] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:57:42] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:57:44] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:57:49] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:57:49] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:57:50] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:57:54] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:57:55] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:57:56] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:58:00] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:58:00] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:58:03] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:58:06] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:58:06] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:58:08] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:58:13] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:58:13] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:58:14] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:58:18] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:58:19] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:58:20] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:58:25] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:58:25] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:58:27] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:58:30] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:58:30] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:58:32] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:58:37] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:58:37] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:58:38] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:58:42] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:58:43] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:58:44] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:58:48] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:58:48] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:58:51] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:58:54] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:58:54] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:58:56] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:59:01] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:59:01] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:59:02] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:59:06] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:59:13] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:59:13] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:59:13] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:59:13] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:59:15] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:59:19] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:59:19] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:59:20] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:59:25] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:59:25] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:59:26] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:59:30] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:59:31] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:59:32] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:59:36] [LOGIN] ✓ page has chat elements, login valid
+[2026-05-23 11:59:36] [STATUS] owner=7, slot=1 auto-detected login success!
+[2026-05-23 11:59:37] [LOGIN] ✓ page has chat elements, login valid
+[2026-05-23 11:59:37] [SLOT 1] navigating to chat page...
+[2026-05-23 11:59:40] [BROWSER] 系统默认浏览器 ProgId: ChromeHTML.ZGVCQUUTUYQKTE7GYWKMOVUU4I
+[2026-05-23 11:59:40] [BROWSER] ✅ 使用 默认浏览器: D:\翻墙\Google\Chrome\Application\chrome.exe
+[2026-05-23 11:59:42] [SLOT 1] ✅ now on chat page
+[2026-05-23 11:59:42] [SLOT 2] ✅ Independent browser instance created (owner=7, session: D:\trea ai\Google\GLM\项目2\douyin-rpa\sessions\merchant_7_slot_2)
+[2026-05-23 11:59:42] [SLOT 1] CDP listeners ready
+[2026-05-23 11:59:42] [SLOT 1] CDP ready, starting monitor thread...
+[2026-05-23 11:59:42] [SLOT 1] MONITORING STARTED
+[2026-05-23 11:59:42] [LOOP-1] COZE keys: key=YES, bot=YES, owner=7
+[2026-05-23 11:59:42] [LOOP-1] No config file found, using defaults
+[2026-05-23 11:59:42] [LOOP-1] ★ started (thread=monitor-1)
+[2026-05-23 11:59:43] [LOGIN] ? has cookie but no chat elements (bodyLen=0), treating as NOT logged in
+[2026-05-23 11:59:43] [POLL] 🔴 targets: ['梦琪爱吃, 职业素人, 冯志泉', '职业素人', '冯志泉']
+[2026-05-23 11:59:43] [POLL] 🟢 processing 梦琪爱吃, 职业素人, 冯志泉 (reason: has_unread)
+[2026-05-23 11:59:43] [STEP1-梦琪爱吃, 职业素人, 冯志泉] clicking conv at (743.6666870117188, 194.1666717529297)
+[2026-05-23 11:59:43] [STEP2-梦琪爱吃, 职业素人, 冯志泉] read 0 msgs, last=NONE
+[2026-05-23 11:59:43] [STEP2-梦琪爱吃, 职业素人, 冯志泉] ❌ NO messages read, returning
+[2026-05-23 11:59:43] [POLL] ✅ done with 梦琪爱吃, 职业素人, 冯志泉, navigating back...
+[2026-05-23 11:59:44] [NAV] clicking back arrow at (274, 97)
+[2026-05-23 11:59:44] [LOGIN] ? has cookie but no chat elements (bodyLen=416), treating as NOT logged in
+[2026-05-23 11:59:45] [WS] connected: wss://frontier-im.douyin.com/ws/v2?token=YSHGAwEBBwECBIPSf5MBZwFVVOV2T1BCQQa6lFU
+[2026-05-23 11:59:45] [NAV] clicked '全部' tab via Playwright locator
+[2026-05-23 11:59:45] [WS-DBG] #1, len=740
+[2026-05-23 11:59:45] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:59:45] [POLL] 🟢 processing 职业素人 (reason: has_unread)
+[2026-05-23 11:59:45] [STEP1-职业素人] clicking conv at (743.6666870117188, 299.1666717529297)
+[2026-05-23 11:59:46] [STEP2-职业素人] read 5 msgs, last=好的，已记录您的手机号！顾问正在为您准备专属方案，马上就联系
+[2026-05-23 11:59:46] [STEP3-职业素人] ✅ state changed, proceeding
+[2026-05-23 11:59:46] [STEP4-职业素人] last msg is_right=False, x=570.6666870117188, text='好的，已记录您的手机号！顾问正在为您准备专属方案，马上就联系'
+[2026-05-23 11:59:46] [STEP4-职业素人] ✅ passed all filters
+[2026-05-23 11:59:46] [POLL] ★ new message from 职业素人: 好的，已记录您的手机号！顾问正在为您准备专属方案，马上就联系您
+[2026-05-23 11:59:50] [STEP5-职业素人] no config file, using defaults
+[2026-05-23 11:59:50] [AI] reply (小橙): 收到！请问方便留个微信号或手机号吗？小橙好安排专人跟进您的需求
+[2026-05-23 11:59:50] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:59:50] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:59:50] [POLL] text inserted via JS for 职业素人
+[2026-05-23 11:59:50] [POLL] ✅ sent reply to 职业素人 (JS+button): 收到！请问方便留个微信号或手机号吗？小橙好安排专人跟进您的需求
+[2026-05-23 11:59:50] [POLL] ✅ done with 职业素人, navigating back...
+[2026-05-23 11:59:50] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:59:51] [NAV] clicking back arrow at (274, 97)
+[2026-05-23 11:59:52] [NAV] clicked '全部' tab via Playwright locator
+[2026-05-23 11:59:52] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:59:53] [POLL] 🟢 processing 冯志泉 (reason: has_unread)
+[2026-05-23 11:59:53] [STEP1-冯志泉] clicking conv at (743.6666870117188, 404.16668701171875)
+[2026-05-23 11:59:53] [STEP2-冯志泉] read 1 msgs, last=2026-5-18 22:24
+[2026-05-23 11:59:53] [STEP3-冯志泉] ✅ state changed, proceeding
+[2026-05-23 11:59:53] [STEP4-冯志泉] last msg is_right=False, x=544.6666870117188, text='2026-5-18 22:24'
+[2026-05-23 11:59:53] [STEP4-冯志泉] ✅ passed all filters
+[2026-05-23 11:59:53] [POLL] ★ new message from 冯志泉: 2026-5-18 22:24
+[2026-05-23 11:59:55] [STEP5-冯志泉] no config file, using defaults
+[2026-05-23 11:59:57] [AI] reply (小橙): 小橙在这里~请问有什么可以帮您的吗？
+[2026-05-23 11:59:57] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:59:57] [POLL] text inserted via JS for 冯志泉
+[2026-05-23 11:59:57] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:59:57] [POLL] ✅ sent reply to 冯志泉 (JS+button): 小橙在这里~请问有什么可以帮您的吗？
+[2026-05-23 11:59:58] [POLL] ✅ done with 冯志泉, navigating back...
+[2026-05-23 11:59:58] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 11:59:58] [NAV] clicking back arrow at (274, 97)
+[2026-05-23 12:00:00] [NAV] clicked '全部' tab via Playwright locator
+[2026-05-23 12:00:03] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 12:00:03] [LOOP-1] ✅ warmup done, recorded 2 conversations.
+[2026-05-23 12:00:03] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 12:00:04] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 12:00:04] [POLL] 🔴 targets: ['职业素人']
+[2026-05-23 12:00:04] [POLL] 🟢 processing 职业素人 (reason: has_unread)
+[2026-05-23 12:00:04] [STEP1-职业素人] clicking conv at (743.6666870117188, 299.1666717529297)
+[2026-05-23 12:00:05] [STEP2-职业素人] read 3 msgs, last=收到！请问方便留个微信号或手机号吗？小橙好安排专人跟进您的需
+[2026-05-23 12:00:05] [STEP3-职业素人] ✅ state changed, proceeding
+[2026-05-23 12:00:05] [STEP4-职业素人] ❌ self echo match: '收到！请问方便留个微信号或手机号吗？小橙' == '收到！请问方便留个微信号或手机号吗？小橙'
+[2026-05-23 12:00:05] [POLL] ✅ done with 职业素人, navigating back...
+[2026-05-23 12:00:05] [NAV] clicking back arrow at (274, 97)
+[2026-05-23 12:00:09] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 12:00:09] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 12:00:09] [NAV] clicked '全部' tab via Playwright locator
+[2026-05-23 12:00:11] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 12:00:14] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 12:00:14] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 12:00:16] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 12:00:21] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 12:00:21] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 12:00:22] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 12:00:27] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 12:00:27] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 12:00:27] [LOOP-1] heartbeat #12 (errs=0, recoveries=0)
+[2026-05-23 12:00:28] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 12:00:35] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 12:00:38] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 12:00:38] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 12:00:38] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 12:00:38] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 12:00:40] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 12:00:45] [LOGIN] ✓ page has chat elements, login valid
+[2026-05-23 12:00:45] [STATUS] owner=7, slot=2 auto-detected login success!
+[2026-05-23 12:00:46] [LOGIN] ✓ page has chat elements, login valid
+[2026-05-23 12:00:46] [SLOT 2] navigating to chat page...
+[2026-05-23 12:00:50] [SLOT 2] ✅ now on chat page
+[2026-05-23 12:00:51] [BROWSER] 系统默认浏览器 ProgId: ChromeHTML.ZGVCQUUTUYQKTE7GYWKMOVUU4I
+[2026-05-23 12:00:51] [BROWSER] ✅ 使用 默认浏览器: D:\翻墙\Google\Chrome\Application\chrome.exe
+[2026-05-23 12:00:52] [SLOT 3] ✅ Independent browser instance created (owner=7, session: D:\trea ai\Google\GLM\项目2\douyin-rpa\sessions\merchant_7_slot_3)
+[2026-05-23 12:00:52] [SLOT 2] CDP listeners ready
+[2026-05-23 12:00:52] [SLOT 2] CDP ready, starting monitor thread...
+[2026-05-23 12:00:52] [SLOT 2] MONITORING STARTED
+[2026-05-23 12:00:52] [LOOP-2] COZE keys: key=YES, bot=YES, owner=7
+[2026-05-23 12:00:52] [LOOP-2] No config file found, using defaults
+[2026-05-23 12:00:52] [LOOP-2] ★ started (thread=monitor-2)
+[2026-05-23 12:00:52] [LOGIN] ? has cookie but no chat elements (bodyLen=0), treating as NOT logged in
+[2026-05-23 12:00:53] [POLL] 🔴 targets: ['梦琪爱吃', '陆仔, 披着社牛的i, Y2Y户外装备', '梦琪爱吃, 职业素人, 冯志泉']
+[2026-05-23 12:00:53] [POLL] 🟢 processing 梦琪爱吃 (reason: has_unread)
+[2026-05-23 12:00:53] [STEP1-梦琪爱吃] clicking conv at (743.6666870117188, 194.1666717529297)
+[2026-05-23 12:00:53] [LOOP-1] heartbeat #24 (errs=0, recoveries=0)
+[2026-05-23 12:00:53] [STEP2-梦琪爱吃] read 0 msgs, last=NONE
+[2026-05-23 12:00:53] [STEP2-梦琪爱吃] ❌ NO messages read, returning
+[2026-05-23 12:00:53] [POLL] ✅ done with 梦琪爱吃, navigating back...
+[2026-05-23 12:00:54] [NAV] clicking back arrow at (274, 97)
+[2026-05-23 12:00:57] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 12:00:57] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 12:00:57] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 12:00:59] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 12:00:59] [NAV] clicked '全部' tab via Playwright locator
+[2026-05-23 12:01:00] [POLL] 🟢 processing 陆仔, 披着社牛的i, Y2Y户外装备 (reason: has_unread)
+[2026-05-23 12:01:00] [STEP1-陆仔, 披着社牛的i, Y2Y户外装备] clicking conv at (743.6666870117188, 299.1666717529297)
+[2026-05-23 12:01:02] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 12:01:02] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 12:01:02] [STEP2-陆仔, 披着社牛的i, Y2Y户外装备] read 4 msgs, last=小孙与大燕
+[2026-05-23 12:01:02] [STEP3-陆仔, 披着社牛的i, Y2Y户外装备] ✅ state changed, proceeding
+[2026-05-23 12:01:02] [STEP4-陆仔, 披着社牛的i, Y2Y户外装备] last msg is_right=False, x=610.6666870117188, text='小孙与大燕'
+[2026-05-23 12:01:02] [STEP4-陆仔, 披着社牛的i, Y2Y户外装备] ✅ passed all filters
+[2026-05-23 12:01:02] [POLL] ★ new message from 陆仔, 披着社牛的i, Y2Y户外装备: 小孙与大燕
+[2026-05-23 12:01:04] [STEP5-陆仔, 披着社牛的i, Y2Y户外装备] no config file, using defaults
+[2026-05-23 12:01:04] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 12:01:05] [AI] reply (小橙): 小橙在这里~请问您是想了解小孙和大燕的相关信息吗？方便加个微信吗，我发您详细资料。
+[2026-05-23 12:01:05] [POLL] text inserted via JS for 陆仔, 披着社牛的i, Y2Y户外装备
+[2026-05-23 12:01:05] [POLL] ✅ sent reply to 陆仔, 披着社牛的i, Y2Y户外装备 (JS+button): 小橙在这里~请问您是想了解小孙和大燕的相关信息吗？方便加个微信吗，我发您详细资料
+[2026-05-23 12:01:06] [POLL] ✅ done with 陆仔, 披着社牛的i, Y2Y户外装备, navigating back...
+[2026-05-23 12:01:09] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 12:01:09] [NAV] clicking back arrow at (274, 97)
+[2026-05-23 12:01:09] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 12:01:10] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 12:01:11] [NAV] clicked '全部' tab via Playwright locator
+[2026-05-23 12:01:12] [POLL] 🟢 processing 梦琪爱吃, 职业素人, 冯志泉 (reason: has_unread)
+[2026-05-23 12:01:12] [STEP1-梦琪爱吃, 职业素人, 冯志泉] clicking conv at (743.6666870117188, 404.16668701171875)
+[2026-05-23 12:01:14] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 12:01:15] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 12:01:15] [STEP2-梦琪爱吃, 职业素人, 冯志泉] read 4 msgs, last=方了个方
+[2026-05-23 12:01:15] [STEP3-梦琪爱吃, 职业素人, 冯志泉] ✅ state changed, proceeding
+[2026-05-23 12:01:15] [STEP4-梦琪爱吃, 职业素人, 冯志泉] last msg is_right=False, x=610.6666870117188, text='方了个方'
+[2026-05-23 12:01:15] [STEP4-梦琪爱吃, 职业素人, 冯志泉] ✅ passed all filters
+[2026-05-23 12:01:15] [POLL] ★ new message from 梦琪爱吃, 职业素人, 冯志泉: 方了个方
+[2026-05-23 12:01:16] [LOOP-1] heartbeat #36 (errs=0, recoveries=0)
+[2026-05-23 12:01:16] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 12:01:17] [STEP5-梦琪爱吃, 职业素人, 冯志泉] no config file, using defaults
+[2026-05-23 12:01:18] [AI] reply (小橙): 小橙在这里呢～您是想了解什么问题呀？
+[2026-05-23 12:01:18] [POLL] text inserted via JS for 梦琪爱吃, 职业素人, 冯志泉
+[2026-05-23 12:01:18] [POLL] ✅ sent reply to 梦琪爱吃, 职业素人, 冯志泉 (JS+button): 小橙在这里呢～您是想了解什么问题呀？
+[2026-05-23 12:01:18] [POLL] ✅ done with 梦琪爱吃, 职业素人, 冯志泉, navigating back...
+[2026-05-23 12:01:21] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 12:01:21] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 12:01:21] [NAV] clicking back arrow at (274, 97)
+[2026-05-23 12:01:23] [WS] connected: wss://frontier-im.douyin.com/ws/v2?token=YSHGAwEBBwECBFZn4gIBZwFV6aEHWlBCQQa6lFU
+[2026-05-23 12:01:23] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 12:01:23] [WS-DBG] #1, len=728
+[2026-05-23 12:01:23] [NAV] clicked '全部' tab via Playwright locator
+[2026-05-23 12:01:26] [LOOP-2] ✅ warmup done, recorded 2 conversations.
+[2026-05-23 12:01:26] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 12:01:26] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 12:01:28] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 12:01:33] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 12:01:33] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 12:01:34] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 12:01:36] [LOOP-1] heartbeat #48 (errs=0, recoveries=0)
+[2026-05-23 12:01:38] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 12:01:39] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 12:01:40] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 12:01:44] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 12:01:44] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 12:01:45] [LOOP-2] heartbeat #12 (errs=0, recoveries=0)
+[2026-05-23 12:01:47] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 12:01:47] [POLL] 🔴 targets: ['梦琪爱吃, 职业素人, 冯志泉']
+[2026-05-23 12:01:47] [POLL] 🟢 processing 梦琪爱吃, 职业素人, 冯志泉 (reason: has_unread)
+[2026-05-23 12:01:47] [STEP1-梦琪爱吃, 职业素人, 冯志泉] clicking conv at (743.6666870117188, 194.1666717529297)
+[2026-05-23 12:01:48] [STEP2-梦琪爱吃, 职业素人, 冯志泉] read 3 msgs, last=小橙在这里呢～您是想了解什么问题呀？
+[2026-05-23 12:01:48] [STEP3-梦琪爱吃, 职业素人, 冯志泉] ✅ state changed, proceeding
+[2026-05-23 12:01:48] [STEP4-梦琪爱吃, 职业素人, 冯志泉] last msg is_right=False, x=570.6666870117188, text='小橙在这里呢～您是想了解什么问题呀？'
+[2026-05-23 12:01:48] [STEP4-梦琪爱吃, 职业素人, 冯志泉] ✅ passed all filters
+[2026-05-23 12:01:48] [POLL] ★ new message from 梦琪爱吃, 职业素人, 冯志泉: 小橙在这里呢～您是想了解什么问题呀？
+[2026-05-23 12:01:50] [STEP5-梦琪爱吃, 职业素人, 冯志泉] no config file, using defaults
+[2026-05-23 12:01:50] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 12:01:51] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 12:01:52] [AI] reply (小橙): 小橙在这里呢～您是想了解什么问题呀？
+[2026-05-23 12:01:52] [POLL] text inserted via JS for 梦琪爱吃, 职业素人, 冯志泉
+[2026-05-23 12:01:52] [POLL] ✅ sent reply to 梦琪爱吃, 职业素人, 冯志泉 (JS+button): 小橙在这里呢～您是想了解什么问题呀？
+[2026-05-23 12:01:52] [POLL] ✅ done with 梦琪爱吃, 职业素人, 冯志泉, navigating back...
+[2026-05-23 12:01:52] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 12:01:53] [NAV] clicking back arrow at (274, 97)
+[2026-05-23 12:01:54] [POLL] 🔴 targets: ['梦琪爱吃, 职业素人, 冯志泉']
+[2026-05-23 12:01:54] [POLL] 🟢 processing 梦琪爱吃, 职业素人, 冯志泉 (reason: has_unread)
+[2026-05-23 12:01:54] [STEP1-梦琪爱吃, 职业素人, 冯志泉] clicking conv at (743.6666870117188, 194.1666717529297)
+[2026-05-23 12:01:54] [STEP2-梦琪爱吃, 职业素人, 冯志泉] read 4 msgs, last=小橙在这里呢～您是想了解什么问题呀？
+[2026-05-23 12:01:54] [STEP3-梦琪爱吃, 职业素人, 冯志泉] ✅ state changed, proceeding
+[2026-05-23 12:01:54] [STEP4-梦琪爱吃, 职业素人, 冯志泉] ❌ self echo match: '小橙在这里呢～您是想了解什么问题呀？' == '小橙在这里呢～您是想了解什么问题呀？'
+[2026-05-23 12:01:55] [POLL] ✅ done with 梦琪爱吃, 职业素人, 冯志泉, navigating back...
+[2026-05-23 12:01:57] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 12:01:57] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 12:01:57] [NAV] clicking back arrow at (274, 97)
+[2026-05-23 12:01:57] [NAV] clicked '全部' tab via Playwright locator
+[2026-05-23 12:01:58] [LOGIN] ✗ page shows login form (session expired)
+[2026-05-23 12:01:59] [NAV] clicked '全部' tab via Playwright locator
+[2026-05-23 12:02:02] [LOGIN] error: Page.evaluate: Execution context was destroyed, most likely because of a navigation
+[2026-05-23 12:02:03] [LOGIN] ? has cookie but no chat elements (bodyLen=954), treating as NOT logged in
+[2026-05-23 12:02:04] [LOGIN] ✓ page has chat elements, login valid
+[2026-05-23 12:02:04] [STATUS] owner=7, slot=3 auto-detected login success!
+[2026-05-23 12:02:06] [LOGIN] ✓ page has chat elements, login valid
+[2026-05-23 12:02:06] [SLOT 3] navigating to chat page...
+[2026-05-23 12:02:10] [LOOP-1] heartbeat #60 (errs=0, recoveries=0)
+[2026-05-23 12:02:12] [SLOT 3] ✅ now on chat page
+[2026-05-23 12:02:12] [SLOT 3] CDP listeners ready
+[2026-05-23 12:02:12] [SLOT 3] CDP ready, starting monitor thread...
+[2026-05-23 12:02:12] [LOOP-3] COZE keys: key=YES, bot=YES, owner=7
+[2026-05-23 12:02:12] [LOOP-3] No config file found, using defaults
+[2026-05-23 12:02:12] [LOOP-3] ★ started (thread=monitor-3)
+[2026-05-23 12:02:12] [POLL] 🔴 targets: ['梦琪爱吃, 职业素人, 冯志泉']
+[2026-05-23 12:02:12] [POLL] 🟢 processing 梦琪爱吃, 职业素人, 冯志泉 (reason: has_unread)
+[2026-05-23 12:02:12] [STEP1-梦琪爱吃, 职业素人, 冯志泉] clicking conv at (743.6666870117188, 194.1666717529297)
+[2026-05-23 12:02:16] [STEP2-梦琪爱吃, 职业素人, 冯志泉] read 0 msgs, last=NONE
+[2026-05-23 12:02:16] [STEP2-梦琪爱吃, 职业素人, 冯志泉] ❌ NO messages read, returning
+[2026-05-23 12:02:16] [POLL] ✅ done with 梦琪爱吃, 职业素人, 冯志泉, navigating back...
+[2026-05-23 12:02:16] [LOOP-2] heartbeat #24 (errs=0, recoveries=0)
+[2026-05-23 12:02:16] [NAV] clicking back arrow at (274, 97)
+[2026-05-23 12:02:17] [WS] connected: wss://frontier-im.douyin.com/ws/v2?token=YSHGAwEBBwECBG+3gQYBZwFZMKEZ21BCQQa6lFU
+[2026-05-23 12:02:17] [WS-DBG] #1, len=728
+[2026-05-23 12:02:17] [NAV] clicked '全部' tab via Playwright locator
+[2026-05-23 12:02:18] [LOOP-3] ✅ warmup done, recorded 0 conversations.
+[2026-05-23 12:02:33] [LOOP-1] heartbeat #72 (errs=0, recoveries=0)
+[2026-05-23 12:02:36] [LOOP-2] heartbeat #36 (errs=0, recoveries=0)
+[2026-05-23 12:02:41] [LOOP-3] heartbeat #12 (errs=0, recoveries=0)
+[2026-05-23 12:02:57] [LOOP-1] heartbeat #84 (errs=0, recoveries=0)
+[2026-05-23 12:03:01] [LOOP-2] heartbeat #48 (errs=0, recoveries=0)
+[2026-05-23 12:03:05] [LOOP-3] heartbeat #24 (errs=0, recoveries=0)
+[2026-05-23 12:03:21] [LOOP-1] heartbeat #96 (errs=0, recoveries=0)
+[2026-05-23 12:03:28] [LOOP-2] heartbeat #60 (errs=0, recoveries=0)
+[2026-05-23 12:03:29] [LOOP-3] heartbeat #36 (errs=0, recoveries=0)
+[2026-05-23 12:03:42] [POLL] 🔴 targets: ['职业素人']
+[2026-05-23 12:03:42] [POLL] 🟢 processing 职业素人 (reason: has_unread)
+[2026-05-23 12:03:42] [STEP1-职业素人] clicking conv at (743.6666870117188, 194.1666717529297)
+[2026-05-23 12:03:42] [STEP2-职业素人] read 5 msgs, last=你好
+[2026-05-23 12:03:42] [STEP3-职业素人] ✅ state changed, proceeding
+[2026-05-23 12:03:42] [STEP4-职业素人] last msg is_right=False, x=570.6666870117188, text='你好'
+[2026-05-23 12:03:42] [STEP4-职业素人] ✅ passed all filters
+[2026-05-23 12:03:42] [POLL] ★ new message from 职业素人: 你好
+[2026-05-23 12:03:45] [STEP5-职业素人] no config file, using defaults
+[2026-05-23 12:03:47] [AI] reply (小橙): 你好呀，我是小橙～请问有什么可以帮您的？
+[2026-05-23 12:03:47] [POLL] text inserted via JS for 职业素人
+[2026-05-23 12:03:48] [POLL] ✅ sent reply to 职业素人 (JS+button): 你好呀，我是小橙～请问有什么可以帮您的？
+[2026-05-23 12:03:48] [POLL] ✅ done with 职业素人, navigating back...
+[2026-05-23 12:03:48] [LOOP-1] heartbeat #108 (errs=0, recoveries=0)
+[2026-05-23 12:03:49] [NAV] clicking back arrow at (274, 97)
+[2026-05-23 12:03:50] [NAV] clicked '全部' tab via Playwright locator
+[2026-05-23 12:03:50] [POLL] 🔴 targets: ['冯志泉']
+[2026-05-23 12:03:50] [POLL] 🟢 processing 冯志泉 (reason: has_unread)
+[2026-05-23 12:03:50] [STEP1-冯志泉] clicking conv at (743.6666870117188, 194.1666717529297)
+[2026-05-23 12:03:51] [STEP2-冯志泉] read 4 msgs, last=你好呀，我是小橙～请问有什么可以帮您的？
+[2026-05-23 12:03:51] [STEP3-冯志泉] ✅ state changed, proceeding
+[2026-05-23 12:03:51] [STEP4-冯志泉] last msg is_right=False, x=570.6666870117188, text='你好呀，我是小橙～请问有什么可以帮您的？'
+[2026-05-23 12:03:51] [STEP4-冯志泉] ✅ passed all filters
+[2026-05-23 12:03:51] [POLL] ★ new message from 冯志泉: 你好呀，我是小橙～请问有什么可以帮您的？
+[2026-05-23 12:03:53] [STEP5-冯志泉] no config file, using defaults
+[2026-05-23 12:03:55] [AI] reply (小橙): 你好呀，我是小橙～请问有什么可以帮您的？
+[2026-05-23 12:03:56] [POLL] text inserted via JS for 冯志泉
+[2026-05-23 12:03:56] [POLL] ✅ sent reply to 冯志泉 (JS+button): 你好呀，我是小橙～请问有什么可以帮您的？
+[2026-05-23 12:03:57] [POLL] ✅ done with 冯志泉, navigating back...
+[2026-05-23 12:03:57] [WS] #50: ['你好呀，我是小橙～请问有什么可以帮您的？', '你好呀，我是小橙～请问有什么可以帮您的？'] (no sender, skipped)
+[2026-05-23 12:03:57] [NAV] clicking back arrow at (274, 97)
+[2026-05-23 12:03:58] [NAV] clicked '全部' tab via Playwright locator
+[2026-05-23 12:03:58] [POLL] 🔴 targets: ['职业素人']
+[2026-05-23 12:03:58] [POLL] 🟢 processing 职业素人 (reason: has_unread)
+[2026-05-23 12:03:58] [STEP1-职业素人] clicking conv at (743.6666870117188, 194.1666717529297)
+[2026-05-23 12:03:58] [STEP2-职业素人] read 3 msgs, last=你好呀，我是小橙～请问有什么可以帮您的？
+[2026-05-23 12:03:58] [STEP3-职业素人] ✅ state changed, proceeding
+[2026-05-23 12:03:58] [STEP4-职业素人] ❌ self echo match: '你好呀，我是小橙～请问有什么可以帮您的？' == '你好呀，我是小橙～请问有什么可以帮您的？'
+[2026-05-23 12:03:58] [POLL] ✅ done with 职业素人, navigating back...
+[2026-05-23 12:03:59] [NAV] clicking back arrow at (274, 97)
+[2026-05-23 12:04:00] [NAV] clicked '全部' tab via Playwright locator
+[2026-05-23 12:04:01] [LOOP-2] heartbeat #72 (errs=0, recoveries=0)
+[2026-05-23 12:04:09] [LOOP-3] heartbeat #48 (errs=0, recoveries=0)
+[2026-05-23 12:04:12] [LOOP-1] heartbeat #120 (errs=0, recoveries=0)
+[2026-05-23 12:04:31] [LOOP-2] heartbeat #84 (errs=0, recoveries=0)
+[2026-05-23 12:04:34] [POLL] 🔴 targets: ['职业素人']
+[2026-05-23 12:04:34] [POLL] 🟢 processing 职业素人 (reason: has_unread)
+[2026-05-23 12:04:34] [STEP1-职业素人] clicking conv at (743.6666870117188, 194.1666717529297)
+[2026-05-23 12:04:35] [STEP2-职业素人] read 4 msgs, last=这个是我的电话15587594172
+[2026-05-23 12:04:35] [STEP3-职业素人] ✅ state changed, proceeding
+[2026-05-23 12:04:35] [STEP4-职业素人] last msg is_right=False, x=570.6666870117188, text='这个是我的电话15587594172'
+[2026-05-23 12:04:35] [STEP4-职业素人] ✅ passed all filters
+[2026-05-23 12:04:35] [POLL] ★ new message from 职业素人: 这个是我的电话15587594172
+[2026-05-23 12:04:36] [LEAD] extracted: {'phone': '15587594172', 'wechat': None}
+[2026-05-23 12:04:36] [LOOP-1] heartbeat #132 (errs=0, recoveries=0)
+[2026-05-23 12:04:36] [BILLING] Deducted 1.0 for lead from 职业素人
+[2026-05-23 12:04:39] [STEP5-职业素人] no config file, using defaults
+[2026-05-23 12:04:39] [AI] reply (小橙): 好的，已记录您的手机号！顾问正在为您准备专属方案，马上就联系您
+[2026-05-23 12:04:39] [POLL] text inserted via JS for 职业素人
+[2026-05-23 12:04:40] [POLL] ✅ sent reply to 职业素人 (JS+button): 好的，已记录您的手机号！顾问正在为您准备专属方案，马上就联系您
+[2026-05-23 12:04:40] [POLL] ✅ done with 职业素人, navigating back...
+[2026-05-23 12:04:41] [NAV] clicking back arrow at (274, 97)
+[2026-05-23 12:04:45] [NAV] clicked '全部' tab via Playwright locator
+[2026-05-23 12:04:45] [POLL] 🔴 targets: ['冯志泉']
+[2026-05-23 12:04:45] [POLL] 🟢 processing 冯志泉 (reason: has_unread)
+[2026-05-23 12:04:45] [STEP1-冯志泉] clicking conv at (743.6666870117188, 194.1666717529297)
+[2026-05-23 12:04:46] [STEP2-冯志泉] read 4 msgs, last=好的，已记录您的手机号！顾问正在为您准备专属方案，马上就联系
+[2026-05-23 12:04:46] [STEP3-冯志泉] ✅ state changed, proceeding
+[2026-05-23 12:04:46] [STEP4-冯志泉] last msg is_right=False, x=570.6666870117188, text='好的，已记录您的手机号！顾问正在为您准备专属方案，马上就联系'
+[2026-05-23 12:04:46] [STEP4-冯志泉] ✅ passed all filters
+[2026-05-23 12:04:46] [POLL] ★ new message from 冯志泉: 好的，已记录您的手机号！顾问正在为您准备专属方案，马上就联系您
+[2026-05-23 12:04:47] [STEP5-冯志泉] no config file, using defaults
+[2026-05-23 12:04:47] [AI] reply (小橙): 是要留联系方式吗？直接发手机号或微信号就行，我帮您对接专属顾问
+[2026-05-23 12:04:47] [POLL] text inserted via JS for 冯志泉
+[2026-05-23 12:04:47] [LOOP-3] heartbeat #60 (errs=0, recoveries=0)
+[2026-05-23 12:04:47] [POLL] ✅ sent reply to 冯志泉 (JS+button): 是要留联系方式吗？直接发手机号或微信号就行，我帮您对接专属顾问
+[2026-05-23 12:04:48] [POLL] ✅ done with 冯志泉, navigating back...
+[2026-05-23 12:04:48] [NAV] clicking back arrow at (274, 97)
+[2026-05-23 12:04:49] [POLL] 🔴 targets: ['职业素人']
+[2026-05-23 12:04:49] [POLL] 🟢 processing 职业素人 (reason: has_unread)
+[2026-05-23 12:04:49] [STEP1-职业素人] clicking conv at (743.6666870117188, 194.1666717529297)
+[2026-05-23 12:04:49] [NAV] clicked '全部' tab via Playwright locator
+[2026-05-23 12:04:54] [STEP2-职业素人] read 4 msgs, last=是要留联系方式吗？直接发手机号或微信号就行，我帮您对接专属顾
+[2026-05-23 12:04:54] [STEP3-职业素人] ✅ state changed, proceeding
+[2026-05-23 12:04:54] [STEP4-职业素人] last msg is_right=False, x=570.6666870117188, text='是要留联系方式吗？直接发手机号或微信号就行，我帮您对接专属顾'
+[2026-05-23 12:04:54] [STEP4-职业素人] ✅ passed all filters
+[2026-05-23 12:04:54] [POLL] ★ new message from 职业素人: 是要留联系方式吗？直接发手机号或微信号就行，我帮您对接专属顾问
+[2026-05-23 12:04:55] [STEP5-职业素人] no config file, using defaults
+[2026-05-23 12:04:55] [AI] reply (小橙): 是要留联系方式吗？直接发手机号或微信号就行，我帮您对接专属顾问
+[2026-05-23 12:04:55] [POLL] text inserted via JS for 职业素人
+[2026-05-23 12:04:55] [POLL] ✅ sent reply to 职业素人 (JS+button): 是要留联系方式吗？直接发手机号或微信号就行，我帮您对接专属顾问
+[2026-05-23 12:04:56] [POLL] ✅ done with 职业素人, navigating back...
+[2026-05-23 12:04:57] [POLL] 🔴 targets: ['冯志泉']
+[2026-05-23 12:04:57] [POLL] 🟢 processing 冯志泉 (reason: has_unread)
+[2026-05-23 12:04:57] [NAV] clicking back arrow at (274, 97)
+[2026-05-23 12:04:57] [STEP1-冯志泉] clicking conv at (743.6666870117188, 194.1666717529297)
+[2026-05-23 12:04:57] [STEP2-冯志泉] read 3 msgs, last=是要留联系方式吗？直接发手机号或微信号就行，我帮您对接专属顾
+[2026-05-23 12:04:57] [STEP3-冯志泉] ✅ state changed, proceeding
+[2026-05-23 12:04:57] [STEP4-冯志泉] ❌ self echo match: '是要留联系方式吗？直接发手机号或微信号就' == '是要留联系方式吗？直接发手机号或微信号就'
+[2026-05-23 12:04:57] [POLL] ✅ done with 冯志泉, navigating back...
+[2026-05-23 12:04:58] [NAV] clicking back arrow at (274, 97)
+[2026-05-23 12:04:59] [NAV] clicked '全部' tab via Playwright locator
+[2026-05-23 12:04:59] [NAV] clicked '全部' tab via Playwright locator
+[2026-05-23 12:05:02] [LOOP-1] heartbeat #144 (errs=0, recoveries=0)
+[2026-05-23 12:05:04] [LOOP-2] heartbeat #96 (errs=0, recoveries=0)
+[2026-05-23 12:05:12] [LOOP-3] heartbeat #72 (errs=0, recoveries=0)
+[2026-05-23 12:05:15] [LOOP-1] heartbeat #156 (errs=0, recoveries=0)
+[2026-05-23 12:05:19] [LOOP-2] heartbeat #108 (errs=0, recoveries=0)
+[2026-05-23 12:05:26] [LOOP-3] heartbeat #84 (errs=0, recoveries=0)
+[2026-05-23 12:05:27] [POLL] 🔴 targets: ['冯志泉']
+[2026-05-23 12:05:27] [POLL] 🟢 processing 冯志泉 (reason: has_unread)
+[2026-05-23 12:05:27] [STEP1-冯志泉] clicking conv at (743.6666870117188, 194.1666717529297)
+[2026-05-23 12:05:28] [STEP2-冯志泉] read 4 msgs, last=这是我的联系方式186444679412
+[2026-05-23 12:05:28] [STEP3-冯志泉] ✅ state changed, proceeding
+[2026-05-23 12:05:28] [STEP4-冯志泉] last msg is_right=False, x=570.6666870117188, text='这是我的联系方式186444679412'
+[2026-05-23 12:05:28] [STEP4-冯志泉] ✅ passed all filters
+[2026-05-23 12:05:28] [POLL] ★ new message from 冯志泉: 这是我的联系方式186444679412
+[2026-05-23 12:05:29] [LEAD] extracted: {'phone': '18644467941', 'wechat': None}
+[2026-05-23 12:05:29] [BILLING] Deducted 1.0 for lead from 冯志泉
+[2026-05-23 12:05:29] [STEP5-冯志泉] no config file, using defaults
+[2026-05-23 12:05:29] [AI] reply (小橙): 收到您的手机号了！我们的专属顾问会在3分钟内联系您，请保持手机畅通
+[2026-05-23 12:05:29] [POLL] text inserted via JS for 冯志泉
+[2026-05-23 12:05:30] [POLL] ✅ sent reply to 冯志泉 (JS+button): 收到您的手机号了！我们的专属顾问会在3分钟内联系您，请保持手机畅通
+[2026-05-23 12:05:30] [POLL] ✅ done with 冯志泉, navigating back...
+[2026-05-23 12:05:32] [LOOP-1] heartbeat #168 (errs=0, recoveries=0)
+[2026-05-23 12:05:32] [NAV] clicking back arrow at (274, 97)
+[2026-05-23 12:05:33] [WS] #100: ['已提交预约，点击下方', '咨询订单', '可查看预约记录'] (no sender, skipped)
+[2026-05-23 12:05:33] [NAV] clicked '全部' tab via Playwright locator
+[2026-05-23 12:05:34] [POLL] 🔴 targets: ['职业素人']
+[2026-05-23 12:05:34] [POLL] 🟢 processing 职业素人 (reason: has_unread)
+[2026-05-23 12:05:34] [STEP1-职业素人] clicking conv at (743.6666870117188, 194.1666717529297)
+[2026-05-23 12:05:34] [STEP2-职业素人] read 3 msgs, last=收到您的手机号了！我们的专属顾问会在3分钟内联系您，请保持手
+[2026-05-23 12:05:34] [STEP3-职业素人] ✅ state changed, proceeding
+[2026-05-23 12:05:34] [STEP4-职业素人] last msg is_right=False, x=570.6666870117188, text='收到您的手机号了！我们的专属顾问会在3分钟内联系您，请保持手'
+[2026-05-23 12:05:34] [STEP4-职业素人] ✅ passed all filters
+[2026-05-23 12:05:34] [POLL] ★ new message from 职业素人: 收到您的手机号了！我们的专属顾问会在3分钟内联系您，请保持手机畅通
+[2026-05-23 12:05:35] [STEP5-职业素人] no config file, using defaults
+[2026-05-23 12:05:35] [AI] reply (小橙): 好的！小橙已经把您的微信号转给了我们最专业的顾问，请留意好友申请
+[2026-05-23 12:05:35] [POLL] text inserted via JS for 职业素人
+[2026-05-23 12:05:38] [POLL] ✅ sent reply to 职业素人 (JS+button): 好的！小橙已经把您的微信号转给了我们最专业的顾问，请留意好友申请
+[2026-05-23 12:05:38] [POLL] ✅ done with 职业素人, navigating back...
+[2026-05-23 12:05:39] [POLL] 🔴 targets: ['冯志泉']
+[2026-05-23 12:05:39] [POLL] 🟢 processing 冯志泉 (reason: has_unread)
+[2026-05-23 12:05:39] [STEP1-冯志泉] clicking conv at (743.6666870117188, 194.1666717529297)
+[2026-05-23 12:05:39] [NAV] clicking back arrow at (274, 97)
+[2026-05-23 12:05:40] [STEP2-冯志泉] read 3 msgs, last=好的！小橙已经把您的微信号转给了我们最专业的顾问，请留意好友
+[2026-05-23 12:05:40] [STEP3-冯志泉] ✅ state changed, proceeding
+[2026-05-23 12:05:40] [STEP4-冯志泉] last msg is_right=False, x=570.6666870117188, text='好的！小橙已经把您的微信号转给了我们最专业的顾问，请留意好友'
+[2026-05-23 12:05:40] [STEP4-冯志泉] ✅ passed all filters
+[2026-05-23 12:05:40] [POLL] ★ new message from 冯志泉: 好的！小橙已经把您的微信号转给了我们最专业的顾问，请留意好友申请
+[2026-05-23 12:05:41] [STEP5-冯志泉] no config file, using defaults
+[2026-05-23 12:05:41] [AI] reply (小橙): 收到！请问方便留个微信号或手机号吗？小橙好安排专人跟进您的需求
+[2026-05-23 12:05:41] [POLL] text inserted via JS for 冯志泉
+[2026-05-23 12:05:41] [POLL] ✅ sent reply to 冯志泉 (JS+button): 收到！请问方便留个微信号或手机号吗？小橙好安排专人跟进您的需求
+[2026-05-23 12:05:42] [POLL] ✅ done with 冯志泉, navigating back...
+[2026-05-23 12:05:42] [WS] #150: ['好的！小橙已经把您的微信号转给了我们最专业的顾问，请留意好友申请', '收到！请问方便留个微信号或手机号吗？小橙好安排专人跟进您的需求'] (no sender, skipped)
+[2026-05-23 12:05:42] [NAV] clicked '全部' tab via Playwright locator
+[2026-05-23 12:05:42] [NAV] clicking back arrow at (274, 97)
+[2026-05-23 12:05:43] [NAV] clicked '全部' tab via Playwright locator
+[2026-05-23 12:05:44] [POLL] 🔴 targets: ['职业素人']
+[2026-05-23 12:05:44] [POLL] 🟢 processing 职业素人 (reason: has_unread)
+[2026-05-23 12:05:44] [STEP1-职业素人] clicking conv at (743.6666870117188, 194.1666717529297)
+[2026-05-23 12:05:44] [STEP2-职业素人] read 3 msgs, last=收到！请问方便留个微信号或手机号吗？小橙好安排专人跟进您的需
+[2026-05-23 12:05:44] [STEP3-职业素人] ✅ state changed, proceeding
+[2026-05-23 12:05:44] [STEP4-职业素人] last msg is_right=False, x=570.6666870117188, text='收到！请问方便留个微信号或手机号吗？小橙好安排专人跟进您的需'
+[2026-05-23 12:05:44] [STEP4-职业素人] ✅ passed all filters
+[2026-05-23 12:05:44] [POLL] ★ new message from 职业素人: 收到！请问方便留个微信号或手机号吗？小橙好安排专人跟进您的需求
+[2026-05-23 12:05:45] [STEP5-职业素人] no config file, using defaults
+[2026-05-23 12:05:45] [AI] reply (小橙): 是要留联系方式吗？直接发手机号或微信号就行，我帮您对接专属顾问
+[2026-05-23 12:05:45] [POLL] text inserted via JS for 职业素人
+[2026-05-23 12:05:46] [POLL] ✅ sent reply to 职业素人 (JS+button): 是要留联系方式吗？直接发手机号或微信号就行，我帮您对接专属顾问
+[2026-05-23 12:05:46] [POLL] ✅ done with 职业素人, navigating back...
+[2026-05-23 12:05:47] [POLL] 🔴 targets: ['冯志泉']
+[2026-05-23 12:05:47] [POLL] 🟢 processing 冯志泉 (reason: has_unread)
+[2026-05-23 12:05:47] [STEP1-冯志泉] clicking conv at (743.6666870117188, 194.1666717529297)
+[2026-05-23 12:05:47] [NAV] clicking back arrow at (274, 97)
+[2026-05-23 12:05:48] [STEP2-冯志泉] read 3 msgs, last=是要留联系方式吗？直接发手机号或微信号就行，我帮您对接专属顾
+[2026-05-23 12:05:48] [STEP3-冯志泉] ✅ state changed, proceeding
+[2026-05-23 12:05:48] [STEP4-冯志泉] ❌ self echo match: '是要留联系方式吗？直接发手机号或微信号就' == '是要留联系方式吗？直接发手机号或微信号就'
+[2026-05-23 12:05:48] [POLL] ✅ done with 冯志泉, navigating back...
+[2026-05-23 12:05:48] [NAV] clicking back arrow at (274, 97)
+[2026-05-23 12:05:49] [NAV] clicked '全部' tab via Playwright locator
+[2026-05-23 12:05:49] [NAV] clicked '全部' tab via Playwright locator
+[2026-05-23 12:05:50] [LOOP-1] heartbeat #180 (errs=0, recoveries=0)
+[2026-05-23 12:05:50] [LOOP-2] heartbeat #120 (errs=0, recoveries=0)
+[2026-05-23 12:05:57] [LOOP-3] heartbeat #96 (errs=0, recoveries=0)
+[2026-05-23 12:06:04] [LOOP-2] heartbeat #132 (errs=0, recoveries=0)
+[2026-05-23 12:06:05] [LOOP-1] heartbeat #192 (errs=0, recoveries=0)
+[2026-05-23 12:06:11] [LOOP-3] heartbeat #108 (errs=0, recoveries=0)
+[2026-05-23 12:06:17] [LOOP-2] heartbeat #144 (errs=0, recoveries=0)
+[2026-05-23 12:06:17] [LOOP-1] heartbeat #204 (errs=0, recoveries=0)
+[2026-05-23 12:06:24] [LOOP-3] heartbeat #120 (errs=0, recoveries=0)
+[2026-05-23 12:06:31] [LOOP-2] heartbeat #156 (errs=0, recoveries=0)
+[2026-05-23 12:06:32] [LOOP-1] heartbeat #216 (errs=0, recoveries=0)
+[2026-05-23 12:06:38] [LOOP-3] heartbeat #132 (errs=0, recoveries=0)
+[2026-05-23 12:06:45] [LOOP-2] heartbeat #168 (errs=0, recoveries=0)
+[2026-05-23 12:06:46] [LOOP-1] heartbeat #228 (errs=0, recoveries=0)
+[2026-05-23 12:06:52] [LOOP-3] heartbeat #144 (errs=0, recoveries=0)
+[2026-05-23 12:06:59] [LOOP-2] heartbeat #180 (errs=0, recoveries=0)
+[2026-05-23 12:07:00] [LOOP-1] heartbeat #240 (errs=0, recoveries=0)
+[2026-05-23 12:07:06] [LOOP-3] heartbeat #156 (errs=0, recoveries=0)
+[2026-05-23 12:07:12] [LOOP-1] heartbeat #252 (errs=0, recoveries=0)
+[2026-05-23 12:07:13] [LOOP-2] heartbeat #192 (errs=0, recoveries=0)
+[2026-05-23 12:07:19] [LOOP-3] heartbeat #168 (errs=0, recoveries=0)
+[2026-05-23 12:07:26] [LOOP-2] heartbeat #204 (errs=0, recoveries=0)
+[2026-05-23 12:07:26] [LOOP-1] heartbeat #264 (errs=0, recoveries=0)
+[2026-05-23 12:07:33] [LOOP-3] heartbeat #180 (errs=0, recoveries=0)
+[2026-05-23 12:07:39] [LOOP-2] heartbeat #216 (errs=0, recoveries=0)
+[2026-05-23 12:07:40] [LOOP-1] heartbeat #276 (errs=0, recoveries=0)
+[2026-05-23 12:07:49] [HEALTH-1] check error: CDPSession.send: Target page, context or browser has been closed
+[2026-05-23 12:07:49] [LOOP-1] ⚠ PAGE_CRASHED, attempting full recovery...
+[2026-05-23 12:07:49] [FULL-RECOVER-1] starting full browser recovery (session: D:\trea ai\Google\GLM\项目2\douyin-rpa\sessions\merchant_7_slot_1)
+[2026-05-23 12:07:49] [BROWSER] 系统默认浏览器 ProgId: ChromeHTML.ZGVCQUUTUYQKTE7GYWKMOVUU4I
+[2026-05-23 12:07:49] [BROWSER] ✅ 使用 默认浏览器: D:\翻墙\Google\Chrome\Application\chrome.exe
+[2026-05-23 12:07:49] [FULL-RECOVER-1] ✅ new browser launched
+[2026-05-23 12:07:50] [LOOP-2] ended
+[2026-05-23 12:07:50] [LOOP-3] ended
+[2026-05-23 12:07:50] [FULL-RECOVER-1] navigation error: Page.goto: Target page, context or browser has been closed
+[2026-05-23 12:07:50] [LOGIN] error: Page.evaluate: Target page, context or browser has been closed
+[2026-05-23 12:07:50] [FULL-RECOVER-1] ⚠ login expired after recovery
+[2026-05-23 12:07:50] [LOOP-1] ✗ full recovery failed, will retry...

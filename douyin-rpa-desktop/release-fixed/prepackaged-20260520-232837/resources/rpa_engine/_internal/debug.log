@@ -1,0 +1,9 @@
+[2026-05-19 21:09:14] [SLOT 1] Using system Chrome: C:\Program Files\Google\Chrome\Application\chrome.exe
+[2026-05-19 21:09:14] [SLOT 1] ✅ Independent browser instance created (session: D:\trea ai\Google\GLM\项目2\软件\光宸智能客服\resources\rpa_engine\_internal\sessions\merchant_1)
+[2026-05-19 21:09:16] [LOGIN] ? has cookie but no chat elements (bodyLen=189), treating as NOT logged in
+[2026-05-19 21:09:17] [LOGIN] error: Page.evaluate: Target page, context or browser has been closed
+[2026-05-19 21:09:18] [LOGIN] error: Page.evaluate: Target page, context or browser has been closed
+[2026-05-19 21:09:19] [SLOT 1] Deleting slot...
+[2026-05-19 21:09:19] [SLOT 1] Failed to delete from DB: 'DatabaseManager' object has no attribute 'get_connection'
+[2026-05-19 21:09:19] [SLOT 1] Slot deleted.
+[2026-05-19 21:09:19] Screenshot error: Page.screenshot: Target page, context or browser has been closed

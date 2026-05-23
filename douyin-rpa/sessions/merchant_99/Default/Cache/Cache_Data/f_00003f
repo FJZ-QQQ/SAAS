@@ -1,0 +1,835 @@
+/*! For license information please see 84665.f60da2a9.js.LICENSE.txt */
+!function(e,t){"object"==typeof exports&&"undefined"!=typeof module?t(exports):"function"==typeof define&&define.amd?define(["exports"],t):t((e="undefined"!=typeof globalThis?globalThis:e||self).xss={})}(this,function(e){"use strict";var t=function(){return(t=Object.assign||function(e){for(var t,i=1,r=arguments.length;i<r;i++)for(var a in t=arguments[i])Object.prototype.hasOwnProperty.call(t,a)&&(e[a]=t[a]);return e}).apply(this,arguments)};function i(e,t,i){if(i||2==arguments.length)for(var r,a=0,s=t.length;a<s;a++)!r&&a in t||(r||(r=Array.prototype.slice.call(t,0,a)),r[a]=t[a]);return e.concat(r||Array.prototype.slice.call(t))}var r=/[^a-zA-Z0-9\\_:.-]/gim,a=/</g,s=/>/g,n=/&#([a-zA-Z0-9]*);?/gim,o=/&quot;/g,c=/&colon;?/gim,l=/&newline;?/gim,h=/((j\s*a\s*v\s*a|v\s*b|l\s*i\s*v\s*e)\s*s\s*c\s*r\s*i\s*p\s*t\s*|m\s*o\s*c\s*h\s*a):/gi,d=/u\s*r\s*l\s*\(.*/gi,p=/e\s*x\s*p\s*r\s*e\s*s\s*s\s*i\s*o\s*n\s*\(.*/gi,u=/"/g,f=function(e){return e.replace(a,"&lt;").replace(s,"&gt;")},m={indexOf:function(e,t){var i,r;for(i=0,r=e.length;i<r;i++)if(e[i]===t)return i;return -1},forEach:function(e,t,i){var r,a;for(r=0,a=e.length;r<a;r++)t.call(i,e[r],r,e)},some:function(e,t,i){var r,a;for(r=0,a=e.length;r<a;r++)if(t.call(i,e[r],r,e))return!0;return!1},trim:function(e){return e.replace(/(^\s*)|(\s*$)/g,"")},includes:function(e,t){if("string"==typeof e)return -1!==e.indexOf(t);for(var i=0;i<e.length;i++)if(e[i]===t)return!0;return!1},spaceIndex:function(e){var t=/\s|\n|\t/.exec(e);return t?t.index:-1},uniq:function(e){for(var t={},i=[],r=0;r<e.length;r++)t[e[r]]||(i.push(e[r]),t[e[r]]=!0);return i},from:function(e){for(var t=[],i=0;i<e.length;i++)t.push(e[i]);return t},keys:function(e){var t=[];for(var i in e)t.push(i);return t}};function g(e){return null==e}function G(e){var t;return'"'===(t=e)[0]&&'"'===t[t.length-1]||"'"===t[0]&&"'"===t[t.length-1]?e.substr(1,e.length-2):e}function v(e){var t,i,r,a,s,n,o,c="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",l="",h=0;for(e=function(e){e=e.replace(/rn/g,"n");for(var t="",i=0;i<e.length;i++){var r=e.charCodeAt(i);r<128?t+=String.fromCharCode(r):r>127&&r<2048?t+=String.fromCharCode(r>>6|192)+String.fromCharCode(63&r|128):t+=String.fromCharCode(r>>12|224)+String.fromCharCode(r>>6&63|128)+String.fromCharCode(63&r|128)}return t}(e);h<e.length;)a=(t=e.charCodeAt(h++))>>2,s=(3&t)<<4|(i=e.charCodeAt(h++))>>4,n=(15&i)<<2|(r=e.charCodeAt(h++))>>6,o=63&r,isNaN(i)?n=o=64:isNaN(r)&&(o=64),l=l+c.charAt(a)+c.charAt(s)+c.charAt(n)+c.charAt(o);return l}function D(e){var t,i,r,a,s,n,o="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",c="",l=0;for(e=e.replace(/[^A-Za-z0-9+/=]/g,"");l<e.length;)t=o.indexOf(e.charAt(l++))<<2|(a=o.indexOf(e.charAt(l++)))>>4,i=(15&a)<<4|(s=o.indexOf(e.charAt(l++)))>>2,r=(3&s)<<6|(n=o.indexOf(e.charAt(l++))),c+=String.fromCharCode(t),64!==s&&(c+=String.fromCharCode(i)),64!==n&&(c+=String.fromCharCode(r));return function(e){for(var t="",i=0,r=0,a=0,s=0;i<e.length;)(r=e.charCodeAt(i))<128?(t+=String.fromCharCode(r),i++):r>191&&r<224?(t+=String.fromCharCode((31&r)<<6|63&(s=e.charCodeAt(i+1))),i+=2):(s=e.charCodeAt(i+1),t+=String.fromCharCode((15&r)<<12|(63&s)<<6|63&(a=e.charCodeAt(i+2))),i+=3);return t}(c)}function _(e,t,i){var r="",a=0,s=!1,n=!1,o=0,c=e.length,l="",h="";e:for(o=0;o<c;o++){var d=e.charAt(o);if(!1===s){if("<"===d){s=o;continue}}else if(!1===n){if("<"===d){r+=i(e.slice(a,o)),s=o,a=o;continue}if(">"===d||o===c-1){r+=i(e.slice(a,s)),l=function(e){var t,i=m.spaceIndex(e);return t=-1===i?e.slice(1,-1):e.slice(1,i+1),"/"===(t=m.trim(t).toLowerCase()).slice(0,1)&&(t=t.slice(1)),"/"===t.slice(-1)&&(t=t.slice(0,-1)),t}(h=e.slice(s,o+1)),r+=t(s,r.length,l,h,"</"===h.slice(0,2)),a=o+1,s=!1;continue}if('"'===d||"'"===d)for(var p=1,u=e.charAt(o-p);""===u.trim()||"="===u;){if("="===u){n=d;continue e}u=e.charAt(o-++p)}}else if(d===n){n=!1;continue}}return a<c&&(r+=i(e.substr(a))),r}function H(e,t){var i=0,a=0,s=[],n=!1,o=e.length;function c(e,i){if(!((e=(e=m.trim(e)).replace(r,"").toLowerCase()).length<1)){var a=t(e,i||"");a&&s.push(a)}}for(var l=0;l<o;l++){var h=e.charAt(l),d=void 0;if(!1!==n||"="!==h){if(!1===n||l!==a){if(/\s|\n|\t/.test(h)){if(e=e.replace(/\s|\n|\t/g," "),!1===n){if(-1===(d=function(e,t){for(;t<e.length;t++){var i=e[t];if(" "!==i)return"="===i?t:-1}return -1}(e,l))){c(m.trim(e.slice(i,l))),n=!1,i=l+1;continue}l=d-1;continue}if(-1===(d=function(e,t){for(;t>0;t--){var i=e[t];if(" "!==i)return"="===i?t:-1}return -1}(e,l-1))){c(n,G(m.trim(e.slice(i,l)))),n=!1,i=l+1;continue}}}else{if(-1===(d=e.indexOf(h,l+1)))break;c(n,m.trim(e.slice(a+1,d))),n=!1,i=(l=d)+1}}else n=e.slice(i,l),i=l+1,a='"'===e.charAt(i)||"'"===e.charAt(i)?i:function(e,t){for(;t<e.length;t++){var i=e[t];if(" "!==i)return"'"===i||'"'===i?t:-1}return -1}(e,l+1)}return i<e.length&&(!1===n?c(e.slice(i)):c(n,G(m.trim(e.slice(i))))),m.trim(s.join(" "))}function y(e,t,i){if(i=function(e){return e=function(e){for(var t="",i=0,r=e.length;i<r;i++)t+=32>e.charCodeAt(i)?" ":e.charAt(i);return m.trim(t)}(e=(e=(e=e.replace(o,'"')).replace(n,function(e,t){return"x"===t[0]||"X"===t[0]?String.fromCharCode(parseInt(t.substr(1),16)):String.fromCharCode(parseInt(t,10))})).replace(c,":").replace(l," "))}(i),"href"===t||"src"===t){if("#"===(i=m.trim(i)))return"#";if("http://"!==i.substr(0,7)&&"https://"!==i.substr(0,8)&&"mailto:"!==i.substr(0,7)&&"tel:"!==i.substr(0,4)&&"data:image/"!==i.substr(0,11)&&"ftp://"!==i.substr(0,6)&&"./"!==i.substr(0,2)&&"../"!==i.substr(0,3)&&"#"!==i[0]&&"/"!==i[0])return""}else if("background"===t){if(h.lastIndex=0,h.test(i))return""}else if("style"===t&&(p.lastIndex=0,p.test(i)||(d.lastIndex=0,d.test(i)&&(h.lastIndex=0,h.test(i)))))return"";return i=function(e){return e=f(e=e.replace(u,"&quot;"))}(i)}var T=function(e){return"string"==typeof e?e.replace(/'/g,'"').replace('=""',"").replace(/\s+/g,"").toLowerCase():""},b=function(){function e(e){var t=function(e){var t={};for(var i in e)t[i]=e[i];return t}(e||{});t.stripIgnoreTag&&(t.onIgnoreTag,t.onIgnoreTag=function(){return""}),t.whiteList={},t.onTag=function(){},t.onTagAttr=function(){},t.onIgnoreTag=function(){},t.onIgnoreTagAttr=function(){},t.safeAttrValue=y,t.escapeHtml=f,this.options=Object.assign(t,e)}return e.prototype.process=function(e){if(!(e=(e=e||"").toString()))return"";var t,i,r,a,s,n,o=this.options,c=o.whiteList,l=o.onTag,h=o.onIgnoreTag,d=o.onTagAttr,p=o.onIgnoreTagAttr,u=o.safeAttrValue,f=o.escapeHtml;o.stripBlankChar&&(e=(t=(t=e.split("")).filter(function(e){var t=e.charCodeAt(0);return!(127===t||t<=31&&10!==t&&13!==t)})).join("")),o.allowCommentTag||(e=function(e){for(var t="",i=0;i<e.length;){var r=e.indexOf("\x3c!--",i);if(-1===r){t+=e.slice(i);break}t+=e.slice(i,r);var a=e.indexOf("--\x3e",r);if(-1===a)break;i=a+3}return t}(e));var g=!1;o.stripIgnoreTagBody&&(i=o.stripIgnoreTagBody,"function"!=typeof(r=h)&&(r=function(){}),a=!Array.isArray(i),s=[],n=!1,h=(g={onIgnoreTag:function(e,t,o){var c;if(c=e,a||-1!==m.indexOf(i,c)){if(o.isClosing){var l="[/removed]",h=o.position+l.length;return s.push([!1!==n?n:o.position,h]),n=!1,l}return n||(n=o.position),"[removed]"}return r(e,t,o)},remove:function(e){var t="",i=0;return m.forEach(s,function(r){t+=e.slice(i,r[0]),i=r[1]}),t+=e.slice(i)}}).onIgnoreTag);var G=_(e,function(e,t,i,r,a){var s={sourcePosition:e,position:t,isClosing:a,isWhite:Object.prototype.hasOwnProperty.call(c,i)},n=l(i,r,s);if(null!=n)return n;if(s.isWhite){if(s.isClosing)return"</".concat(i,">");var o=function(e){var t=m.spaceIndex(e);if(-1===t)return{html:"",closing:"/"===e[e.length-2]};var i="/"===(e=m.trim(e.slice(t+1,-1)))[e.length-1];return i&&(e=m.trim(e.slice(0,-1))),{html:e,closing:i}}(r),g=c[i],G=H(o.html,function(e,t){var r=-1!==m.indexOf(g,e),a=d(i,e,t,r);return null==a?r?(t=u(i,e,t,null))?"".concat(e,'="').concat(t,'"'):e:null==(a=p(i,e,t,r))?void 0:a:a});return r="<".concat(i),G&&(r+=" ".concat(G)),o.closing&&(r+=" /"),r+=">"}return null==(n=h(i,r,s))?f(r):n},f);return g&&(G=g.remove(G)),G},e}(),C=Function("\nvar _checkXSS = function (it) {\n  return it && it.Math == Math && it;\n};\nreturn _checkXSS(typeof globalThis === 'object' && globalThis) ||\n_checkXSS(typeof window === 'object' && window) ||\n_checkXSS(typeof self === 'object' && self) ||\n_checkXSS(typeof global === 'object' && global) ||\nFunction('return this')();\n")(),P=new(function(){function e(){var e=this;this.batchData=[],this.uniqKeys=new Set,this.timeout=2e3,this.lock=!1,this.getSlardarBid=function(){var t,i,r="douyin_web";if(!m.includes(r,"bid"))return r;if(e.config&&e.config.bid)return e.config.bid;if(C&&C._xssBid)return C._xssBid;if(C&&C.slardar&&"function"==typeof C.slardar.config){var a=(C.slardar.config()||{}).bid;if(a)return a}if(C&&C.Slardar&&"function"==typeof C.Slardar.config){var s=(C.Slardar.config()||{}).bid;if(s)return s}return(null===(i=null===(t=null==C?void 0:C.Slardar)||void 0===t?void 0:t._baseParams)||void 0===i?void 0:i.bid)||"argus"},this.getConfigRegion=function(){var t;return m.includes("cn","region")?e.config&&e.config.region?e.config.region:((null===(t=null==C?void 0:C.gfdatav1)||void 0===t?void 0:t.region)||"cn").toLowerCase():"cn"},this.gerReportUrl=function(){var t={cn:D("aHR0cHM6Ly9tb24uemlqaWVhcGkuY29tL21vbml0b3JfYnJvd3Nlci9jb2xsZWN0L2JhdGNoL3NlY3VyaXR5Lz9iaWQ9"),boe:D("aHR0cHM6Ly9tb24uemlqaWVhcGkuY29tL21vbml0b3JfYnJvd3Nlci9jb2xsZWN0L2JhdGNoL3NlY3VyaXR5Lz9iaWQ9"),ttp:D("aHR0cHM6Ly9tb24udXMudGlrdG9rdi5jb20vbW9uaXRvcl9icm93c2VyL2NvbGxlY3QvYmF0Y2gvc2VjdXJpdHkvP2JpZD0="),va:D("aHR0cHM6Ly9tb24tdmEuYnl0ZW92ZXJzZWEuY29tL21vbml0b3JfYnJvd3Nlci9jb2xsZWN0L2JhdGNoL3NlY3VyaXR5Lz9iaWQ9"),maliva:D("aHR0cHM6Ly9tb24tdmEuYnl0ZW92ZXJzZWEuY29tL21vbml0b3JfYnJvd3Nlci9jb2xsZWN0L2JhdGNoL3NlY3VyaXR5Lz9iaWQ9"),sg:D("aHR0cHM6Ly9tb24tdmEuYnl0ZW92ZXJzZWEuY29tL21vbml0b3JfYnJvd3Nlci9jb2xsZWN0L2JhdGNoL3NlY3VyaXR5Lz9iaWQ9"),boei18n:D("aHR0cHM6Ly9tb24tdmEuYnl0ZW92ZXJzZWEuY29tL21vbml0b3JfYnJvd3Nlci9jb2xsZWN0L2JhdGNoL3NlY3VyaXR5Lz9iaWQ9")}[e.getConfigRegion()];if(t)return t+e.getSlardarBid()}}return e.prototype.setConfig=function(e){this.config=e},e.prototype.upload=function(){var e=this,t=this.gerReportUrl();!this.lock&&t&&0!==this.batchData.length&&(this.lock=!0,setTimeout(function(){var i=e.batchData.slice(0,100);e.batchData=e.batchData.slice(100),C.fetch(t,{method:"post",body:JSON.stringify(i),headers:{"Content-Type":"application/json"}}).catch(function(e){}),e.lock=!1,e.upload()},this.timeout))},e.prototype.generateKey=function(e){return e.collectKey?[e.collectMode,e.collectKey].join("___"):""},e.prototype.push=function(e){this.batchData.push(e),this.upload()},e.prototype.report=function(e){var t=this.generateKey(e);if(C.fetch&&e.collectKey){var i="object"==typeof window?window.location.href:"SSR";e.documentUrl=i;var r={age:Math.floor(Date.now()),type:"xss",url:i,body:e,"user-agent":""};"enforce"===e.disposition&&"SSR"!==i||(r.url=t),"SSR"===i&&(r.url="SSR___".concat(r.url),r.body.ssr=!0),this.push(r)}},e}()),I=function(e){for(var t=0,i=function(i){Array.isArray(e[i])?0===e[i].length?delete e[i]:(e[i]=m.from(m.uniq(e[i])),t+=e[i].length):0===m.keys(e[i]).length?delete e[i]:m.keys(e[i]).forEach(function(r){e[i][r]=m.from(m.uniq(e[i][r])),t+=e[i][r].length})},r=0,a=m.keys(e);r<a.length;r++)i(a[r]);return{count:t,ret:e}};function E(e,t){return P.setConfig(t),new b(t).process(e)}function k(e){var t,i=(t=/\s|\n|\t/.exec(e))?t.index:-1;if(-1===i)return{html:"",closing:"/"===e[e.length-2]};var r="/"===(e=e.slice(i+1,-1).trim())[e.length-1];return r&&(e=e.slice(0,-1).trim()),{html:e,closing:r}}var R=function(e){return -1===(e=(e=(e=(e=e.replace(/&colon;/gi,":")).replace(/&tab;/gi,"")).replace(/&newline;/gi,"")).replace(/(\t|\n|\r)/g,"")).indexOf("&#")?e.trim().toLowerCase():e.trim().replace(/&#(?:(x)([0-9a-f]+)|([0-9]+));?/gi,function(e,t,i,r){return String.fromCharCode(t?parseInt(i,16):parseInt(r))}).replace(/(\t|\n|\r)/g,"").toLowerCase()};function S(e,t){if(void 0===e&&(e=""),"string"!=typeof e)return!0;if(e=R(e),m.includes(e,"base64")&&!function(e){if(""===e||""===e.trim())return!0;try{return!m.includes(e,"data:text/html;base64")}catch(e){return!0}}(e))return t&&t("data:text/html;base64"),!1;var i=["expression(","behavior:","view-source:"];if(m.some(i,function(t){return -1!==e.indexOf(t)}))return m.forEach(i,function(i){-1!==e.indexOf(i)&&t&&t(i)}),!1;var r=["data:application","data:javascript","data:text/html","data:texthtml"];if(m.some(r,function(t){return -1!==e.indexOf(t)}))return m.forEach(r,function(i){-1!==e.indexOf(i)&&t&&t(i)}),!1;if(e.indexOf("javascript:")>0)return t&&t("javascript:"),!1;if(/^javascript:/i.test(e)){var a=e.slice(11).replace(/\s/g,"").trim();return!!m.some(["void","void(0)","void0","false","undefined",";"],function(e){return e===a})||(t&&t("javascript:"),!1)}return!0}var x=function(e,t){var i,r,a="<%= isSaveValidUrl =>";if("string"!=typeof e||(r=Number("<%= urlLimit =>"),void 0!==i&&(r=i),"NaN"!==e.toString()&&-1!==r&&e.length>=r)||S(e,t))return e;try{if(!0===(a=JSON.parse(a))||"true"===a){var s=new URL(e);return s.origin+s.pathname}}catch(e){}return"#"};function A(e,t,r){if(void 0===e&&(e=""),void 0===t&&(t=[]),"string"!=typeof e)return!0;if(!S(e=R(e)))return!1;var a,s={url:(a=e.match(/^(?:([A-Za-z]+):)?(\/{0,3})([0-9.\-A-Za-z]+)(?::(\d+))?(?:\/([^?#]*))?(?:\?([^#]*))?(?:#(.*))?$/)||[])[0],scheme:a[1],slash:a[2],host:a[3],port:a[4],path:a[5],query:a[6],hash:a[7]},n=s.scheme,o=s.host;return r?!!r(e):!(!n||!o)&&(!m.includes(["http","https","file"],n)||("object"==typeof window&&window&&(t=i(i([],t,!0),[location.host],!1)),m.some(t,function(e){return!!(e instanceof RegExp&&e.test(o))||e===o})))}var L={a:["target","title","spellcheck","rel"],canvas:[],abbr:["title"],address:[],area:["shape","coords","alt"],article:[],aside:[],audio:["autoplay","controls","loop","preload"],b:[],bdi:["dir"],bdo:["dir"],big:[],blockquote:["cite"],br:[],caption:[],center:[],cite:[],code:[],col:["align","valign","span","width"],colgroup:["align","valign","span","width"],dd:[],del:["datetime"],details:["open"],div:["dir"],dl:[],dt:[],em:[],font:["color","size","face"],footer:[],h1:[],h2:[],h3:[],h4:[],h5:[],h6:[],header:[],hr:[],i:[],img:["alt","title","width","height","decoding"],ins:["datetime"],li:[],mark:[],nav:[],ol:["start"],p:[],pre:[],s:[],section:[],small:[],span:[],sub:[],sup:[],delete:[],form:[],strong:[],mask:["maskunits","x","y","width","height","fill"],table:["width","border","align","valign"],tbody:["align","valign"],td:["width","rowspan","colspan","align","valign"],tfoot:["align","valign"],th:["width","rowspan","colspan","align","valign"],thead:["align","valign"],tr:["rowspan","align","valign"],tt:[],u:[],ul:[],wbr:[],video:["autoplay","controls","loop","preload","height","width"],svg:["viewBox","version","xmlns","fill","width","height","stroke","stroke-width","style"],path:["d","fill","opacity","stroke","p-id","fill-rule","clip-rule","stroke-width","stroke-linecap","stroke-linejoin","fill-opacity","mask"],rect:["x","y","width","height","fill","stroke","rx"],g:[]},M={collect:null,initCollect:function(){this.collect={whiteList:{},filterProtocol:[]}},removeCollect:function(){var e=I(this.collect),t=e.count,i=e.ret;return this.collect=null,{collectKey:0===t?null:JSON.stringify(i),collectMode:"white"}},onIgnoreTagAttr:function(e,t,r){return e&&m.indexOf(["href","src"],t)>-1?M.domainWhiteList&&Array.isArray(M.domainWhiteList)&&M.domainWhiteList.length>0&&!A(r,i([],M.domainWhiteList,!0))?"":"".concat(t,'="').concat(x(r,function(e){var t;null===(t=M.collect)||void 0===t||t.filterProtocol.push(e)}),'"'):e&&(m.indexOf(["style","class","id"],t)>-1||t.indexOf("data-")>-1)?"".concat(t,'="').concat(r,'"'):(M.collect.whiteList[e]=M.collect.whiteList[e]||[],void M.collect.whiteList[e].push(t))},onIgnoreTag:function(e,t){if("style"===e)return t;_(t,function(e,t,i,r){H(k(r).html.replace("/",""),function(e){M.collect.whiteList[i]=M.collect.whiteList[i]||[],M.collect.whiteList[i].push(e)})},f)},whiteList:L,mergeWhiteList:function(e){for(var t,i={},r=0,a=m.keys(L);r<a.length;r++)i[t=a[r]]=m.from(L[t]);for(var s=0,n=m.keys(e);s<n.length;s++)i[t=n[s]]=t in L?L[t].concat(e[t]):m.from(e[t]);return i},setWhiteList:function(e){for(var t=0,i=m.keys(e);t<i.length;t++){var r=i[t];this.whiteList[r]=r in L?L[r].concat(e[r]):m.from(e[r])}}};try{var w={},U="merge";m.includes(U,"override")&&(M.whiteList=w.whiteList),m.includes(U,"merge")&&M.setWhiteList(w.whiteList)}catch(e){}var O=function(e,t){for(var i={},r=0,a=m.keys(e);r<a.length;r++){var s=a[r];Array.isArray(e[s])?i[s]=m.from(e[s]):i[s]=O({},e[s])}for(var n=0,o=m.keys(t);n<o.length;n++)(s=o[n])in e?Array.isArray(e[s])?i[s]=e[s].concat(t[s]):i[s]=O(e[s],t[s]):Array.isArray(t[s])?i[s]=m.from(t[s]):i[s]=O({},t[s]);return i},N={blackList:{a:["folder"],meta:["content"],iframe:["srcdoc"],input:["pattern"],vmlframe:["xmlns"]},blackTags:["script","xml","embed","isindex","object","base","set","handler","animate","payload","import"],blackAttrs:["charset","ns","namespace","formaction","xlink:href","xmlns:xlink","handler","repeat","repeat-start","repeat-end"],blackAttrRegExps:[/^on/],filterList:{param:["value"],video:["poster"],form:["action"]},filterAttrs:["href","src","background","style","dynsrc","lowsrc","content"]};try{var j={};j.blackAttrRegExps&&(j.blackAttrRegExps=j.blackAttrRegExps.map(function(e){return new RegExp(e.toString().slice(1,e.toString().length-1))}));var V="merge";m.includes(V,"override")&&(N=j),m.includes(V,"merge")&&(N=O(N,j))}catch(e){}var F={mode:"black",whiteList:{},blackConfig:N,collect:null,initCollect:function(){F.collect={blackList:{},blackTags:[],blackAttrs:[],blackAttrRegExps:[],filterAttrs:[],filterList:{},filterProtocol:[]}},removeCollect:function(){var e=I(F.collect),t=e.count,i=e.ret;return F.collect=null,{collectKey:0===t?null:JSON.stringify(i),collectMode:"black"}},onIgnoreTag:function(e,t){var i;if(!m.includes(N.blackTags,e))return _(t,function(e,t,i,r,a){if(-1!==i.indexOf("/"))return f(r);if(a)return"</".concat(i,">");var s=k(r),n=H(s.html,function(e,t){var r,a=0;if(N.blackList[i]&&m.includes(N.blackList[i],e)&&(F.collect.blackList[i]=F.collect.blackList[i]||[],F.collect.blackList[i].push(e),a++),N.blackAttrRegExps.length&&N.blackAttrRegExps.some(function(t){return t.test(e)})&&m.forEach(N.blackAttrRegExps,function(t){t.test(e)&&(F.collect.blackAttrRegExps.push("".concat(t.toString(),"->").concat(e)),a++)}),N.blackAttrs.length&&m.includes(N.blackAttrs,e)&&(N.blackAttrs.push(e),a++),!a){if(N.filterList&&N.filterList[i]&&m.includes(N.filterList[i],e)){var s=x(t,function(e){var t;null===(t=F.collect)||void 0===t||t.filterProtocol.push(e)});return s!==t&&(F.collect.filterList[i]=F.collect.filterList[i]||[],F.collect.filterList[i].push(e)),t?"".concat(e,"='").concat(s,"'"):e}return N.filterAttrs&&m.includes(N.filterAttrs,e)?((s=x(t,function(e){var t;null===(t=F.collect)||void 0===t||t.filterProtocol.push(e)}))!==t&&(null===(r=F.collect)||void 0===r||r.filterAttrs.push(e)),t?"".concat(e,"='").concat(s,"'"):e):t?"".concat(e,"='").concat(t,"'"):e}});return r="<".concat(i),n&&(r+=" ".concat(n)),s.closing&&(r+=" /"),r+=">"},f);null===(i=F.collect)||void 0===i||i.blackTags.push(e)}},Z=function(e){var t=e.reportOnly,i=void 0===t||t,r=e.block;return i&&"all"===i?"report":("string"==typeof i&&("true"===i&&(i=!0),"false"===i&&(i=!1)),r?"enforce":i?"report":"enforce")},W=function(e){return function(i,r,a){if(!i||"string"!=typeof i)return i;var s=r;e===E&&(s=M).initCollect();var n=e(i,s);if(T(n)===T(i))return i;if(!a)return n;var o=a.logType,c=Z(a),l=s.removeCollect();return P.report(t(t({type:o,disposition:c},l),{sourceText:v(i),filterText:v(n)})),"enforce"===c?n:i}},X=W(function(e,t){return void 0===t&&(t={}),t&&t.whiteList||(t.whiteList={a:["target","href","title"],abbr:["title"],address:[],area:["shape","coords","href","alt"],article:[],aside:[],audio:["autoplay","controls","crossorigin","loop","muted","preload","src"],b:[],bdi:["dir"],bdo:["dir"],big:[],blockquote:["cite"],br:[],caption:[],center:[],cite:[],code:[],col:["align","valign","span","width"],colgroup:["align","valign","span","width"],dd:[],del:["datetime"],details:["open"],div:[],dl:[],dt:[],em:[],figcaption:[],figure:[],font:["color","size","face"],footer:[],h1:[],h2:[],h3:[],h4:[],h5:[],h6:[],header:[],hr:[],i:[],img:["src","alt","title","width","height"],ins:["datetime"],li:[],mark:[],nav:[],ol:[],p:[],pre:[],s:[],section:[],small:[],span:[],sub:[],summary:[],sup:[],strong:[],strike:[],table:["width","border","align","valign"],tbody:["align","valign"],td:["width","rowspan","colspan","align","valign"],tfoot:["align","valign"],th:["width","rowspan","colspan","align","valign"],thead:["align","valign"],tr:["rowspan","align","valign"],tt:[],u:[],ul:[],video:["autoplay","controls","crossorigin","loop","muted","playsinline","poster","preload","src","height","width"]}),new b(t).process(e)}),$=W(E),B=function(e,t,i){var r=[],a=x(e,function(e){r.push(e)});if(a===e)return e;r=m.from(m.uniq(r));var s=t||i||{};if(!s)return a;var n=s.logType,o=Z(i);return P.report({type:n,disposition:o,collectKey:r.join("___"),collectData:JSON.stringify(r),collectMode:"black",sourceText:v(e),filterText:v(a)}),"enforce"===o?a:e},K=C._xssProject||{},z=C.xssNamespace||{},Y="3.0.26",q={FilterXSS:b,version:Y,webpackPluginVersion:"<%= webpackPluginVersion =>",reportOnly:"<%= reportOnly =>",filterXSS:X,_filterXSS:$,filterUrl:B,Config:M,BlackConfig:F,project:K,setProjectName:function(e){K[e]=this,C._xssProjectName=e}};z.douyin_web=q,C.xssNamespace=z,C.Math&&!C.Math.xssNamespace&&(C.Math.xssNamespace=z),K[Y]=q,C.globalThis=C,C.getFilterXss=function(){return void 0!==this._xssProjectName?this._xssProject[this._xssProjectName]:q},C.xss=q,C.isSafeUrl=A,C.isSafeDomain=A,C.isSafeProtocol=S,C._xssProject=K,C._xssProjectName&&(K[C._xssProjectName]=q);var J=q.setProjectName.bind(q);e.BlackConfig=F,e.Config=M,e.FilterXSS=b,e._filterXSS=$,e.filterUrl=B,e.filterXSS=X,e.isSafeDomain=A,e.isSafeProtocol=S,e.isSafeUrl=A,e.project=K,e.setProjectName=J,e.setXssNamespace=function(e){var t=e.appId,i=e.bid,r=e.region;z[t]=q;M.bid=i,M.region=r,M.enabled=!0},e.xssNamespace=z,Object.defineProperty(e,"__esModule",{value:!0})}),(self.webpackChunkdouyin_web=self.webpackChunkdouyin_web||[]).push([["84665"],{457227:function(e,t,i){"use strict";i.d(t,{Z:function(){return G}}),i(874386),i(250440),i(268917),i(429532);var r=i(595814),a=i.n(r),s=i(96008),n=i.n(s),o=i(207813),c=i.n(o),l=i(88648),h=i(713097),d=i.n(h),p=i(627813),u=i(764548),f=i(143690),m=i(723402),g=i(619835);function G(){let e,t=arguments.length>0&&void 0!==arguments[0]?arguments[0]:{},{prefixCls:i=u.UX.PREFIX,filteredValue:r,filterIcon:s="filter",filterDropdownProps:o,onSelect:h,filterDropdownVisible:G,renderFilterDropdown:v,onFilterDropdownVisibleChange:D}=t,{filterDropdown:_=null}=t,H=void 0!==G,y=!H&&"function"==typeof v,[T,b]=(0,l.useState)(r),C=!y&&G,[P,I]=(0,l.useState)(C);(0,l.useEffect)(()=>{void 0!==G&&I(G)},[G]),(0,l.useEffect)(()=>{b(r)},[r]);let E=d()(`${i}-column-filter`,{on:Array.isArray(r)&&r.length});e="function"==typeof s?s(Array.isArray(r)&&r.length>0):(0,l.isValidElement)(s)?s:l.createElement("div",{className:E},"​",l.createElement(p.Z,{role:"button","aria-label":"Filter data with this column","aria-haspopup":"listbox",tabIndex:-1,size:"default"}));let k=Object.assign(Object.assign(Object.assign(Object.assign({},t),o),{tempFilteredValue:T,setTempFilteredValue:b,confirm:function(){let e=arguments.length>0&&void 0!==arguments[0]?arguments[0]:{},t=(null==e?void 0:e.filteredValue)||T;!c()(t,r)&&h({filteredValue:t}),e.closeDropdown&&I(!1)},clear:function(){let e=arguments.length>0&&void 0!==arguments[0]?arguments[0]:{};b([]),h({filteredValue:[]}),e.closeDropdown&&I(!1)},close:()=>{I(!1)}}),{filterDropdownVisible:H?G:P,onFilterDropdownVisibleChange:e=>{y&&I(e),D(e)}});return _=l.isValidElement(_)?_:function e(t){let i=arguments.length>1&&void 0!==arguments[1]?arguments[1]:null,r=arguments.length>2&&void 0!==arguments[2]?arguments[2]:0,{filterMultiple:s=!0,filters:o=[],filteredValue:c=[],filterDropdownVisible:h,onSelect:d=n(),onFilterDropdownVisibleChange:p=n(),trigger:G="click",position:v="bottom",renderFilterDropdown:D,renderFilterDropdownItem:_}=null!=t?t:{},H=a()(t,["tempFilteredValue","setTempFilteredValue","confirm","clear","close","filters"]),y="function"==typeof D?D(H):l.createElement(f.Z.Menu,null,Array.isArray(o)&&o.map((i,a)=>{let n=e=>{let t=e&&e.nativeEvent;t&&(t.stopImmediatePropagation(),t.stopPropagation(),t.preventDefault());let r=[...c],a=r.includes(i.value),n=r.indexOf(i.value);return n>-1?r.splice(n,1):s?r.push(i.value):r=[i.value],d({value:i.value,filteredValue:r,included:!a,domEvent:t})},o=c.includes(i.value),{text:h}=i,{value:p}=i,u=`${r}_${a}`,G="function"==typeof _?_({onChange:n,filterMultiple:s,value:p,text:h,checked:o,filteredValue:c,level:r}):null,v=G&&l.isValidElement(G)?l.cloneElement(G,{key:u}):l.createElement(f.Z.Item,{key:u,onClick:n},s?l.createElement(g.Z,{checked:o},h):l.createElement(m.Z,{checked:o},h));if(Array.isArray(i.children)&&i.children.length){let a=Object.assign(Object.assign({},t),{filters:i.children,trigger:"hover",position:"right"});delete a.filterDropdownVisible,v=e(a,v,r+1)}return v})),T=Object.assign(Object.assign({},t),{onVisibleChange:e=>p(e),trigger:G,position:v,render:y});return null!=h&&(T.visible=h),l.createElement(f.Z,Object.assign({},T,{key:`Dropdown_level_${r}`,className:`${u.UX.PREFIX}-column-filter-dropdown`}),i)}(k,e)}},194597:function(e,t,i){"use strict";i.d(t,{Z:function(){return x}}),i("429532"),i("413806"),i("826893");var r=i("23902"),a=i.n(r),s=i("645260"),n=i.n(s),o=i("43715"),c=i.n(o),l=i("866674"),h=i.n(l),d=i("128231"),p=i.n(d),u=i("88648"),f=i("713097"),m=i.n(f),g=i("201845"),G=i.n(g),v=i("944490"),D=i("794158"),_=i("154337"),H=i("839020"),y=i("492071");let T=(0,y.A)(function(e){return u.createElement("svg",Object.assign({viewBox:"0 0 24 24",fill:"none",xmlns:"http://www.w3.org/2000/svg",width:"1em",height:"1em",focusable:!1,"aria-hidden":!0},e),u.createElement("path",{fillRule:"evenodd",clipRule:"evenodd",d:"M2 5a3 3 0 0 1 3-3h3.3a2 2 0 0 1 1.25.44l1.13.9a3 3 0 0 0 1.87.66H18c2 0 3 2 3 4H7.53A2 2 0 0 0 5.6 9.48L2.57 20.76C2.21 20.26 2 19.66 2 19V5Zm20.17 5H9.5a2 2 0 0 0-1.92 1.44l-2.7 9.28A1 1 0 0 0 5.82 22H18.5a2 2 0 0 0 1.92-1.44l2.7-9.28a1 1 0 0 0-.95-1.28Z",fill:"currentColor"}))},"folder_open");var b=i("61035"),C=i("619835"),P=i("103093"),I=i("904542"),E=i("458504"),k=i("704898"),R=function(e,t){var i={};for(var r in e)Object.prototype.hasOwnProperty.call(e,r)&&0>t.indexOf(r)&&(i[r]=e[r]);if(null!=e&&"function"==typeof Object.getOwnPropertySymbols)for(var a=0,r=Object.getOwnPropertySymbols(e);a<r.length;a++)0>t.indexOf(r[a])&&Object.prototype.propertyIsEnumerable.call(e,r[a])&&(i[r[a]]=e[r[a]]);return i};let S=v.UX.PREFIX_OPTION;class x extends u.PureComponent{renderArrow(){var e,t;let i=!this.isLeaf(),{loading:r,expanded:a,showLine:s,expandIcon:n}=this.props;if(r)return u.createElement(I.Z,{wrapperClassName:`${S}-spin-icon`});if(i){if(n){if("function"==typeof n)return n({onClick:this.onExpand,className:`${S}-expand-icon`,expanded:a});if(!u.isValidElement(n))return n;else{let i=m()(`${S}-expand-icon`,{[null===(e=null==n?void 0:n.props)||void 0===e?void 0:e.className]:null===(t=null==n?void 0:n.props)||void 0===t?void 0:t.className});return u.cloneElement(n,{onClick:this.onExpand,className:i})}}return u.createElement(_.Z,{role:"button","aria-label":`${a?"Expand":"Collapse"} the tree item`,className:`${S}-expand-icon`,size:"small",onClick:this.onExpand})}return s?this.renderSwitcher():u.createElement("span",{className:`${S}-empty-icon`})}renderCheckbox(){let{checked:e,halfChecked:t,eventKey:i}=this.props,r=this.isDisabled();return u.createElement("div",{role:"none",onClick:this.onCheck,onKeyPress:this.handleCheckEnterPress},u.createElement(C.Z,{"aria-label":"Toggle the checked state of checkbox",value:i,indeterminate:t,checked:e,disabled:!!r}))}renderIcon(){let{directory:e,treeIcon:t}=this.context,{expanded:i,icon:r,data:a}=this.props;if(r)return r;if(t)return"function"==typeof t?t(this.props):t;if(e)return this.isLeaf()?u.createElement(H.Z,{className:`${S}-item-icon`}):i?u.createElement(T,{className:`${S}-item-icon`}):u.createElement(b.Z,{className:`${S}-item-icon`});return null}renderEmptyNode(){let{emptyContent:e}=this.props,t=m()(S,{[`${S}-empty`]:!0});return u.createElement("ul",{className:t},u.createElement("li",{className:`${S}-label ${S}-label-empty`,"x-semi-prop":"emptyContent"},e))}render(){let e=this.props,{eventKey:t,expanded:i,selected:r,checked:s,halfChecked:o,loading:l,active:h,level:d,empty:p,filtered:f,treeNodeFilterProp:g,display:G,style:v,isEnd:D,showLine:_}=e,H=R(e,["eventKey","expanded","selected","checked","halfChecked","loading","active","level","empty","filtered","treeNodeFilterProp","display","style","isEnd","showLine"]);if(p)return this.renderEmptyNode();let{multiple:y,draggable:T,renderFullLabel:b,dragOverNodeKey:C,dropPosition:P,labelEllipsis:I}=this.context,E=D[D.length-1],x=this.isDisabled(),A=C===t&&-1===P,L=C===t&&1===P,M=m()(S,{[`${S}-level-${d+1}`]:!0,[`${S}-fullLabel-level-${d+1}`]:b,[`${S}-collapsed`]:!i,[`${S}-disabled`]:!!x,[`${S}-selected`]:r,[`${S}-active`]:!y&&h,[`${S}-ellipsis`]:I,[`${S}-drag-over`]:!x&&C===t&&0===P,[`${S}-draggable`]:!x&&T&&!b,[`${S}-fullLabel-draggable`]:!x&&T&&b,[`${S}-fullLabel-drag-over-gap-top`]:!x&&A&&b,[`${S}-fullLabel-drag-over-gap-bottom`]:!x&&L&&b,[`${S}-tree-node-last-leaf`]:E}),w={onClick:this.onClick,onContextMenu:this.onContextMenu,onDoubleClick:this.onDoubleClick,className:M,onExpand:this.onExpand,data:H.data,level:d,onCheck:this.onCheck,style:v,expandIcon:this.renderArrow(),checkStatus:{checked:s,halfChecked:o},expandStatus:{expanded:i,loading:l},filtered:f,searchWord:H.keyword},U={onDoubleClick:this.onDoubleClick,onDragStart:T?this.onDragStart:void 0,onDragEnter:T?this.onDragEnter:void 0,onDragOver:T?this.onDragOver:void 0,onDragLeave:T?this.onDragLeave:void 0,onDrop:T?this.onDrop:void 0,onDragEnd:T?this.onDragEnd:void 0,draggable:!x&&T||void 0};if(b){let e=b(Object.assign({},w));return T?u.cloneElement(e,Object.assign({ref:this.setRef},U)):a()(v)?e:u.cloneElement(e,{style:Object.assign(Object.assign({},n()(e,["props","style"])),v)})}let O=m()(`${S}-label`,{[`${S}-drag-over-gap-top`]:!x&&A,[`${S}-drag-over-gap-bottom`]:!x&&L}),N=n()(H,["data","children","length"]),j=c()(H.pos)?Number(H.pos.split("-")[d+1])+1:1;return u.createElement("li",Object.assign({className:M,role:"treeitem","aria-disabled":x,"aria-checked":s,"aria-selected":r,"aria-setsize":N,"aria-posinset":j,"aria-expanded":i,"aria-level":d+1,"data-key":t,onClick:this.onClick,onKeyPress:this.handleliEnterPress,onContextMenu:this.onContextMenu,onDoubleClick:this.onDoubleClick,ref:this.setRef,style:v},U),u.createElement(k.Z,{showLine:_,prefixcls:S,level:d,isEnd:D}),this.renderArrow(),u.createElement("span",{className:O},y?this.renderCheckbox():null,this.renderIcon(),u.createElement("span",{className:`${S}-label-text`},this.renderRealLabel())))}constructor(e){super(e),this.onSelect=e=>{let{onNodeSelect:t}=this.context;t(e,this.props)},this.onExpand=e=>{let{onNodeExpand:t}=this.context;e&&e.stopPropagation(),e.nativeEvent.stopImmediatePropagation(),t(e,this.props)},this.onCheck=e=>{var t,i;if(this.isDisabled())return;let{onNodeCheck:r}=this.context;e.stopPropagation(),null===(i=null===(t=e.nativeEvent)||void 0===t?void 0:t.stopImmediatePropagation)||void 0===i||i.call(t),r(e,this.props)},this.handleCheckEnterPress=e=>{(0,D.Z)(e)&&this.onCheck(e)},this.onContextMenu=e=>{let{onNodeRightClick:t}=this.context;t(e,this.props)},this.onClick=e=>{let{expandAction:t}=this.context;if("doubleClick"===t){this.debounceSelect(e);return}this.onSelect(e),"click"===t&&this.onExpand(e)},this.handleliEnterPress=e=>{(0,D.Z)(e)&&this.onClick(e)},this.onDoubleClick=e=>{let{expandAction:t,onNodeDoubleClick:i}=this.context;e.stopPropagation(),e.nativeEvent.stopImmediatePropagation(),h()(i)&&i(e,this.props),"doubleClick"===t&&this.onExpand(e)},this.onDragStart=e=>{let{onNodeDragStart:t}=this.context;e.stopPropagation(),t(e,Object.assign(Object.assign({},this.props),{nodeInstance:this.refNode}));try{e.dataTransfer.setData("text/plain","")}catch(e){}},this.onDragEnter=e=>{let{onNodeDragEnter:t}=this.context;e.preventDefault(),e.stopPropagation(),t(e,Object.assign(Object.assign({},this.props),{nodeInstance:this.refNode}))},this.onDragOver=e=>{let{onNodeDragOver:t}=this.context;e.preventDefault(),e.stopPropagation(),t(e,Object.assign(Object.assign({},this.props),{nodeInstance:this.refNode}))},this.onDragLeave=e=>{let{onNodeDragLeave:t}=this.context;e.stopPropagation(),t(e,Object.assign(Object.assign({},this.props),{nodeInstance:this.refNode}))},this.onDragEnd=e=>{let{onNodeDragEnd:t}=this.context;e.stopPropagation(),t(e,Object.assign(Object.assign({},this.props),{nodeInstance:this.refNode}))},this.onDrop=e=>{let{onNodeDrop:t}=this.context;e.preventDefault(),e.stopPropagation(),t(e,Object.assign(Object.assign({},this.props),{nodeInstance:this.refNode}))},this.getNodeChildren=()=>{let{children:e}=this.props;return e||[]},this.isLeaf=()=>{let{isLeaf:e,loaded:t}=this.props,{loadData:i}=this.context,r=0!==this.getNodeChildren().length;return!1!==e&&(e||!i&&!r||i&&t&&!r)},this.isDisabled=()=>{let{disabled:e}=this.props,{treeDisabled:t}=this.context;return!1!==e&&!!(t||e)},this.renderSwitcher=()=>this.isLeaf()?u.createElement("span",{className:m()(`${S}-switcher`)},u.createElement("span",{className:`${S}-switcher-leaf-line`})):null,this.renderRealLabel=()=>{let{renderLabel:e}=this.context,{label:t,keyword:i,data:r,filtered:a,treeNodeFilterProp:s}=this.props;return h()(e)?e(t,r,i):c()(t)&&a&&i?u.createElement(E.Z,{highlightClassName:`${S}-highlight`,component:"span",sourceString:t,searchWords:[i]}):t},this.setRef=e=>{this.refNode=e},this.state={},this.debounceSelect=p()(this.onSelect,500,{leading:!0,trailing:!1})}}x.contextType=P.Z,x.propTypes={expanded:G().bool,selected:G().bool,checked:G().bool,halfChecked:G().bool,active:G().bool,disabled:G().bool,loaded:G().bool,loading:G().bool,isLeaf:G().bool,pos:G().string,children:G().oneOfType([G().array,G().object]),icon:G().node,directory:G().bool,keyword:G().string,treeNodeFilterProp:G().string,selectedKey:G().string,motionKey:G().oneOfType([G().string,G().arrayOf(G().string)]),isEnd:G().arrayOf(G().bool),showLine:G().bool,expandIcon:G().oneOfType([G().node,G().func])},x.defaultProps={selectedKey:"",motionKey:""}},742585:function(e,t,i){"use strict";i.d(t,{Eo:function(){return a},Qc:function(){return o},f6:function(){return l},gJ:function(){return n},je:function(){return c},lp:function(){return s}}),i(134761),i(112587),i(17322),i(560401),i(779566),i(69896),i(416555),i(404948),i(527785),i(268917),i(897860),i(927234);var r=i(384997);function a(e){let{loadModuleError:t,lowVideoDecodeCnt:i,workerDisableCnt:a}=r.T.getWebCodecStates();return"undefined"!=typeof MediaStreamTrackGenerator&&"undefined"!=typeof VideoDecoder&&"undefined"!=typeof AudioDecoder&&"undefined"!=typeof EncodedVideoChunk&&"undefined"!=typeof EncodedAudioChunk&&"undefined"!=typeof AudioContext&&!t&&i<((null==e?void 0:e.limitLowVideoDecodeCnt)||Number.MAX_VALUE)&&a<((null==e?void 0:e.limitWorkerDisableCnt)||Number.MAX_VALUE)}function s(){let{preWorkerReady:e}=r.T.getWebCodecStates();return e}function n(){for(var e=arguments.length,t=Array(e),i=0;i<e;i++)t[i]=arguments[i];if((t=t.filter(Boolean)).length<2)return t[0];let r=new Uint8Array(t.reduce((e,t)=>e+t.byteLength,0)),a=0;return t.forEach(e=>{r.set(e,a),a+=e.byteLength}),r}function o(e){if(!Array.isArray(e)){let t=[],i="";for(let r=0;r<e.length;r++)r%2&&(i=e[r-1]+e[r],t.push(parseInt(i,16)));return t}return e.map(e=>parseInt(e,16))}function c(){try{return parseInt(`${performance.now()}`,10)}catch(e){return new Date().getTime()}}function l(){return Math.random().toString(36).substring(2,15)+Math.random().toString(36).substring(2,15)}},781897:function(e,t,i){"use strict";i.d(t,{gp:function(){return f},yZ:function(){return u}});var r=i(134761);i(675373),i(874386);var a=i(791166),s=i(831950),n=i(691947),o=i(661620),c=i(965450),l=i(105730),h=i(323264),d=i(211166),p={CONNECTING:"connecting",CONNECTED:"connected",DISCONNECTED:"disconnected"};let u="invoke destroy()";class f extends a.Z{async connect(e,t){var i,r;f.checkSupported();let a=Date.now();this._logger.log("connect",e),this._setState(p.CONNECTING),this._loadRtmResult=(0,h.$p)(e),this.url=(null===(i=this._loadRtmResult)||void 0===i?void 0:i.url)||e,this._isPreload=!!this._loadRtmResult,this._loadRtmResult?d.K.mark(e,"playStart"):this._loadRtmResult=(0,h.Qu)(e,t,{isPreload:!1});let s=await this._loadRtmResult.preloadPromise;if(this.url=s.url,this.emit("responseHeaders",{elapsed:Date.now()-a,headers:(0,l.u8)(null===(r=s.response)||void 0===r?void 0:r.headers)}),this._destroyed){this._logger.log("stop... peerconnection is destroyed.");return}this._peer=s.peer,d.K.bindPeerConnection(e,this._peer),this._audioTransceicer=s.audioTransceicer,this._videoTransceicer=s.videoTransceicer,this._videoPayloadMap=s.videoPayloadMap,this._audioPayloadMap=s.audioPayloadMap,this._initAudioEncodedTransform(this._audioTransceicer),this._videoTransceicer&&this._initVideoEncodedTransform(this._videoTransceicer);let n=s.sdp;return this.emit("avCodecInfo",{video:this._videoPayloadMap,audio:this._audioPayloadMap}),new Promise(async(i,r)=>{if(!n||!this._peer)throw new o.Z(o.t.OTHER,"answer sdp is empty or peer is undefined");this._connectReject=r;let s=setTimeout(()=>{var e;null===(e=this._connectReject)||void 0===e||e.call(this,new o.Z(o.t.NETWORK_TIMEOUT,"peerconnection timeout")),delete this._connectReject},t.loadTimeout||5e3),c=()=>{var e;this._logger.log("ice connection state change",null===(e=this._peer)||void 0===e?void 0:e.iceConnectionState)},l=()=>{var t,r,n,c,l,h,u;if((null===(t=this._peer)||void 0===t?void 0:t.iceConnectionState)==="failed"||(null===(r=this._peer)||void 0===r?void 0:r.iceConnectionState)==="closed"||(null===(n=this._peer)||void 0===n?void 0:n.connectionState)==="failed")null===(u=this._connectReject)||void 0===u||u.call(this,new o.Z(o.t.RTM_ICE_FAILED,`pc.connectionstatechange -> ${null===(l=this._peer)||void 0===l?void 0:l.connectionState}, ice -> ${null===(h=this._peer)||void 0===h?void 0:h.iceConnectionState}`)),delete this._connectReject,clearTimeout(s),this._setState(p.DISCONNECTED);else if((null===(c=this._peer)||void 0===c?void 0:c.connectionState)==="connected"){this._setState(p.CONNECTED),i();let t=Date.now()-a;this.emit("ttfb",t),this._logger.log("[RTM Metrics] PeerConnection已连接, TTFB:",t),d.K.mark(e,"dtlsConnected");let r=d.K.buildReport(e);r&&this.emit("rtm_timing",{is_preload:this._isPreload?1:0,report_start_time:r.startAt,play_start_time:d.K.getMarkTime(e,"playStart"),dtls_connected_time:d.K.getMarkTime(e,"dtlsConnected"),create_offer:r.preloadPhases.createOffer,set_local_description:r.preloadPhases.setLocalDescription,http_signaling:r.preloadPhases.httpSignaling,http_signaling_total:r.preloadPhases.httpSignalingTotal,http_request_count:r.preloadPhases.httpRequestCount,wait_preload:r.playPhases.waitPreload,set_remote_description:r.playPhases.setRemote,ice_negotiation:r.playPhases.iceNegotiation,dtls_handshake:r.playPhases.dtlsHandshake}),clearTimeout(s),this._startGetAVBitrate()}};this._peer.addEventListener("iceconnectionstatechange",c),this._peer.addEventListener("connectionstatechange",l),this._clearPeerListeners=()=>{var e,t;null===(e=this._peer)||void 0===e||e.removeEventListener("iceconnectionstatechange",c),null===(t=this._peer)||void 0===t||t.removeEventListener("connectionstatechange",l)},d.K.mark(e,"setRemoteStart"),await this._peer.setRemoteDescription({type:"answer",sdp:n}).catch(e=>{var t;null===(t=this._connectReject)||void 0===t||t.call(this,new o.Z(o.t.RTM_SET_DESCRIPTION_ERROR,`set remote description error ${e.message}`)),delete this._connectReject,clearTimeout(s)}),d.K.mark(e,"setRemoteEnd")})}disconnect(){var e,t,i,r,a;this._logger.log("disconnect"),this._destroyed=!0,delete this.url,super.offAll(),this._stopGetAVBitrate(),clearTimeout(this._reportTransportTimer),delete this._reportTransportTimer,null===(e=this._peer)||void 0===e||e.close(),delete this._peer,null===(t=this._loadRtmResult)||void 0===t||t.cancel(),(null===(i=this._loadRtmResult)||void 0===i?void 0:i.url)&&d.K.endSession(this._loadRtmResult.url,this._loadRtmResult.timingInstanceId),delete this._audioTransceicer,delete this._videoTransceicer,null===(r=this._connectReject)||void 0===r||r.call(this,new o.Z(o.t.OTHER,u)),delete this._connectReject,null===(a=this._clearPeerListeners)||void 0===a||a.call(this),delete this._clearPeerListeners}getVideoCodec(e){return this._videoPayloadMap[e]}getAudioCodec(e){return this._audioPayloadMap[e]}_setState(e){this._state!==e&&(this._state=e,this.emit("stateChange",e),this._logger.log("RTM PeerStateChange ==>",e))}async _startGetAVBitrate(){var e,t,i,r;let[a,s]=await Promise.all([(0,c.At)(null===(t=this._videoTransceicer)||void 0===t?void 0:null===(e=t.receiver)||void 0===e?void 0:e.getStats()),(0,c.cX)(null===(r=this._audioTransceicer)||void 0===r?void 0:null===(i=r.receiver)||void 0===i?void 0:i.getStats())]);if(this._preAudioStats&&this._preVideoStats){let e=(0,c.IE)(this._preVideoStats,a),t=(0,c.xt)(this._preAudioStats,s);this.emit("stats",{audio:t,video:e})}!this._destroyed&&(this._preVideoStats=a,this._preAudioStats=s,this._reportAVBitrateTimer=window.setTimeout(()=>{this._startGetAVBitrate()},2e3))}_stopGetAVBitrate(){clearTimeout(this._reportAVBitrateTimer),delete this._reportAVBitrateTimer}async _reportTransportStats(){var e,t,i;let r=await (null===(e=this._peer)||void 0===e?void 0:e.getStats()),a={};if(null==r||r.forEach(e=>{"transport"===e.type?(a.dtls_state=e.dtlsState,a.bytes_received=e.bytesReceived,a.bytes_sent=e.bytesSent,a.ice_state=e.iceState,a.packets_received=e.packetsReceived,a.packets_sent=e.packetsSent,a.selected_candidate_pair_changes=e.selectedCandidatePairChanges):"local-candidate"===e.type||"remote-candidate"===e.type?a.candidates_info=[...a.candidates_info||[],{id:e.id,is_remote:e.isRemote,port:e.port,protocol:e.protocol,candidate_type:e.candidateType,priority:e.priority,network_type:e.networkType,candidate_ip:e.ip}]:"candidate-pair"===e.type&&(a.candidatePairsInfo={},a.candidatePairsInfo.candidate_state=e.state,a.candidatePairsInfo.writable_state=e.writable,a.candidatePairsInfo.sent_ping_requests_total=e.requestsSent,a.candidatePairsInfo.recv_ping_requests=e.requestsReceived,a.candidatePairsInfo.sent_ping_responses=e.responsesSent,a.candidatePairsInfo.recv_ping_responses=e.responsesReceived,a.candidatePairsInfo.current_rtt=e.currentRoundTripTime,a.candidatePairsInfo.total_rtt=e.totalRoundTripTime,["localCandidateId","remoteCandidateId","bytesSent","bytesReceived","availableOutgoingBitrate","availableIncomingBitrate","bytesDiscardedOnSend","consentRequestsSent","packetsDiscardedOnSend","lastPacketReceivedTimestamp","lastPacketSentTimestamp"].forEach(t=>{void 0!==e[t]&&(a.candidatePairsInfo[(0,s.EB)(t)]=e[t])}))}),Object.keys(a).length,!this._destroyed){let e=(null===(t=this._peer)||void 0===t?void 0:t.iceConnectionState)==="connected"&&(null===(i=this._peer)||void 0===i?void 0:i.connectionState)==="connected";this._reportTransportTimer=setTimeout(()=>{this._reportTransportStats()},e?5e3:1e3)}}static isSupported(){try{return f.checkSupported(),!0}catch(e){return!1}}static checkSupported(){if(!window.RTCPeerConnection)throw new o.Z(o.t.RTM_NOT_SUPPORTED,"RTCPeerConnection is not defined");if("function"!=typeof window.RTCPeerConnection.prototype.addTransceiver)throw new o.Z(o.t.RTM_NOT_SUPPORTED,"addTransceiver is not a function");if(!(0,s.GH)())throw new o.Z(o.t.RTM_NOT_SUPPORTED,"EncodedTransform is not supported")}_initVideoEncodedTransform(e){if(!e.receiver)throw new o.Z(o.t.RTM_NOT_SUPPORTED,"no receiver found when trying to bind encodedTransform");let{readable:t,writable:i}=e.receiver.createEncodedStreams();this.emit("readable_writable",{type:"video",readable:t,writable:i})}_initAudioEncodedTransform(e){if(!e.receiver)throw new o.Z(o.t.RTM_NOT_SUPPORTED,"no receiver found when trying to bind encodedTransform");let{readable:t,writable:i}=e.receiver.createEncodedStreams();this.emit("readable_writable",{type:"audio",readable:t,writable:i})}constructor(...e){super(...e),(0,r._)(this,"_logger",new n.ZP("RTMPeerConnection")),(0,r._)(this,"_peer",void 0),(0,r._)(this,"_audioTransceicer",void 0),(0,r._)(this,"_videoTransceicer",void 0),(0,r._)(this,"_videoPayloadMap",{}),(0,r._)(this,"_audioPayloadMap",{}),(0,r._)(this,"_state",void 0),(0,r._)(this,"_destroyed",!1),(0,r._)(this,"_reportTransportTimer",void 0),(0,r._)(this,"_connectReject",void 0),(0,r._)(this,"_clearPeerListeners",void 0),(0,r._)(this,"_loadRtmResult",void 0),(0,r._)(this,"_isPreload",!1),(0,r._)(this,"url",void 0),(0,r._)(this,"_reportAVBitrateTimer",void 0),(0,r._)(this,"_preVideoStats",void 0),(0,r._)(this,"_preAudioStats",void 0)}}},697963:function(e,t,i){"use strict";i.d(t,{Bc:function(){return n},Vc:function(){return r},_e:function(){return a},yQ:function(){return s}});let r={VIDEO:"video",AUDIO:"audio",METADATA:"metadata"},a={AV1:"av1",AVC:"avc",HEVC:"hevc"},s={AAC:"aac",G711PCMA:"g7110a",G711PCMU:"g7110m"},n={LARGE_AV_SHIFT:"LARGE_AV_SHIFT",LARGE_VIDEO_GAP:"LARGE_VIDEO_GAP",LARGE_VIDEO_GAP_BETWEEN_CHUNK:"LARGE_VIDEO_GAP_BETWEEN_CHUNK",LARGE_AUDIO_GAP:"LARGE_AUDIO_GAP",AUDIO_FILLED:"AUDIO_FILLED",AUDIO_DROPPED:"AUDIO_DROPPED"}},162063:function(e,t,i){"use strict";i.d(t,{Z:function(){return y}});var r=i(134761),a=i(520739),s=i(878389);i(250440),i(268917),i(779788),i(675373),i(777180);var n=i(742585),o=i(691947),c=i(373594),l=i(826336),h=i(687072),d=i(379606),p=i(211166),u=i(172374),f=i(384997),m=i(804449),g=i(661620),G=i(938628),v=i(466167),D=i(959168),_=i(853436),H=i(40036);class y extends m.ZP{get worker(){return this._workerSink}get currentSrc(){return this._src}get src(){var e;return(null===(e=this._media)||void 0===e?void 0:e.src)||this._src}get seeking(){return this._seeking}get ended(){return this.runtime.ended}get buffered(){return this.runtime.buffered}get curTimeBuffered(){return Math.min(this.runtime.buffered._audioBufferEnd,this.runtime.buffered._videoBufferEnd)}get currentTime(){var e;return this._seekCurrentTime>=0?this._seekCurrentTime:(null===(e=this._media)||void 0===e?void 0:e.currentTime)||0}get autoPlayPolicy(){return this._autoplayPolicy}set currentTime(e){if(!(e>=this.duration-2)||!this._media||!(this._media.currentTime>=this.duration-2))e<0?e=0:this.duration>0&&e>=this.duration&&(e=this.duration-2),this.runtime.ended=!1,this._seekCurrentTime=e,this._seekedEventTimestamp=Date.now(),this._seekCurrentTimeCnt=0,this.syncCurrentTimer(),this.dispatchMediaEvent(u.c.TIMEUPDATE),this.emit(G.Zo.CURRENT_TIME,{time:e})}syncCurrentTimer(){clearTimeout(this._seekCheckCurrentTimer),this._seekCheckCurrentTimer=setTimeout(()=>{this.media&&(1>=Math.abs(this.media.currentTime-this._seekCurrentTime)||this._seekedEventTimestamp>0&&Date.now()-this._seekedEventTimestamp>=5e3?(this._seekCurrentTimeCnt++,this._seekCurrentTimeCnt>=5?(this._seekCurrentTime=-1,clearTimeout(this._seekCheckCurrentTimer),this._seekCheckCurrentTimer=null,this._seekedEventTimestamp=0,this._seekCurrentTimeCnt=0):this.syncCurrentTimer()):this.syncCurrentTimer())},15)}get duration(){return this.runtime.duration}get error(){return this._errorInfo}get playbackRate(){return"number"==typeof this._playbackRate?this._playbackRate:this._defaultPlaybackRate}set playbackRate(e){this.logger.log("set playbackRate",e),this._playbackRate=e,this.emit(G.Zo.PLAYBACKRATE,{rate:e})}get playbackQuality(){var e;let t=(null===(e=this._media)||void 0===e?void 0:e.getVideoPlaybackQuality())||{totalVideoFrames:0,droppedVideoFrames:0};return this.runtime.playbackQuality={decodedVideoFrames:t.totalVideoFrames,droppedVideoFrames:t.droppedVideoFrames,droppedRate:t.droppedVideoFrames/t.totalVideoFrames*100},this.runtime.playbackQuality}_resetMediaEvtState(){this._mediaEventState={loadeddata:!1,loadedmetadata:!1,loadstart:!1,canplay:!1}}get speedInfo(){return this.runtime.speedInfo}get audioCtxState(){var e,t;return null===(t=this._audioTrack)||void 0===t?void 0:null===(e=t.ctx)||void 0===e?void 0:e.state}get bufferedPoint(){return(0,H.bA)(this.currentTime,this.buffered)}playBy(){var e,t,i;let r=arguments.length>0&&void 0!==arguments[0]?arguments[0]:{};if(!this._media)return;!r.seamless&&![D.b.FLV,D.b.RTM,D.b.RTM_WEBTS].includes(r.protocol)&&this._media.srcObject&&(this._media.srcObject=null),null===(e=this._rtmLoader)||void 0===e||e.disconnect(),this.updateCfg(r),this.init(r.seamless),this.logger.log("playBy",r.seamless,r.protocol);let n=(0,H.Og)(this._media);if(r.protocol===D.b.RTM&&!this._rtmLoader&&(this._rtmLoader=new d.Z(this,this._cfg)),r.seamless){this.emit(G.Zo.SEAMLESS_LOAD_STREAM,(0,s._)((0,a._)({},r),{autoPlayPolicy:this._media.autoplay&&n,canAutoPlay:n,type:G.Zo.LOAD_STREAM,muted:this._media.muted,paused:this._media.paused}));return}this._setTimelineData(),this.resetInitTimeStamp(r);let o=[];r.stream&&o.push(r.stream),this.postMsgToWorker((0,s._)((0,a._)({},r),{type:G.Zo.LOAD_STREAM,autoPlayPolicy:this._media.autoplay&&n,canAutoPlay:n,muted:this._media.muted,paused:this._media.paused}),o),this.emit(G.Zo.URLCHANGE,{url:r.url}),[D.b.FLV,D.b.RTM,D.b.RTM_WEBTS].includes(r.protocol)&&this.dispatchMediaEvent(u.c.LOADSTART),r.protocol===D.b.RTM&&r.url&&(null===(t=this._cfg.ab)||void 0===t?void 0:t.rtm_main_thread_connect)&&(null===(i=this._rtmLoader)||void 0===i||i.load({url:r.url}))}init(){let e=arguments.length>0&&void 0!==arguments[0]&&arguments[0];if(this._errorInfo=null,this._startTime=performance.now(),!e)this.updateLastStep(l.ef.NEW,{support:(0,n.Eo)()}),this._isReUseWorker?this.updateLastStep("reuse",{workerSize:c.Yz.size}):this.updateLastStep("newworker"),this.resetAutoPlayState(),this._mediaPlayRetry=!1,this._canplay=!1,this._resetMediaEvtState(),this._handlePoster(),this._cfg.urlList&&this._cfg.urlList.length>0&&(this._src=this._cfg.urlList[0].src),(!this._cfg.bindSrcTiming||this._cfg.bindSrcTiming===l.Iv.INIT)&&this.attachMedia()}attachMedia(){this._media&&!this._media.srcObject?(this._isReuseSrc=!1,this.logger.log(`media bind srcObject ${this._cfg.bindSrcTiming}`),this._media.srcObject=this._mediaStream):this._isReuseSrc=!0}detachMedia(){this._media&&this._media.srcObject&&(this._doMediaPause(),this._resetMediaEvtState(),this._media.srcObject=null,this.logger.log("media detach srcObject"))}reset(){var e,t,i,r;this.logger.log("call reset()"),this.updateLastStep(l.ef.RESET),super.destroy(),this._resetMediaEvtState(),this._unbindMediaEvent(),this._removeOldTracks(null===(e=this.media)||void 0===e?void 0:e.srcObject),null===(t=this._rtmLoader)||void 0===t||t.disconnect(),(null===(i=this.media)||void 0===i?void 0:i.srcObject)&&(this.media.srcObject=null,this.media.load(),this._canplay=!1),this._isPaused=null,this._isResumeAudioCtx=!1,null===(r=this._audioCtxCoord)||void 0===r||r.reset(),this._audioCtxCoord=void 0,this._startTime=0,this._firstframeCost={},this._seeking=!1,this._seekCurrentTime=-1,this._seekedEventTimestamp=0,this._seekCheckCurrentTimer&&(clearTimeout(this._seekCheckCurrentTimer),this._seekCheckCurrentTimer=null)}updateProtoConfig(){var e;let t=arguments.length>0&&void 0!==arguments[0]?arguments[0]:{},i=arguments.length>1&&void 0!==arguments[1]&&arguments[1],r=!t.seamless&&(t.protocol===D.b.MP4||t.protocol===D.b.DASH);t.requireWorkerAck=r,this.updateCfg(t,i),this.updateLastStep(l.ef.SEND_CONFIG),this.emit(G.Zo.PROTOCOL_CONFIG,t),this._audioTrack&&(null===(e=t.writeable)||void 0===e?void 0:e.audioWritable)&&(this._audioTrack.writableNeutered=!0),r&&this.checkWorkerEnable()}checkWorkerEnable(){if(!this._checkWorkerEnableTimer&&!!this._isReUseWorker)this._checkWorkerEnableTimer=setTimeout(()=>{this._checkWorkerEnableTimer=null,f.T.addWorkerDisableCnt(),this.onVEError(new g.Z(g.t.VEWORKER_REVEIVE_TIMEOUT,"workerReceiveMessageTimeout"))},100)}onWorkerEnable(){this._checkWorkerEnableTimer&&(clearTimeout(this._checkWorkerEnableTimer),this._checkWorkerEnableTimer=null)}updateCfg(){var e,t,i;let r=arguments.length>0&&void 0!==arguments[0]?arguments[0]:{},s=arguments.length>1&&void 0!==arguments[1]&&arguments[1];!s&&(r.seamless=r.seamless||!1,super.normalizeConfig(r)),this.updateLoggerID(r),(null==r?void 0:r.seamless)&&(this._cfg.preloadDataInfo=void 0),(null===(e=r.mediaInfo)||void 0===e?void 0:e.audioSampleRate)&&(null===(t=r.mediaInfo)||void 0===t?void 0:t.audioSampleRate)>0&&(this._sampleRate=r.mediaInfo.audioSampleRate),r.ctxDependList&&r.ctxDependList.length>=0?this._ctxDependList=r.ctxDependList:this._ctxDependList=(0,H.Uw)(),this.isLive&&(null===(i=r.mediaInfo)||void 0===i?void 0:i.volumebalance)&&this._updateVbalanceCfg((0,a._)({duration:r.mediaInfo.duration},r.mediaInfo.volumebalance))}updateCodecConfig(e){this.emit(G.Zo.MEDIACODEC_CONFIG,e)}switchCancel(){this.emit(G.Zo.CANCEL_SWITCH)}getFirstframeCost(){return this._firstframeCost}updateLoggerID(e){var t;(null==e?void 0:null===(t=e.mediaInfo)||void 0===t?void 0:t.id)&&(this.logger.loggerID=e.mediaInfo.id)}_canUseNeuteredAudioTrack(){return this._cfg.protocol&&!this.isLive}async onInitRender(e){var t;if(!this._media||this._errorInfo)return;this.updateLastStep(l.ef.INIT_RENDER),this._startTimelines.reqtime=Date.now(),this._sampleRate=e.sampleRate;let i=this._media.muted||!this._media.volume,r=(0,H.Og)(this._media);if(this._autoplayPolicy=this._media.autoplay&&r,this.logger.log("init render, autoplay",this._autoplayPolicy,", muted:",i,", videoAutoplay:",this._media.autoplay,", sampleRate:",this._sampleRate,", e",JSON.stringify(e)),e.audioWritable&&this._audioTrack&&(this.logger.log("\uD83D\uDD0AaudioWritable back mainSink"),this.onDownWritable({audioWritable:e.audioWritable,audioTrack:e.audioTrack})),(null==e?void 0:e.audio)&&(this._audioTrack&&(!e.audioWritable&&!this._canUseNeuteredAudioTrack()&&this.closeRender(),this._audioTrack=null),!this._audioTrack)){let t;try{this.logger.log("\uD83D\uDD0AaudioTrack generate"),t=await (0,_.vH)(e,this._cfg)}catch(e){this.onVEError(g.Z.create(g.t.AUDIO_TRACK_ERROR,e.message,"audioTrackGenerate error")),this.updateLastStep(l.ef.AUDIO_TRACK_ERR);return}if(this._errorInfo){t&&_.Lx.setStatus(t,"idle");return}t&&(this.updateLastStep(l.ef.AUDIO_TRACK),this.logger.log(`initRender audioWriteable send, sampleRate:${e.sampleRate} channelCount:${e.channelCount}`),this._audioTrack=t,this.updateLastStep(l.ef.SEND_WRITABLE),this.emit(G.Zo.WRITABLE,{audioWritable:this._canUseNeuteredAudioTrack()&&t.writableNeutered?void 0:t.writable,audioTrack:{id:t.id,sampleRate:e.sampleRate,channelCount:e.channelCount||l.vv},autoplayPolicy:this._autoplayPolicy,canAutoPlay:r,muted:i}),t.writableNeutered=!0,this.addAudioTrack())}!this._errorInfo&&((this._autoplayPolicy||(this._cfg.audioCtxCoord?null===(t=this._audioCtxCoord)||void 0===t?void 0:t.isDesiredRunning():this._isResumeAudioCtx))&&(this.logger.log("init render resumeAudioCtx",this.audioCtxState),this.resumeAudioCtx()),this._repaceMediaTrack&&(this.logger.warn("call pause() -> play() in onInitRender"),this._replacingTrack=!0,(!1===this._isPaused||null===this._isPaused&&this._autoplayPolicy)&&(this._media.pause(),this.play().then(()=>{var e;this._canplay||null===(e=this._media)||void 0===e||e.play()}).catch(e=>{}))))}addAudioTrack(){let e=this._removeOldATracks(this._mediaStream);if(this._repaceMediaTrack=!!e||this._repaceMediaTrack,this._audioTrack){let e=this._audioTrack.track;this._mediaStream.addTrack(e),this.logger.log("replace audio track!",e.id),_.Lx.setStatus(this._audioTrack,"using")}}createVideoTrack(){let e,t=arguments.length>0&&void 0!==arguments[0]?arguments[0]:{};this.logger.log("createVideoTrack"),this.createMediaStream();let i=this._removeOldVTracks(this._mediaStream);this._repaceMediaTrack=!!i;try{e=(0,_.eY)()}catch(e){this.onVEError(g.Z.create(g.t.VIDEO_TRACK_ERROR,e.message,"videoTrackGenerate error"));return}this._videoTrack=e,!t.writeable&&(t.writeable={}),t.writeable.videoWritable=this._videoTrack.writable,this._videoTrack&&(this._mediaStream.addTrack(this._videoTrack.track),this.logger.log("replace video track!"))}createMediaStream(){if(this._mediaStream)this.logger.log("mediaStream exist");else{var e;this.logger.log("createMediaStream"),this._mediaStream=(null===(e=this._media)||void 0===e?void 0:e.srcObject)||new MediaStream}}createAudioTrack(){var e,t,i,r,a,s;let n,o=arguments.length>0&&void 0!==arguments[0]?arguments[0]:{};this.createMediaStream();let c=(null===(e=o.mediaInfo)||void 0===e?void 0:e.audioSampleRate)||l.hD,h=(null===(t=o.mediaInfo)||void 0===t?void 0:t.audioChannelCnt)||l.vv;if(o.sendDefaultWorkerLet&&_.Lx.hasIdleTracks(c,h)&&(n=(0,_.Dc)({sampleRate:c,channelCount:h},this._cfg),this.logger.log("audioTrackGenerateFromCache")),n){this._audioTrack=n,!o.writeable&&(o.writeable={}),this._sampleRate=c,(!this._canUseNeuteredAudioTrack()||!n.writableNeutered)&&(o.writeable.audioWritable=n.writable),o.writeable.audioTrack={id:n.id,sampleRate:c,channelCount:h};let e=(0,H.Og)(this._media);this._autoplayPolicy=!!(null===(i=this._media)||void 0===i?void 0:i.autoplay)&&e,(this._autoplayPolicy||(this._cfg.audioCtxCoord?null===(r=this._audioCtxCoord)||void 0===r?void 0:r.isDesiredRunning():this._isResumeAudioCtx))&&(this.logger.log("createMediaStream resumeAudioCtx",this.audioCtxState),this.resumeAudioCtx()),this.addAudioTrack(),o.autoPlay=this.isLive?e:this._autoplayPolicy,o.muted=!!((null===(a=this._media)||void 0===a?void 0:a.muted)||!(null===(s=this._media)||void 0===s?void 0:s.volume));return}let{_ctxDependList:d}=this;if(!!d&&!!(null==d?void 0:d.length))(0,m.eE)(d)}onChangeURL(e){let{url:t}=e;this._src=t,this.logger.log(`load changeUrl ${t}`)}onFirstFrame(e){this.updateLastStep(l.ef.FIRST_FRAME),this.logger.log(`firstframe show! ${(performance.now()-this._startTime).toFixed(0)} ms, now:${performance.now()}`,e.firstAFrame,e.firstVFrame),this._firstframeCost=e,"rtm"===this._cfg.protocol&&p.K.markFirstFrame(this._src),this.dispatchMediaEvent(u.c.FIRST_FRAME,{fvt:this._firstframeCost}),this._isReuseSrc&&(!this._mediaEventState.loadeddata&&(this.logger.warn("mock emit loadeddata event"),this.dispatchMediaEvent(u.c.LOADEDDATA)),!this._mediaEventState.canplay&&(this.logger.warn("mock emit canplay event"),this.dispatchMediaEvent(u.c.CANPLAY)))}onLoadedmetadata(e){this.runtime.duration=e.meta.duration,this._cfg.bindSrcTiming===l.Iv.META_READY&&!this._cfg.seamless&&this.attachMedia()}onDurationChange(e){this.runtime.duration=e.duration,this.dispatchMediaEvent(u.c.DURATIONCHANGE)}onRemoveBuffer(e){}onProgress(e){this.runtime.buffered.update(e),this.runtime.videoBuffered.update({buffered:e.videoBuffered}),this.runtime.audioBuffered.update({buffered:e.audioBuffered}),e.speedInfo&&(this.runtime.speedInfo=e.speedInfo),this.dispatchMediaEvent(u.c.PROGRESS,e)}onRateChange(e){this._playbackRate=e.rate,this.logger.log(`mainSink receive rateChange ${e.rate}`),this.dispatchMediaEvent(u.c.RATECHANGE)}onEnded(){if(!!this.media)if(this.runtime.ended=!0,this.media.paused)this.dispatchMediaEvent(u.c.ENDED);else{var e,t;let i=null===(e=this._audioTrack)||void 0===e?void 0:e.ctx;i&&"running"===i.state?i.addEventListener("statechange",()=>{"running"!==i.state&&this.dispatchMediaEvent(u.c.ENDED)},{once:!0}):(this._showingPoster=!1,this.media.addEventListener("pause",()=>{this.dispatchMediaEvent(u.c.ENDED)},{once:!0})),null===(t=this._media)||void 0===t||t.pause()}}onSeeking(){this._seeking=!0,this.dispatchMediaEvent(u.c.SEEKING)}onSeeked(){this._seeking=!1,this._seekedEventTimestamp=Date.now(),this.dispatchMediaEvent(u.c.SEEKED)}onSwitchComplete(e){let{url:t}=e;this._src=t}onVEError(e){if(!this._errorInfo){if(this._cfg.audioCtxCoord)this._ensureAudioCtxCoord().requestSuspended();else{var t,i;null===(i=this._audioTrack)||void 0===i||null===(t=i.ctx)||void 0===t||t.suspend()}super.onVEError(e)}}play(){return(0,H.Og)(this._media)&&this.resumeAudioCtx(),this.logger.log(`play before ctxState ${this.audioCtxState}`),super.play()}resumeAudioCtx(){if(this._errorInfo||this._cfg.bindSrcTiming===l.Iv.MANUAL&&this._media&&!this._media.srcObject){this.logger.log("resume audioCtx return, errorInfo is not null!");return}if(this._cfg.audioCtxCoord){this._ensureAudioCtxCoord().requestRunning();return}if("suspended"===this.audioCtxState&&(!1===this._isPaused||null===this._isPaused&&this._autoplayPolicy)){var e,t;null===(t=this._audioTrack)||void 0===t||null===(e=t.ctx.resume())||void 0===e||e.then(()=>{if(this._isResumeAudioCtx=!1,this.updateLastStep(l.ef.CTX_RUNNING),this.logger.log("audio context resumed!",this._isPaused),this._isPaused){var e,t;null===(t=this._audioTrack)||void 0===t||null===(e=t.ctx.suspend())||void 0===e||e.then(()=>{this.updateLastStep(l.ef.CTX_PAUSE),this.logger.log("resume then suspend audioCtx suspend!")})}else this.resumeAudioCtx()})}else"running"!==this.audioCtxState&&(this._isResumeAudioCtx=!0)}_removeOldVTracks(e){if(!e)return{};let t=e.getVideoTracks()[0];return t&&e.removeTrack(t),t}_removeOldATracks(e){if(!e)return{};let t=e.getAudioTracks()[0];if(t){e.removeTrack(t);let i=_.Lx.get(t.id);i&&_.Lx.setStatus(i,"idle")}return t}_removeOldTracks(e){if(!e)return{};let t=this._removeOldVTracks(e);return{oldA:this._removeOldATracks(e),oldV:t}}_updateVbalanceCfg(e){this.postMsgToWorker({type:G.Zo.VOLUMEBALANCE_UPDATE,param:e})}_bindMediaEvents(){this._media&&(this._mediaPropsObserver.observe(this._media,{attributes:!0}),this._media.addEventListener("loadstart",this._onMediaLoadstart),this._media.addEventListener("loadedmetadata",this._onMediaLoadedmetadata),this._media.addEventListener("loadeddata",this._onMediaLoadeddata),this._media.addEventListener("canplay",this._onMediaCanplay),this._media.addEventListener("play",this._onMediaPlay),this._media.addEventListener("pause",this._onMediaPause),this._media.addEventListener("volumechange",this._onMediaVolumeChange),this._media.addEventListener("waiting",this._onMediaWaiting),document.addEventListener("visibilitychange",this._onVisibilitychange))}_unbindMediaEvent(){var e;document.removeEventListener("visibilitychange",this._onVisibilitychange),this._media&&(null===(e=this._mediaPropsObserver)||void 0===e||e.disconnect(),this._media.removeEventListener("loadstart",this._onMediaLoadstart),this._media.removeEventListener("loadedmetadata",this._onMediaLoadedmetadata),this._media.removeEventListener("loadeddata",this._onMediaLoadeddata),this._media.removeEventListener("canplay",this._onMediaCanplay),this._media.removeEventListener("play",this._onMediaPlay),this._media.removeEventListener("pause",this._onMediaPause),this._media.removeEventListener("volumechange",this._onMediaVolumeChange),this._media.removeEventListener("waiting",this._onMediaWaiting))}_doMediaPause(){var e,t;if(this.emit(G.Zo.PAUSE),this._cfg.audioCtxCoord){this._ensureAudioCtxCoord().requestSuspended();return}null===(t=this._audioTrack)||void 0===t||null===(e=t.ctx.suspend())||void 0===e||e.then(()=>{this.logger.log("audio context suspend!",this.audioCtxState)})}_ensureAudioCtxCoord(){return!this._audioCtxCoord&&(this.logger.log("create AudioCtxCoordinator"),this._audioCtxCoord=new v.Y({getCtx:()=>{var e;return null===(e=this._audioTrack)||void 0===e?void 0:e.ctx},canResume:()=>!1===this._isPaused||null===this._isPaused&&this._autoplayPolicy,onResumeSuccess:()=>{this._isResumeAudioCtx=!1,this.updateLastStep(l.ef.CTX_RUNNING),this.logger.log("audio context resumed!",this._isPaused)},onSuspendSuccess:()=>{this.updateLastStep(l.ef.CTX_PAUSE),this.logger.log("audio context suspend!",this.audioCtxState)},onResumeFail:e=>{this.logger.warn("audio context resume failed",(null==e?void 0:e.message)||e)},onSuspendFail:e=>{this.logger.warn("audio context suspend failed",(null==e?void 0:e.message)||e)}})),this._audioCtxCoord}_handlePoster(){if(!this._media)return;let e=(0,H.Og)(this._media);if(this.logger.log("_handlePoster",this._media.autoplay,e,this.audioCtxState),this._media.autoplay&&e){this.resumeAudioCtx();return}if(!!this._media.autoplay||!this._cfg.disableDefaultPoster)!this._handlePosterListenerRegistered&&(this._handlePosterListenerRegistered=!0,!this._cfg.disableDefaultPoster&&(this._media.addEventListener("play",this._onPlay4Poster),this._media.addEventListener("pause",this._onPause4Poster))),this._media.removeEventListener("canplay",this._onCanplay4Poster),this._media.addEventListener("canplay",this._onCanplay4Poster,{once:!0})}resetInitTimeStamp(e){e.firstTimeStemp=Date.now()}constructor(e,t={}){t.worker=(0,a._)({enable:"boolean"!=typeof t.worker||t.worker,recylable:t.protocol&&![D.b.FLV,D.b.RTM,D.b.RTM_WEBTS].includes(t.protocol)},"object"==typeof t.worker?t.worker:{}),t.coreType=l.MR.MediaStream,super(e,t),(0,r._)(this,"version","0.0.2-alpha.76-202604162011"),(0,r._)(this,"logger",new o.ZP("MediaStreamAdaptor")),(0,r._)(this,"_playbackRate",void 0),(0,r._)(this,"_defaultPlaybackRate",1),(0,r._)(this,"_repaceMediaTrack",!1),(0,r._)(this,"_startTime",0),(0,r._)(this,"_firstframeCost",{}),(0,r._)(this,"_seeking",!1),(0,r._)(this,"_autoplayPolicy",!1),(0,r._)(this,"_isResumeAudioCtx",!1),(0,r._)(this,"_audioCtxCoord",void 0),(0,r._)(this,"_seekCurrentTime",-1),(0,r._)(this,"_seekCurrentTimeCnt",0),(0,r._)(this,"_seekCheckCurrentTimer",null),(0,r._)(this,"_seekedEventTimestamp",0),(0,r._)(this,"_mediaStream",null),(0,r._)(this,"_sampleRate",0),(0,r._)(this,"_ctxDependList",void 0),(0,r._)(this,"_isReuseSrc",!1),(0,r._)(this,"_checkWorkerEnableTimer",null),(0,r._)(this,"_rtmLoader",null),(0,r._)(this,"_mediaEventState",{loadstart:!1,loadedmetadata:!1,loadeddata:!1,canplay:!1}),(0,r._)(this,"_mediaPropsObserver",new MutationObserver(e=>{e.forEach(e=>{let{type:t,attributeName:i}=e;this._media&&"attributes"===t&&"loop"===i&&this.emit(G.Zo.LOOP_CHANGE,{loop:this._media.loop})})})),(0,r._)(this,"_onVisibilitychange",()=>{let e="visible"===document.visibilityState;if(!this.isPiP)this.emit(G.Zo.VISIBILITYSTATE,{state:e})}),(0,r._)(this,"_onMediaLoadstart",e=>{this._startTimelines.loadstarttime=Date.now(),this._startTimelines.loadstarttype=1,this.logger.log("onMediaLoadstart",this._mediaEventState.loadstart),this.updateLastStep(l.ef.LOAD_START),this._mediaEventState.loadstart?e.stopImmediatePropagation():this._mediaEventState.loadstart=!0}),(0,r._)(this,"_onMediaLoadedmetadata",e=>{this.logger.log("onMediaLoadedmetadata",this._mediaEventState.loadedmetadata),this._mediaEventState.loadedmetadata?e.stopImmediatePropagation():this._mediaEventState.loadedmetadata=!0,e instanceof CustomEvent?this.updateLastStep("loademetaddata1"):this.updateLastStep("loademetaddata")}),(0,r._)(this,"_onMediaLoadeddata",e=>{this._startTimelines.loadeddatatime=Date.now(),this._startTimelines.ffcost=this._startTimelines.loadeddatatime-this._startTimelines.loadstarttime,this._startTimelines.loadeddatatype=1;let t=e instanceof CustomEvent;t?this.updateLastStep("loadeddata1"):this.updateLastStep("loadeddata"),this.logger.log(`onMediaLoadeddata ${this._mediaEventState.loadeddata} ${t}`),this._mediaEventState.loadeddata?e.stopImmediatePropagation():this._mediaEventState.loadeddata=!0}),(0,r._)(this,"_onMediaCanplay",e=>{var t,i;if(!this._media||this._errorInfo){e.stopImmediatePropagation();return}this._canplay=!0;let r=e instanceof CustomEvent;r?this.updateLastStep("canplay1"):this.updateLastStep("canplay"),this.logger.log(`_onMediaCanplay ${this._mediaEventState.canplay} ${null===(t=this._media)||void 0===t?void 0:t.autoplay} ${this._isPaused} ${r}`),((null===(i=this._media)||void 0===i?void 0:i.autoplay)&&!0!==this._isPaused||!1===this._isPaused)&&(this.logger.log("onMediaCanplay call play"),super.play()),this._mediaEventState.canplay?e.stopImmediatePropagation():this._mediaEventState.canplay=!0}),(0,r._)(this,"_onMediaPlay",e=>{if(!this._media||this._errorInfo){e.stopImmediatePropagation();return}this._isPaused=!1,this.logger.log("on play! message to worker before resumeAudioCtx",this.audioCtxState),this.updateLastStep("sendplaytoworker"),this.resumeAudioCtx(),this._replacingTrack&&(e.stopImmediatePropagation(),this._replacingTrack=!1);let t=this._media.muted||!this._media.volume,i=this._media.loop,r=(0,H.Og)(this._media);this._autoplayPolicy=this._media.autoplay&&r;let a=this.playbackRate;this.logger.log("play! message to worker",t,a,this._autoplayPolicy),this.emit(G.Zo.PLAY,{muted:t,loop:i,playbackRate:a,autoplayPolicy:this._autoplayPolicy,canAutoPlay:r})}),(0,r._)(this,"_onMediaPause",e=>{if(this._isPaused=!0,this.logger.log("on pause! message to worker",this._replacingTrack),this._replacingTrack){e.stopImmediatePropagation();return}this._doMediaPause()}),(0,r._)(this,"_onPlay4Poster",e=>{this.logger.log("onPlay4Poster！",this._showingPoster),this._showingPoster&&e.stopImmediatePropagation()}),(0,r._)(this,"_onPause4Poster",e=>{this.logger.log("onPausePoster！",this._showingPoster),this._showingPoster&&(e.stopImmediatePropagation(),this._showingPoster=!1)}),(0,r._)(this,"_onCanplay4Poster",()=>{if(this._cfg.disableDefaultPoster){this.dispatchMediaEvent(u.c.AUTOPLAY_WAS_PREVENTED);return}this._showingPoster=!0,this.logger.log("hack, 展示首帧！")}),(0,r._)(this,"_onMediaWaiting",e=>{if(!this._media)return;let t=e instanceof CustomEvent;this.logger.log(`receive waiting ${this._media.currentTime} ${t}`),this.updateLastStep(t?"waitingMock":l.ef.WAITING,{currentTime:this._media.currentTime,isMock:t})}),(0,r._)(this,"_onMediaVolumeChange",e=>{var t;if(!this._media)return;let i=(0,H.Og)(this._media);this._autoplayPolicy=this._media.autoplay&&i;let r=this._media.muted||!this._media.volume;this.logger.log("volume change",r,this._autoplayPolicy,this._showingPoster,null===(t=this._media)||void 0===t?void 0:t.paused),this._showingPoster&&e.stopImmediatePropagation(),this._media&&!this._media.paused&&(this.emit(G.Zo.MUTED_SET,{muted:r,autoplayPolicy:this._autoplayPolicy,canAutoPlay:i}),"suspended"===this.audioCtxState&&this._autoplayPolicy&&this.media&&!this.media.paused&&!r&&(this.logger.log("onMediaVolumeChange resumeAudioCtx",this.audioCtxState),this.resumeAudioCtx()))}),"number"==typeof t.defaultPlaybackRate&&(this._defaultPlaybackRate=t.defaultPlaybackRate),this.resetInitTimeStamp(t),this.updateLoggerID(t),this._bindMediaEvents(),this._resetMediaEvtState(),this.createMediaStream(),this.init(),this.createVideoTrack(t),this.createAudioTrack(t),this.updateProtoConfig(t,!0),(this._cfg.protocol===D.b.FLV||this._cfg.protocol===D.b.RTM_WEBTS)&&this._workerSink&&(0,h.le)(this._workerSink)}}},415317:function(e,t,i){"use strict";i.d(t,{U:function(){return a},j:function(){return s}});var r=i(818749);let a={PREFIX:`${r.T}-tag`},s={TAG_SIZE:["default","small","large"],TAG_COLOR:["grey","red","pink","purple","violet","indigo","blue","light-blue","cyan","teal","green","light-green","lime","yellow","amber","orange","white"],TAG_TYPE:["light","solid","ghost"],AVATAR_SHAPE:["square","circle"]}},459164:function(e,t,i){"use strict";i.d(t,{KT:function(){return p},UX:function(){return c},j2:function(){return d}});var r=i(818749),a=i(120534);let s=`${r.T}-upload`,n="picture",o="list",c={PREFIX:s,LIST:`${s}-list`},l="auto",h="custom",d={FILE_STATUS_UPLOADING:"uploading",FILE_STATUS_SUCCESS:"success",FILE_STATUS_UPLOAD_FAIL:"uploadFail",FILE_STATUS_VALIDATING:"validating",FILE_STATUS_VALID_FAIL:"validateFail",FILE_STATUS_WAIT_UPLOAD:"wait",FILE_LIST_PIC:n,FILE_LIST_DEFAULT:o,LIST_TYPE:[n,o],imageTypes:["image","webp","png","svg","gif","jpg","jpeg","bmp","dpg"],DRAG_AREA_DEFAULT:"default",DRAG_AREA_LEGAL:"legal",DRAG_AREA_ILLEGAL:"illegal",TRIGGER_AUTO:l,TRIGGER_CUSTOM:h,UPLOAD_TRIGGER:[l,h],VALIDATE_STATUS:a.L,PROMPT_POSITION:["left","right","bottom"]},p={PROGRESS_COEFFICIENT:.95}},611315:function(e,t,i){"use strict";i.d(t,{i:function(){return g}});var r=i(520739),a=i(878389),s=i(563097),n=i(202451),o=i(127180),c=i(88648),l=i(309931);i(978896);var h=i(899291),d=i(285150),p=i(289989),u=i(20968),f=i(46419),m=i(327100);let g=(0,d.n)(e=>{let{closeMoveSeek:t,isCloseClickSeek:i,isDraggingSeek:d,miniMoveStep:g=5,isPauseMoving:G,thumbnail:v,progresspreview:D,chapters:_=[],showPaidDot:H=!1,previewPaidTime:y}=e,{playerRef:T,el:b}=(0,c.useContext)(n.E),{active:C,focus:P,blur:I}=(0,u.t)(e),E=(0,c.useRef)(null),k=(0,c.useRef)(null),R=(0,c.useRef)(null),S=(0,c.useRef)(null),x=(0,c.useRef)(null),A=(0,c.useRef)(null),L=(0,c.useRef)(null),M=(0,c.useRef)(null),{updateChapter:w,ChapterNode:U,DotsNode:O}=(0,m.W)({chapters:_,showPaidDot:H,previewPaidTime:y}),N=(0,c.useRef)({x:0,isProgressMoving:!1,moving:!1,isDown:!1,isEnter:!1,isLocked:!1,prePlayTime:0,time:0}),j=(0,f.R)(v,D);(0,n.T)(()=>{let e=T.current,t=()=>{if(!N.current.isProgressMoving)W(e.currentTime/e.duration)};return e.on("timeupdate",t),()=>{var e;null===(e=T.current)||void 0===e||e.off("timeupdate",t)}});let V=(0,p.DM)((e,t,i)=>{var a;null===(a=T.current)||void 0===a||a.emitUserAction(e,t,(0,r._)({pluginName:"progress"},i))}),F=(0,p.DM)(t=>{var i,r;let a=N.current,s=B(t);s.forward=a.time<s.currentTime,s.prePlayTime=a.prePlayTime,!a.moving&&(a.moving=!0,null===(r=e.onDragStart)||void 0===r||r.call(e,B(t)),V("drag","dragstart",s)),X(s);let n=t.clientX-N.current.x;if(!(n<g)||!(n>-g))null==e||null===(i=e.onDragMove)||void 0===i||i.call(e,s),G&&T.current.pause(),N.current.x=t.clientX,K(s.currentTime,s.seekTime,s.percent,1)}),Z=(0,p.DM)(t=>{var r,a,s;document.removeEventListener("mousemove",F);let n=null===(r=T.current)||void 0===r?void 0:r._pipWindow;n&&n.removeEventListener("mousemove",F);let o=N.current;o.isDown=!1;let c=B(t);if(c.prePlayTime=o.prePlayTime,o.moving)null===(a=e.onDragend)||void 0===a||a.call(e,c),V("drag","dragend",c),K(c.currentTime,c.seekTime,c.percent,2);else if(null===(s=e.onClick)||void 0===s||s.call(e,c),V("click","click",c),i){let{prePlayTime:e}=o;W(e/T.current.duration)}o.moving=!1,o.isProgressMoving=!1,o.time=0,o.prePlayTime=0,document.removeEventListener("mousemove",F),document.removeEventListener("mouseup",Z),n&&(n.removeEventListener("mousemove",F),n.removeEventListener("mouseup",Z)),T.current.updatePluginConfig("time",{currentTime:void 0}),!o.isEnter&&I()}),W=(0,p.DM)(e=>{requestAnimationFrame(()=>{if(!!R.current&&!!L.current)R.current.style.left=`${100*e}%`,L.current.style.width=`${100*e}%`})}),X=(0,p.DM)(e=>{let t,{percent:i,width:r}=e;if(!S.current||!x.current)return;let{pic_num:a,col:s,row:n,urls:o}=v,{width:c,height:l}=j;i*r<c/2?(t="0px",x.current.style.marginLeft=i*r+"px"):i*r>r-c/2?(t=`${r-c}px`,x.current.style.marginLeft=i*r-(r-c)+"px"):(t=`calc(${100*i}% - ${c/2}px)`,x.current.style.margin=""),S.current.style.left=t;let h=o[a*i/(s*n)|0],d=(a*i|0)%(s*n);A.current.style.background=`url(${h}) -${d%s*c}px -${(d/s|0)*l}px`;let p=T.current.duration*i|0,u=p%60;w(1e3*p),A.current.previousElementSibling.textContent=`${p/60|0}:${u<10?`0${u}`:u}`}),$=(0,p.DM)(e=>{if(!N.current.isProgressMoving)X(B(e))}),B=(0,p.DM)(e=>{if(!E.current)return{percent:0,currentTime:0,seekTime:0,width:0};let{width:t,left:i}=E.current.getBoundingClientRect(),r=e.clientX-i,a=(r=r>t?t:r<0?0:r)/t,s=a*T.current.duration;return{percent:a,currentTime:s,seekTime:s,width:t}}),K=(0,p.DM)((e,t,r,a)=>{if(W(r),0===a&&i||!(null==T?void 0:T.current))return;if(T.current.updatePluginConfig("time",{currentTime:2===a?void 0:e}),1!==a||!!d)T.current.currentTime=0|t}),z=(0,p.DM)(e=>{var i;if(e.stopPropagation(),t)return;let r=B(e),a=T.current,s=N.current;s.isDown=!0,s.prePlayTime=a.currentTime,s.isProgressMoving=!0,s.moving=!1,s.x=e.clientX,s.time=r.currentTime,a.focus({isLock:!0}),document.addEventListener("mousemove",F),document.addEventListener("mouseup",Z,{once:!0});let n=null===(i=T.current)||void 0===i?void 0:i._pipWindow;n&&(n.addEventListener("mousemove",F),n.addEventListener("mouseup",Z,{once:!0})),K(r.currentTime,r.seekTime,r.percent,0)}),Y=(0,p.DM)(()=>{var t;N.current.isEnter=!0,P(),null==e||null===(t=e.onMouseenter)||void 0===t||t.call(e)}),q=(0,p.DM)(()=>{if(N.current.isEnter=!1,!N.current.isDown)I()}),J=(null==v?void 0:v.pic_num)?(0,s.jsxs)("div",{className:"douyin-player-spot-info",ref:S,children:[(0,s.jsxs)("div",{className:"douyin-player-spot-content",children:[(0,s.jsxs)("div",{className:"douyin-player-spot-thumbnail",children:[(0,s.jsx)("span",{className:"douyin-player-spot-time"}),(0,s.jsx)("div",{ref:A,className:"douyin-player-thumbnail",style:j})]}),U]}),(0,s.jsx)("div",{className:"douyin-player-spot-line",ref:x})]}):null;(0,c.useEffect)(()=>{let e=E.current;if(!!e)return e.addEventListener("mousedown",z),e.addEventListener("mouseenter",Y),e.addEventListener("mouseleave",q),()=>{e.removeEventListener("mousedown",z),e.removeEventListener("mouseenter",Y),e.removeEventListener("mouseleave",q)}},[]),(0,c.useEffect)(()=>{let e=M.current;if(!!e)return e.addEventListener("mousemove",$),()=>{e.removeEventListener("mousemove",$)}},[]);let Q=(0,c.useMemo)(()=>b.querySelector((0,o.w2)("controls",!0)),[b]);return(0,l.createPortal)((0,s.jsxs)("div",{ref:E,className:`douyin-player-progress ${C?" active":""}`,children:[(0,s.jsxs)("div",{className:"douyin-player-progress-outer",ref:k,children:[(0,s.jsxs)("div",{className:"progress-list",ref:M,children:[(0,s.jsx)(h.K,(0,a._)((0,r._)({},e),{ref:L})),O]}),(0,s.jsx)("div",{className:"douyin-player-progress-btn",ref:R})]}),J]}),Q)})},673035:function(e,t,i){"use strict";i.d(t,{Z:function(){return a}});let r=`Arc(TM) A770M Graphics|995
+Arc(TM) A770 Graphics|983
+Arc(TM) A770 Graphics|969
+Arc(TM) A580 Graphics|944
+Arc(TM) A730M Graphics|822
+Arc(TM) A750 Graphics|768
+Arc(TM) A750 Graphics|768
+Arc(TM) A550M Graphics|660
+Arc(TM) A550M Graphics|634
+Xe Graphics ReleaseInternal|561
+Arc(TM) A770M Graphics|498
+Arc(TM) A380 Graphics|473
+Arc(TM) A380 Graphics|468
+Arc(TM) A370M Graphics|342
+Arc(TM) A370M Graphics|341
+Xe Graphics|319
+HD Graphics 630 GT2|309
+Arc(TM) A350M Graphics|284
+Iris(R) Xe MAX Graphics|214
+Iris(R) Xe Graphics RI|205
+Iris(R) Xe Graphics ReleaseInternal|181
+Iris(R) Xe Graphics|180
+Gen12 Desktop Graphics Controller|179
+Iris(R) Xe Graphics|178
+Iris(R) Xe MAX Graphics|168
+Corporation Iris Xe Graphics|167
+Corporation TigerLake-LP GT2 [Iris Xe Graphics]|162
+Xe Graphics|158
+Arc(TM) A350M Graphics|156
+Corporation TigerLake GT2 [Iris Xe Graphics]|149
+UHD Graphics 770|138
+UHD Graphics ReleaseInternal|137
+Iris(R) Pro Graphics P580|137
+Iris(R) Plus Graphics|132
+Iris Plus Graphics|127
+Iris(R) Pro Graphics 580|126
+UHD Graphics 770|125
+UHD Graphics 750|125
+Radeong 0.4 on AMD TONGA (DRM 3.1.0, LLVM 3.9.0)|123
+Corporation Iris Plus Graphics G7|123
+Iris(R) Plus Graphics|122
+Iris(R) Plus Graphics 940|121
+Iris(R) Plus Graphics 650|121
+Iris(R) Plus Graphics 655|121
+Iris(R) Plus Graphics 655|121
+HD Graphics P4600|120
+Iris(TM) Pro Graphics 6200|120
+Iris(R) Plus Graphics|118
+Iris(R) Plus Graphics 650|116
+Iris(R) Plus Graphics 655|115
+Iris(R) Pro Graphics 580|114
+Corporation Iris Pro Graphics 580|114
+Iris(R) Plus Graphics 645|113
+Iris(TM) Pro Graphics 6200|113
+Iris(TM) Pro Graphics P580|113
+Corporation Iris Plus Graphics 655|112
+Arc(TM) Graphics RI|111
+Iris(R) Plus Graphics 655|111
+Iris(R) Plus Graphics 655|110
+Iris(R) Plus Graphics|110
+UHD Graphics|110
+Iris Plus Graphics 655|108
+Iris(R) Plus Graphics 650|108
+Iris(R) Plus Graphics 650|108
+Iris(TM) Pro Graphics 580|108
+Iris(TM) Pro Graphics 6200|107
+Iris Graphics 6100|107
+Iris(TM) Pro Graphics 6200|107
+Iris(R) Plus Graphics 645|106
+UHD Graphics 730|106
+Iris(TM) Pro Graphics 6200|103
+Iris Pro Graphics 580|102
+Corporation Iris Pro Graphics 6200|102
+Iris(R) Plus Graphics gfx-driver-user-comp_media-21486 DC ReleaseInternal|101
+Iris(R) Pro Graphics 580|101
+Iris Plus Graphics 645|101
+UHD Graphics 750|100
+Iris(TM) Pro Graphics 580|99
+Iris(TM) Graphics 550|99
+Iris(TM) Pro Graphics P6300|99
+Iris(R) Plus Graphics 650|99
+Iris(TM) Pro Graphics 5200|98
+Iris(R) Graphics 550|97
+Iris(R) Plus Graphics|97
+Iris(R) Plus Graphics 650|96
+Iris(R) Plus Graphics 655|96
+Iris(R) Graphics 550|96
+Iris(R) Plus Graphics 645|95
+Iris Plus Graphics 650|95
+Iris(R) Graphics 550|95
+Iris Graphics 550|93
+Iris(R) Plus Graphics 650|93
+Iris(R) Pro Graphics 580|93
+Iris(TM) Plus Graphics 650|91
+Iris(TM) Graphics 550|91
+Iris(R) Plus Graphics 640|89
+Iris(TM) Plus Graphics 650|88
+Iris(TM) Pro Graphics P6300|88
+Iris(TM) Plus Graphics 650|88
+Iris(TM) Graphics 550|87
+UHD Graphics 730|87
+Corporation Iris Plus Graphics 650|87
+Iris(TM) Pro Graphics 5200|86
+Corporation CometLake-H GT2 [UHD Graphics]|86
+Iris(R) Graphics 540|86
+UHD Graphics P630|86
+UHD Graphics 630|85
+Iris(TM) Graphics 540|85
+Iris(TM) Plus Graphics 640|84
+Iris(TM) Graphics 540|84
+UHD Graphics 630|84
+UHD Graphics 630|83
+UHD Graphics P630|83
+Iris(TM) Plus Graphics 640|83
+UHD Graphics 630|83
+UHD Graphics 630|83
+Iris Plus Graphics 640|83
+Iris(TM) Graphics 540|82
+UHD Graphics 630|82
+UHD Graphics 630|82
+Iris(TM) Pro Graphics 5200|81
+UHD Graphics 630|81
+HD Graphics 630|81
+UHD Graphics 630|81
+UHD Graphics 630|81
+UHD Graphics 630|80
+UHD Graphics 630|80
+UHD Graphics 630|80
+Iris Pro Graphics 6200|80
+UHD Graphics 630|80
+Iris Graphics 540|80
+HD Graphics 630|80
+Iris(TM) Graphics 540|80
+Iris(TM) Pro Graphics 5200|79
+UHD Graphics 630|79
+UHD Graphics 630|79
+UHD Graphics 630|79
+Iris Graphics 540|79
+UHD Graphics 630|79
+UHD Graphics|78
+Corporation Sky Lake Integrated Graphics|78
+Iris(TM) Pro Graphics 6200|78
+Corporation WhiskeyLake-U GT2 [UHD Graphics 620]|78
+Radeong 0.4 on AMD BONAIRE (DRM 2.43.0, LLVM 3.8.0)|78
+UHD Graphics 710|78
+UHD Graphics 630|78
+UHD Graphics P630|77
+UHD Graphics 630|77
+UHD Graphics 630 (Desktop 9 Series)|77
+UHD Graphics 630|77
+Coffee Lake UHD Graphics|77
+Iris(TM) Pro Graphics 5200|77
+UHD Graphics 630|76
+Iris(R) Plus Graphics 640|76
+Iris(TM) Pro Graphics 5200|76
+UHD Graphics 630|76
+UHD Graphics|76
+UHD Graphics 630|76
+Iris(TM) Pro Graphics 5200|75
+UHD Graphics 630|75
+UHD Graphics P630|75
+HD Graphics P530|75
+HD Graphics 630|75
+Iris(TM) Pro Graphics 5200|75
+UHD Graphics 630|75
+Iris(TM) Pro Graphics 5200|75
+HD Graphics 620|74
+UHD Graphics 630|74
+HD Graphics 630|74
+HD Graphics 630|74
+Coffee Lake HD Graphics|74
+UHD Graphics 630|74
+Iris(TM) Graphics 540|74
+UHD 630|74
+Iris(R) Graphics 540|73
+UHD Graphics 620|73
+Iris Graphics 6200|73
+Corporation CoffeeLake-H GT2 [UHD Graphics 630]|73
+UHD Graphics 630 (Desktop)|73
+HD Graphics ICL RVP|73
+UHD Graphics 630|73
+HD Graphics 630|72
+Iris Pro|72
+KBL Unknown|72
+UHD Graphics 630|72
+Iris(TM) Pro Graphics 5200|72
+HD Graphics 530|72
+Corporation UHD Graphics 630 (Desktop 9 Series)|72
+Radeon Pro Vega 16|72
+Iris(TM) Graphics 540|72
+Iris(R) Graphics 540|72
+UHD Graphics 630|71
+HD Graphics 630|71
+Iris(TM) Pro Graphics 5200|71
+UHD Graphics 630|71
+Iris Pro|71
+CometLake UHD Graphics 630|71
+HD Graphics 630|71
+UHD Graphics|71
+Iris(TM) Plus Graphics 640|71
+UHD Graphics|71
+Corporation UHD Graphics|70
+Iris Pro Graphics 6200|70
+Iris(R) Graphics 540|70
+Graphics|70
+UHD Graphics 630|70
+HD Graphics ICL RVP BigSur|70
+UHD Graphics ReleaseInternal|70
+HD Graphics 530|70
+UHD Graphics 630|70
+UHD Graphics|70
+UHD Graphics gfx-driver-user-comp_core-23599|70
+UHD Graphics 630|69
+UHD Graphics|69
+Iris(TM) Pro Graphics 5200|69
+Corporation Iris Plus Graphics G1 (Ice Lake)|69
+HD Graphics 630|69
+HD Graphics 630|69
+Iris(R) Plus Graphics|69
+Iris(TM) Pro Graphics 5200|69
+UHD Graphics 620|69
+UHD Graphics|69
+Iris(R) Plus Graphics 640|69
+Iris Pro Graphics 6200|69
+HD Graphics 630|69
+UHD Graphics 630 (Mobile)|68
+Iris(TM) Pro Graphics 5200|68
+Corporation UHD Graphics 630 (Desktop)|68
+HD Graphics 630|68
+UHD Graphics 630|68
+UHD Graphics 620|68
+UHD Graphics 630|68
+Iris(TM) Plus Graphics 640|68
+UHD Graphics|67
+Iris Pro Graphics 580|67
+Iris(TM) Graphics 540|67
+UHD Graphics 620|67
+Iris(TM) Pro Graphics 5200|67
+UHD Graphics|66
+HD Graphics P530|66
+Corporation UHD Graphics 630 (Mobile)|66
+Iris(R) Plus Graphics 640|66
+UHD Graphics 630|66
+Iris(R) Plus Graphics 640|65
+HD Graphics 630|65
+HD 530|65
+UHD Graphics 620|65
+SKL Unknown|65
+HD Graphics 630|64
+Iris(TM) Graphics 540|64
+Mesa DRI Intel(R) UHD Graphics 620 (Kabylake GT2)|64
+UHD Graphics 630|64
+HD Graphics 530|63
+HD Graphics 530|63
+HD Graphics 530|63
+Mesa Intel(R) HD Graphics 530 (SKL GT2)|63
+UHD Graphics|63
+HD Graphics 530|63
+Iris Graphics 550|63
+HD Graphics 530|63
+Iris Plus Graphics 655|63
+HD Graphics 630|63
+UHD Graphics, Gen11 LP|63
+Corporation 8th Gen Core Processor Gaussian Mixture Model|63
+UHD Graphics 630|63
+Iris(TM) Graphics 650|63
+Iris(R) Plus Graphics 640|62
+HD Graphics 530|62
+Mesa DRI Intel(R) Iris Graphics 540 (Skylake GT3e)|62
+Iris(R) Plus Graphics|61
+Iris(TM) Pro Graphics 5200|61
+Iris Pro|61
+HD Graphics 620|61
+UHD Graphics 620|61
+UHD Graphics 630|61
+UHD Graphics|61
+HD Graphics 530|60
+Iris Plus Graphics G1|60
+Iris(TM) Pro Graphics 5200|60
+Iris Plus Graphics 650|60
+UHD Graphics|60
+HD Graphics 620|60
+UHD Graphics 620|60
+UHD Graphics 630|60
+Mesa DRI Intel(R) HD Graphics 630 (Kaby Lake GT2)|60
+UHD Graphics 620|60
+HD Graphics 630|60
+HD Graphics 630|59
+Iris Graphics 540|59
+Iris Plus Graphics 640|59
+CoffeeLake-H GT2 [UHD Graphics 630]|59
+HD Graphics 630|59
+UHD Graphics|59
+HD Graphics 620|59
+UHD Graphics 620|59
+HD Graphics 630|59
+Corporation UHD Graphics 620 (Whiskey Lake)|59
+Iris(R) Plus Graphics 650|59
+UHD Graphics 620|59
+Mesa Intel(R) HD Graphics 520 (SKL GT2)|58
+HD Graphics 630|58
+HD Graphics P530|58
+Iris(TM) Plus Graphics 640|58
+Corporation HD Graphics 630|58
+UHD Graphics 620|58
+UHD Graphics 630|58
+HD Graphics P630|58
+Mesa DRI Intel(R) UHD Graphics 630 (Coffeelake 3x8 GT2)|58
+Corporation CometLake-S GT2 [UHD Graphics 630]|58
+HD Graphics 530|58
+Iris Graphics 540|58
+HD Graphics 530|58
+Corporation Device|58
+HD Graphics CFL CRB|57
+HD Graphics 620 macOS Edition|57
+HD Graphics 530|57
+Mesa DRI Intel(R) HD Graphics 520 (SKL GT2)|57
+Iris Pro Graphics|56
+Iris(TM) Pro Graphics 5200|56
+Iris(R) Plus Graphics 655|56
+Coffee Lake UHD Graphics|56
+Iris(TM) Graphics 640|55
+Iris Pro|55
+UHD Graphics 630|55
+UHD Graphics 620|55
+HD Graphics 530|55
+HD Graphics 520|54
+HD Graphics 530|54
+UHD Graphics 620|54
+HD Graphics 530|54
+Corporation UHD Graphics 620|54
+UHD Graphics|54
+Iris Plus Graphics G7|54
+Corporation Skylake GT2 [HD Graphics 520]|53
+UHD Graphics 630|53
+HD Graphics 630|53
+Corporation HD Graphics 530|53
+UHD Graphics 617|53
+HD Graphics 520|52
+HD Graphics 620|52
+HD Graphics 620|52
+HD Graphics 620|52
+HD Graphics 620|52
+HD Graphics 630|52
+HD Graphics 630|52
+HD Graphics 5600|51
+HD Graphics 530|51
+HD Graphics 630|51
+UHD Graphics 615|51
+Mesa DRI Intel(R) HD Graphics 520 (Skylake GT2)|51
+HD Graphics 630|50
+HD Graphics 620|50
+UHD Graphics|50
+HD Graphics P4600/P4700|50
+HD Graphics 520|50
+HD Graphics 530|50
+HD Graphics 620|50
+HD Graphics 530|50
+Corporation HD Graphics 620|50
+HD Graphics 530|50
+UHD Graphics 620|49
+UHD Graphics 620|49
+HD Graphics 530|49
+Iris(TM) Graphics 6100|49
+HD Graphics 4600|49
+HD Graphics 630|49
+UHD Graphics 617|49
+UHD Graphics RI|48
+HD Graphics 520|48
+UHD Graphics 617|48
+HD Graphics 5600|48
+HD Graphics 620|48
+UHD Graphics, Gen11 LP|47
+UHD Graphics 617|47
+Mesa DRI Intel(R) HD Graphics 620 (Kaby Lake GT2)|47
+HD Graphics 615|47
+UHD Graphics RI|47
+HD Graphics 630|47
+HD Graphics 4600|46
+HD Graphics 520|46
+Corporation Skylake GT2 [HD Graphics 520]|46
+HD Graphics 520|46
+Corporation Device|46
+HD Graphics 4600|46
+HD Graphics 615|45
+HD Graphics 4600|45
+Iris(TM) Graphics 6100|45
+HD Graphics 615|45
+UHD Graphics 615|45
+HD Graphics 630 GT2|45
+HD Graphics 4600|45
+HD Graphics 630|45
+Iris(TM) Graphics 6100|45
+HD Graphics 4600|45
+HD Graphics 620|45
+Iris(TM) Graphics 6100|45
+HD Graphics 520|45
+HD Graphics 4600|45
+Iris(TM) Graphics 540|44
+HD Graphics 530|44
+HD Graphics 4600|44
+Iris(TM) Graphics 5100|44
+Kabylake HD Graphics ULT GT2|44
+Iris Graphics 6100|44
+UHD Graphics 630|44
+HD Graphics 520|44
+HD Graphics KBL CRB|44
+HD Graphics 530 (Skylake GT2)|44
+Corporation HD Graphics 620|44
+HD Graphics 515|44
+UHD Graphics|44
+UHD Graphics 620|44
+Iris(TM) Pro Graphics P580|43
+UHD Graphics 615|43
+HD Graphics 4600|43
+HD Graphics 4600|43
+Corporation Skylake Integrated Graphics|43
+HD Graphics 530|43
+UHD Graphics 615|43
+UHD Graphics 630|43
+HD Graphics 615|42
+HD Graphics 620|42
+HD Graphics 4600|42
+HD Graphics 615|42
+HD Graphics 4600|42
+HD Graphics 4600|42
+Mesa DRI Intel(R) Kabylake GT2|42
+HD Graphics 620|42
+Corporation HD Graphics 6000|42
+UHD Graphics 615|42
+HD Graphics 4600|41
+Corporation HD Graphics 520|41
+HD Graphics P4600/P4700|41
+Corporation, Series Chipset Iris Plus Graphics 655|41
+HD Graphics 4600|41
+Mesa DRI Intel(R) HD Graphics 530 (Skylake GT2)|41
+HD Graphics 4600|41
+Iris(TM) Graphics 640|41
+HD Graphics 4600|41
+HD Graphics 630|40
+Iris(TM) Graphics 5100|40
+Iris(TM) Graphics 6100|40
+UHD Graphics 610|40
+HD Graphics 4600|40
+HD Graphics 4600|40
+UHD Graphics 615|40
+UHD Graphics 610|40
+HD Graphics 530|40
+UHD Graphics 605|40
+HD Graphics 615|40
+HD Graphics 4600|40
+UHD Graphics 615|40
+HD Graphics 505|39
+PHDGD Ivy 4|39
+Unknown|39
+Iris(TM) Graphics 5100|39
+Iris|39
+Corporation Iris Graphics 6100|39
+HD Graphics 6000|39
+Iris(TM) Graphics 5100|39
+HD Graphics 615|39
+HD Graphics 5500|39
+Skylake GT2 [HD Graphics 520]|39
+Corporation Broadwell-U Integrated Graphics|38
+HD Graphics 615|38
+HD Graphics 5500|38
+HD Graphics 4600|38
+Mesa DRI Intel(R) HD Graphics P4000 (IVB GT2)|38
+HD Graphics 4600|38
+HD Graphics 615|38
+Corporation HD Graphics 610|38
+HD Graphics 4600|38
+HD Graphics 4600|38
+Iris(TM) Graphics 5100|38
+Iris Graphics 6100|38
+HD Graphics 515|38
+HD Graphics 6000|38
+UHD Graphics, Gen11 LP|38
+Iris(TM) Graphics 5100|38
+HD Graphics 4600|37
+HD Graphics 610|37
+HD Graphics 4600|37
+HD Graphics 515|37
+HD Graphics 4600|37
+HD Graphics 4600|37
+Iris Graphics P580|37
+Iris(TM) Pro Graphics P6300|37
+HD Graphics 5500|37
+HD Graphics 4600|37
+Iris Graphics 6100|37
+UHD Graphics 610|37
+HD Graphics 4600|37
+HD Graphics 4600|37
+UHD Graphics 610|37
+HD Graphics 530|37
+HD Graphics 5500|37
+HD Graphics 515|36
+HD Graphics P4600/P4700|36
+HD Graphics 515|36
+HD Graphics 4600|36
+UHD Graphics 615|36
+Iris Graphics 6100|36
+HD Graphics 4600|36
+HD Graphics 4600|36
+HD Graphics 4600|36
+HD Graphics 520|36
+HD Graphics 520|36
+HD Graphics 5500|36
+Corporation HD Graphics 5500|35
+Iris|35
+HD5500 Graphics PG7|35
+HD Graphics 515|35
+Iris|35
+Graphics gfx-driver-user-feature_dg1_poweron-27723 DCH ReleaseInternal|35
+HD Graphics 615|35
+HD Graphics P630|35
+HD Graphics 510|35
+HD Graphics 6000|35
+HD Graphics 5000|35
+Corporation HD Graphics 5300|35
+HD Graphics 6000|35
+HD Graphics 4600|35
+HD5500 Broadwell PG7|35
+Graphics HD 4600|35
+HD Graphics 6000|35
+HD Graphics 510|34
+HD Graphics 610|34
+HD Graphics 4600|34
+HD Graphics Family (PHDGD Skylake v2.9)|34
+Corporation Device|34
+HD Graphics 610|34
+UHD Graphics 610|34
+HD Graphics 5300|34
+HD Graphics 5000|34
+HD Graphics 4600|34
+UHD Graphics 610|33
+HD Graphics 4600|33
+UHD Graphics 620|33
+Corporation UHD Graphics 615|33
+HD Graphics 5000|33
+Kabylake HD Graphics ULX GT2|33
+HD Graphics 620|33
+UHD Graphics 615|33
+HD Graphics 4600|33
+HD Graphics 5500|33
+HD Graphics 515|33
+UHD Graphics|33
+HD Graphics 4600|33
+HD Graphics 520|33
+HD Graphics 6000|33
+HD Graphics 615|33
+HD Graphics KBL CRB|33
+HD Graphics 4600|33
+UHD Graphics 610|33
+Iris Graphics 6100|33
+HD Graphics 515|33
+Iris|32
+Iris|32
+HD Graphics 5000|32
+Iris|32
+HD Graphics 5000|32
+Iris(TM) Graphics 5100|32
+HD Graphics 4600|32
+HD Graphics 4600|32
+Corporation Xeon E3-1200 v3/4th Gen Core Processor Integrated Graphics Controller|32
+HD Graphics 5500 (PHDGD Skylake v2.9)|32
+HD Graphics 610|32
+HD Graphics 6000|31
+HD Graphics 5500|31
+Iris|31
+HD Graphics 6000|31
+UHD Graphics 610|31
+HD Graphics 510|31
+HD Graphics|31
+HD Graphics 6000|31
+HD Graphics 4400|31
+HD Graphics 5000|31
+HD Graphics 4600|30
+HD Graphics 515|30
+HD Graphics 5600|30
+HD Graphics 4600|30
+HD Graphics 4400|30
+HD Graphics 530|30
+GeForce GTX 960|30
+UHD Graphics 610|30
+GeForce GTX 960|30
+HD Graphics 510|30
+HD Graphics 6000|30
+Corporation HD Graphics 515|30
+HD Graphics 610|29
+HD Graphics 510|29
+HD Graphics 5000|29
+HD Graphics 4600|29
+Iris(TM) Pro Graphics 6200|29
+HD Graphics 510|29
+HD Graphics 5000|29
+HD Graphics 6000|29
+Iris|29
+HD Graphics 4400|29
+HD Graphics 4400|29
+HD Graphics 4000|29
+HD Graphics 510|29
+HD Graphics 5000|29
+HD Graphics 4400|28
+HD Graphics 610|28
+HD Graphics 5300|28
+HD Graphics 510|28
+HD Graphics|28
+HD Graphics 610|28
+HD Graphics 4400|28
+HD Graphics 610|28
+HD Graphics 4600|28
+HD Graphics 4600|28
+HD Graphics 5000|28
+HD Graphics 4400|28
+HD Graphics 4400|28
+Corporation Xeon E3-1200 v3/4th Gen Core Processor Integrated Graphics Controller|28
+HD Graphics 4400|28
+HD Graphics 5300|28
+HD Graphics 5000|28
+UHD Graphics 605|28
+HD Graphics 4400|28
+HD Graphics 5500|28
+HD Graphics 4000|28
+HD Graphics 4400|27
+HD Graphics 615|27
+HD Graphics Family(PHDGD Skylake v2.0)|27
+HD Graphics 4400|27
+HD Graphics 4400|27
+HD Graphics 610|27
+Corporation HD Graphics 510|27
+Iris|27
+HD Graphics 520|27
+HD Graphics 5000|27
+HD Graphics 5300|27
+HD Graphics 6000|27
+HD Graphics 4000|27
+HD Graphics 610|27
+HD Graphics 5000|27
+HD Graphics 4600|27
+Mesa DRI Intel(R) HD Graphics 505 (Broxton)|27
+HD Graphics 5500|27
+HD Graphics|27
+HD Graphics 5000|26
+UHD Graphics 600|26
+HD Graphics 4600|26
+Mesa DRI Intel(R) Haswell Mobile|26
+HD Graphics 4000|26
+HD Graphics 5300|26
+Iris(TM) Graphics 540|26
+HD Graphics 4000|26
+HD Graphics 4600|26
+HD Graphics|26
+HD Graphics 4400|26
+HD Graphics 4600|26
+HD Graphics 6000|26
+Corporation Celeron N3350/Pentium N4200/Atom E3900 Series Integrated Graphics Controller|26
+HD Graphics 530|26
+HD Graphics 5500|25
+Broxton-P HD Graphics|25
+Corporation Xeon E3-1200 v3/4th Gen Core Processor Integrated Graphics Controller|25
+HD 4000|25
+HD Graphics 4400|25
+HD Graphics 4600|25
+HD Graphics 5500|25
+HD 4000|25
+Corporation Xeon E3-1200 v3/4th Gen Core Processor Integrated Graphics Controller|25
+Corporation HD Graphics|25
+HD Graphics 4400|25
+Mesa DRI Intel(R) HD Graphics 5500 (Broadwell GT2)|25
+HD Graphics 4400|25
+HD Graphics|25
+UHD Graphics 600|24
+Arc(TM) Graphics|24
+HD Graphics 4600|24
+HD Graphics 5300|24
+HD Graphics 4400|24
+HD Graphics 4400|24
+HD Graphics 4400|24
+HD Graphics 4000|24
+UHD Graphics 605|24
+HD Graphics 5000|23
+Corporation Xeon E3-1200 v2/3rd Gen Core processor Graphics Controller|23
+UHD Graphics, LKF|23
+UHD Graphics 605|23
+HD Graphics 4400|23
+HD Graphics 4400|23
+HD Graphics 4000|23
+HD Graphics 4400|23
+Mesa DRI Intel(R) Ivybridge Desktop|23
+0x496e74656c2048442047726170686963000732034343|23
+HD Graphics 5300|22
+HD Graphics 615|22
+Kabylake HD Graphics ULX GT2|22
+HD Graphics 5300|22
+HD Graphics|22
+HD Graphics|22
+HD Graphics 4000|22
+HD Graphics|22
+HD Graphics 515|22
+HD Graphics|22
+HD Graphics 5300|22
+Corporation Xeon E3-1200 v3/4th Gen Core Processor Integrated Graphics Controller|22
+HD Graphics 5300|22
+Corporation Xeon E3-1200 v3/4th Gen Core Processor Integrated Graphics Controller|22
+HD Graphics 4000|21
+UHD Graphics 605|21
+Corporation Xeon E3-1200 v3/4th Gen Core Processor Integrated Graphics Controller|21
+HD Graphics 4400|21
+HD Graphics|21
+HD Graphics 4400|21
+Corporation Xeon E3-1200 v3/4th Gen Core Processor Integrated Graphics Controller|21
+HD Graphics|21
+HD Graphics 5300|21
+HD Graphics 4400|21
+HD Graphics 5300|21
+HD Graphics P4600/P4700|21
+HD Graphics|21
+Corporation Xeon E3-1200 v3/4th Gen Core Processor Integrated Graphics Controller|21
+Corporation UHD Graphics 605|20
+UHD Graphics 600|20
+HD Graphics 4000|20
+HD Graphics|20
+UHD Graphics 600 Universal|20
+HD Graphics 4600|20
+HD Graphics 500|20
+UHD Graphics 600|20
+HD Graphics|20
+HD Graphics 5000|20
+HD Graphics 4400|20
+HD Graphics 5300|19
+HD Graphics 4000|19
+Mesa DRI Intel(R) Sandybridge Mobile|19
+HD Graphics 505|19
+HD Graphics 4000|19
+HD Graphics 4400|19
+UHD Graphics 600|19
+HD Graphics 3000|19
+HD Graphics 615|19
+HD Graphics|19
+Corporation Atom/Celeron/Pentium Processor N4200/N3350/E3900 Series Integrated Graphics Controller|19
+HD Graphics 4000|19
+HD Graphics|19
+UHD Graphics 600|19
+HD Graphics|19
+Corporation Haswell-ULT Integrated Graphics Controller|19
+HD Graphics 4400|19
+Corporation GeminiLake [UHD Graphics 600]|19
+HD Graphics 4000|18
+HD Graphics|18
+HD Graphics|18
+HD Graphics 500|18
+HD Graphics 4000|18
+CherryView HD Graphics|17
+Corporation Xeon E3-1200 v2/3rd Gen Core processor Graphics Controller|17
+Xeon E3-1200 v3/4th Gen Core Processor Integrated Graphics Controller|17
+Corporation Xeon E3-1200 v3/4th Gen Core Processor Integrated Graphics Controller|17
+UHD Graphics 600|17
+UHD Graphics 600|17
+Corporation Xeon E3-1200 v2/3rd Gen Core processor Graphics Controller|16
+HD Graphics|16
+UHD Graphics 600|16
+HD Graphics|16
+HD Graphics 5000 (Android)|16
+HD Graphics|16
+UHD Graphics 600|16
+HD Graphics|16
+HD Graphics, Gen10|16
+HD Graphics (PHDGD IvyDrive 3.0)|16
+HD Graphics|15
+UHD Graphics 600|15
+Corporation Atom/Celeron/Pentium Processor x5-E8000/J3xxx/N3xxx Integrated Graphics Controller|15
+HD Graphics 500|15
+HD Graphics 505|15
+HD Graphics|15
+Corporation 3rd Gen Core processor Graphics Controller|15
+HD Graphics 4400|15
+HD Graphics|14
+HD Graphics|14
+HD Graphics|14
+HD Graphics 505|14
+HD Graphics|14
+HD Graphics|14
+HD Graphics|14
+HD Graphics|13
+HD Graphics 530|13
+HD Graphics 500|13
+Corporation 3rd Gen Core processor Graphics Controller|13
+HD Graphics 4400|12
+HD Graphics 5500|12
+HD Graphics|12
+HD Graphics|12
+Corporation HD Graphics 500|12
+HD Graphics 500|12
+3rd Gen Core processor Graphics Controller|12
+HD Graphics|11
+Corporation Atom/Celeron/Pentium Processor x5-E8000/J3xxx/N3xxx Series PCI Configuration Registers|11
+Corporation 2nd Gen Core Processor Family Integrated Graphics Controller|11
+HD Graphics 510|11
+HD Graphics 4600 (PHDGD Skylake v2.9)|9
+Corporation Atom Processor Z36xxx/Z37xxx Series Graphics & Display|8
+Corporation Atom Processor Z36xxx/Z37xxx Series Graphics & Display|8
+Mesa DRI Intel(R) Bay Trail|8
+UHD Graphics, Gen12 LP ReleaseInternal|5
+Corporation D3D12 (Intel(R) UHD Graphics 630)|3
+HD Graphics 3000|2
+(PE64) Intel(R) 4th Generation Haswell HD Graphics Family|-1
+4 Series Internal Chipset|-1
+7 Series/C216 Chipset Family MEI Controller #1|-1
+B43 Express Chipset|-1
+CometLake-S GT2 [UHD Graphics 630]|-1
+HD Graphics 5500|-1
+HD Graphics 620|-1
+G35 Express Chipset Family|-1
+G41 Express Chipset|-1
+G45/G43 Express Chipset|-1
+Graphics Media Accelerator HD|-1
+HD Graphics (PHDGD Omega 5.0)|-1
+HD Graphics 4400|-1
+HD Graphics P3000|-1
+HD Graphics P3000 (PHDGD Omega 5.0)|-1
+IncrediblE HD Graphics 3000|-1
+Iris Pro Graphics 5200|-1
+Mesa DRI Intel(R) HD Graphics (CHV)|-1
+Mesa DRI Intel(R) Ivybridge Mobile|-1
+Mobile Intel(R) 4 Series Express Chipset Family|-1
+Mobile Intel(R) 965 Express Chipset Family|-1
+Mobile Intel(R) HD Graphics|-1
+PHDGD Quantic C3|-1
+Q45/Q43 Express Chipset|-1
+Radeong 0.4 on AMD CAPE VERDE (DRM 2.43.0, LLVM 3.7.0)|-1
+Radeong 0.4 on AMD CAPE VERDE (DRM 3.9.0 / 4.9.0-rc1+, LLVM 4.0.0)|-1
+Radeong 0.4 on AMD FIJI (DRM 3.2.0 / 4.7.0-rc5+, LLVM 4.0.0)|-1
+UHD Graphics, Gen12 LP ReleaseInternal|-1`;function a(){return r}},205464:function(e,t,i){"use strict";i(303677)},211284:function(e,t,i){"use strict";i.d(t,{Fo:function(){return u},U2:function(){return c},is:function(){return T},nB:function(){return _},qw:function(){return h}});var r=i(88648),a=i(209021),s=i(190087);function n(e,t,i){let r=e.slice();return r.splice(i<0?r.length+i:i,0,r.splice(t,1)[0]),r}function o(e){return null!==e&&e>=0}let c=e=>{let{rects:t,activeIndex:i,overIndex:r,index:a}=e,s=n(t,r,i),o=t[a],c=s[a];return c&&o?{x:c.left-o.left,y:c.top-o.top,scaleX:c.width/o.width,scaleY:c.height/o.height}:null},l={scaleX:1,scaleY:1},h=e=>{var t;let{activeIndex:i,activeNodeRect:r,index:a,rects:s,overIndex:n}=e,o=null!=(t=s[i])?t:r;if(!o)return null;if(a===i){let e=s[n];return e?{x:0,y:i<n?e.top+e.height-(o.top+o.height):e.top-o.top,...l}:null}let c=function(e,t,i){let r=e[t],a=e[t-1],s=e[t+1];return r?i<t?a?r.top-(a.top+a.height):s?s.top-(r.top+r.height):0:s?s.top-(r.top+r.height):a?r.top-(a.top+a.height):0:0}(s,a,i);return a>i&&a<=n?{x:0,y:-o.height-c,...l}:a<i&&a>=n?{x:0,y:o.height+c,...l}:{x:0,y:0,...l}},d="Sortable",p=r.createContext({activeIndex:-1,containerId:d,disableTransforms:!1,items:[],overIndex:-1,useDragOverlay:!1,sortedRects:[],strategy:c,disabled:{draggable:!1,droppable:!1}});function u(e){var t;let{children:i,id:n,items:o,strategy:l=c,disabled:h=!1}=e,{active:u,dragOverlay:f,droppableRects:m,over:g,measureDroppableContainers:G}=(0,a.Cj)(),v=(0,s.Ld)(d,n),D=null!==f.rect,_=(0,r.useMemo)(()=>o.map(e=>"object"==typeof e&&"id"in e?e.id:e),[o]),H=null!=u,y=u?_.indexOf(u.id):-1,T=g?_.indexOf(g.id):-1,b=(0,r.useRef)(_),C=!function(e,t){if(e===t)return!0;if(e.length!==t.length)return!1;for(let i=0;i<e.length;i++)if(e[i]!==t[i])return!1;return!0}(_,b.current),P=-1!==T&&-1===y||C;let I="boolean"==typeof(t=h)?{draggable:t,droppable:t}:t;(0,s.LI)(()=>{C&&H&&G(_)},[C,_,H,G]),(0,r.useEffect)(()=>{b.current=_},[_]);let E=(0,r.useMemo)(()=>{var e,t;return{activeIndex:y,containerId:v,disabled:I,disableTransforms:P,items:_,overIndex:T,useDragOverlay:D,sortedRects:(e=_,t=m,e.reduce((e,i,r)=>{let a=t.get(i);return a&&(e[r]=a),e},Array(e.length))),strategy:l}},[y,v,I.draggable,I.droppable,P,_,T,m,D,l]);return r.createElement(p.Provider,{value:E},i)}let f=e=>{let{id:t,items:i,activeIndex:r,overIndex:a}=e;return n(i,r,a).indexOf(t)},m=e=>{let{containerId:t,isSorting:i,wasDragging:r,index:a,items:s,newIndex:n,previousItems:o,previousContainerId:c,transition:l}=e;return!!l&&!!r&&(o===s||a!==n)&&(!!i||n!==a&&t===c)},g={duration:200,easing:"ease"},G="transform",v=s.ux.Transition.toString({property:G,duration:0,easing:"linear"}),D={roleDescription:"sortable"};function _(e){let{animateLayoutChanges:t=m,attributes:i,disabled:n,data:c,getNewIndex:l=f,id:h,strategy:d,resizeObserverConfig:u,transition:_=g}=e,{items:H,containerId:y,activeIndex:T,disabled:b,disableTransforms:C,sortedRects:P,overIndex:I,useDragOverlay:E,strategy:k}=(0,r.useContext)(p),R=function(e,t){var i,r;return"boolean"==typeof e?{draggable:e,droppable:!1}:{draggable:null!=(i=null==e?void 0:e.draggable)?i:t.draggable,droppable:null!=(r=null==e?void 0:e.droppable)?r:t.droppable}}(n,b),S=H.indexOf(h),x=(0,r.useMemo)(()=>({sortable:{containerId:y,index:S,items:H},...c}),[y,c,S,H]),A=(0,r.useMemo)(()=>H.slice(H.indexOf(h)),[H,h]),{rect:L,node:M,isOver:w,setNodeRef:U}=(0,a.Zj)({id:h,data:x,disabled:R.droppable,resizeObserverConfig:{updateMeasurementsFor:A,...u}}),{active:O,activatorEvent:N,activeNodeRect:j,attributes:V,setNodeRef:F,listeners:Z,isDragging:W,over:X,setActivatorNodeRef:$,transform:B}=(0,a.O1)({id:h,data:x,attributes:{...D,...i},disabled:R.draggable}),K=(0,s.HB)(U,F),z=!!O,Y=z&&!C&&o(T)&&o(I),q=!E&&W,J=q&&Y?B:null,Q=Y?null!=J?J:(null!=d?d:k)({rects:P,activeNodeRect:j,activeIndex:T,overIndex:I,index:S}):null,ee=o(T)&&o(I)?l({id:h,items:H,activeIndex:T,overIndex:I}):S,et=null==O?void 0:O.id,ei=(0,r.useRef)({activeId:et,items:H,newIndex:ee,containerId:y}),er=H!==ei.current.items,ea=t({active:O,containerId:y,isDragging:W,isSorting:z,id:h,index:S,items:H,newIndex:ei.current.newIndex,previousItems:ei.current.items,previousContainerId:ei.current.containerId,transition:_,wasDragging:null!=ei.current.activeId}),es=function(e){let{disabled:t,index:i,node:n,rect:o}=e,[c,l]=(0,r.useState)(null),h=(0,r.useRef)(i);return(0,s.LI)(()=>{if(!t&&i!==h.current&&n.current){let e=o.current;if(e){let t=(0,a.VK)(n.current,{ignoreTransform:!0}),i={x:e.left-t.left,y:e.top-t.top,scaleX:e.width/t.width,scaleY:e.height/t.height};(i.x||i.y)&&l(i)}}i!==h.current&&(h.current=i)},[t,i,n,o]),(0,r.useEffect)(()=>{c&&l(null)},[c]),c}({disabled:!ea,index:S,node:M,rect:L});return(0,r.useEffect)(()=>{z&&ei.current.newIndex!==ee&&(ei.current.newIndex=ee),y!==ei.current.containerId&&(ei.current.containerId=y),H!==ei.current.items&&(ei.current.items=H)},[z,ee,y,H]),(0,r.useEffect)(()=>{if(et===ei.current.activeId)return;if(et&&!ei.current.activeId){ei.current.activeId=et;return}let e=setTimeout(()=>{ei.current.activeId=et},50);return()=>clearTimeout(e)},[et]),{active:O,activeIndex:T,attributes:V,data:x,rect:L,index:S,newIndex:ee,items:H,isOver:w,isSorting:z,isDragging:W,listeners:Z,node:M,overIndex:I,over:X,setNodeRef:K,setActivatorNodeRef:$,setDroppableNodeRef:U,setDraggableNodeRef:F,transform:null!=es?es:Q,transition:function(){return es||er&&ei.current.newIndex===S?v:(!q||(0,s.vd)(N))&&_?z||ea?s.ux.Transition.toString({..._,property:G}):void 0:void 0}()}}function H(e){if(!e)return!1;let t=e.data.current;return!!t&&"sortable"in t&&"object"==typeof t.sortable&&"containerId"in t.sortable&&"items"in t.sortable&&"index"in t.sortable||!1}let y=[a.g4.Down,a.g4.Right,a.g4.Up,a.g4.Left],T=(e,t)=>{let{context:{active:i,collisionRect:r,droppableRects:n,droppableContainers:o,over:c,scrollableAncestors:l}}=t;if(y.includes(e.code)){if(e.preventDefault(),!i||!r)return;let t=[];o.getEnabled().forEach(i=>{if(!i||null!=i&&i.disabled)return;let s=n.get(i.id);if(!!s)switch(e.code){case a.g4.Down:r.top<s.top&&t.push(i);break;case a.g4.Up:r.top>s.top&&t.push(i);break;case a.g4.Left:r.left>s.left&&t.push(i);break;case a.g4.Right:r.left<s.left&&t.push(i)}});let h=(0,a.ey)({active:i,collisionRect:r,droppableRects:n,droppableContainers:t,pointerCoordinates:null}),d=(0,a._8)(h,"id");if(d===(null==c?void 0:c.id)&&h.length>1&&(d=h[1].id),null!=d){let e=o.get(i.id),t=o.get(d),c=t?n.get(t.id):null,h=null==t?void 0:t.node.current;if(h&&c&&e&&t){let i=(0,a.hI)(h).some((e,t)=>l[t]!==e),n=b(e,t),o=function(e,t){return!!(H(e)&&H(t)&&b(e,t))&&e.data.current.sortable.index<t.data.current.sortable.index}(e,t),d=i||!n?{x:0,y:0}:{x:o?r.width-c.width:0,y:o?r.height-c.height:0},p={x:c.left,y:c.top};return d.x&&d.y?p:(0,s.$X)(p,d)}}}};function b(e,t){return!!(H(e)&&H(t))&&e.data.current.sortable.containerId===t.data.current.sortable.containerId}},590123:function(e,t,i){"use strict";i.d(t,{j:function(){return s}});var r=i(949496),a=i.n(r);let s=(e,t=[])=>{var i,r,s;let n="";for(let{param_name:r}of t)n+=`,${r}=${null!=(i=e[r])?i:""}`;let o=a()(n.substring(1)),c={};return window.byted_acrawler&&(c=null==(r=null==window?void 0:window.byted_acrawler)?void 0:r.frontierSign({"X-MS-STUB":o})),{signature:null!=(s=c["X-Bogus"])?s:""}}},806363:function(e,t,i){var r=i(967529),a=i(859104),s=i(605521),n=i(842454),o=i(603233),c=i(481611),l=r?r.prototype:void 0,h=l?l.valueOf:void 0;e.exports=function(e,t,i,r,l,d,p){switch(i){case"[object DataView]":if(e.byteLength!=t.byteLength||e.byteOffset!=t.byteOffset)break;e=e.buffer,t=t.buffer;case"[object ArrayBuffer]":if(e.byteLength!=t.byteLength||!d(new a(e),new a(t)))break;return!0;case"[object Boolean]":case"[object Date]":case"[object Number]":return s(+e,+t);case"[object Error]":return e.name==t.name&&e.message==t.message;case"[object RegExp]":case"[object String]":return e==t+"";case"[object Map]":var u=o;case"[object Set]":var f=1&r;if(u||(u=c),e.size!=t.size&&!f)break;var m=p.get(e);if(m)return m==t;r|=2,p.set(e,t);var g=n(u(e),u(t),r,l,d,p);return p.delete(e),g;case"[object Symbol]":if(h)return h.call(e)==h.call(t)}return!1}},82068:function(e){var t=Object.prototype.hasOwnProperty;e.exports=function(e){var i=e.length,r=new e.constructor(i);return i&&"string"==typeof e[0]&&t.call(e,"index")&&(r.index=e.index,r.input=e.input),r}},46e3:function(e,t,i){var r=i(694451),a=i(922080),s=i(193800);e.exports=function(){this.size=0,this.__data__={hash:new r,map:new(s||a),string:new r}}},641193:function(e,t,i){var r=i(663875),a=i(420669),s=i(760284),n=Math.max,o=Math.min;e.exports=function(e,t,i){var c=null==e?0:e.length;if(!c)return -1;var l=c-1;return void 0!==i&&(l=s(i),l=i<0?n(c+l,0):o(l,c-1)),r(e,a(t,3),l,!0)}},748845:function(e,t,i){var r=i(29093),a=i(730865),s=i(563e3),n=a(function(e,t){return s(e)?r(e,t):[]});e.exports=n},468311:function(e,t,i){"use strict";function r(e){return new Promise(function(t,i,r){(r=new XMLHttpRequest).open("GET",e,r.withCredentials=!0),r.onload=function(){200===r.status?t():i()},r.send()})}i.d(t,{f:function(){return h},s:function(){return l}}),i(675373),i(874386),i(209955),i(954372),i(826893),i(882732),i(544943),i(927234);var a,s="undefined"!=typeof document&&(a=document.createElement("link")).relList&&a.relList.supports&&a.relList.supports("prefetch")?function(e){return new Promise(function(t,i,r){(r=document.createElement("link")).rel="prefetch",r.href=e,r.onload=t,r.onerror=i,document.head.appendChild(r)})}:r,n=new Set,o=new Set;function c(e){if(e){if(e.saveData)return Error("Save-Data is enabled");if(/2g/.test(e.effectiveType))return Error("network conditions are poor")}return!0}function l(e,t,i){var a=c(navigator.connection);return a instanceof Error?Promise.reject(Error("Cannot prefetch, "+a.message)):(o.size,Promise.all([].concat(e).map(function(e){if(!n.has(e))return n.add(e),(t?function(e){return window.fetch?fetch(e,{credentials:"include"}):r(e)}:s)(new URL(e,location.href).toString())})))}function h(e,t){var i=c(navigator.connection);if(i instanceof Error)return Promise.reject(Error("Cannot prerender, "+i.message));if(!HTMLScriptElement.supports("speculationrules"))return l(e),Promise.reject(Error("This browser does not support the speculation rules API. Falling back to prefetch."));for(var r=0,a=[].concat(e);r<a.length;r+=1){var s=a[r];if(window.location.origin!==new URL(s,window.location.href).origin)return Promise.reject(Error("Only same origin URLs are allowed: "+s));o.add(s)}n.size;var h=function(e){var t=document.createElement("script");t.type="speculationrules",t.text='{"prerender":[{"source": "list","urls": ["'+Array.from(e).join('","')+'"]}]}';try{document.head.appendChild(t)}catch(e){return e}return!0}(o);return!0===h?Promise.resolve():Promise.reject(h)}},344137:function(e,t,i){"use strict";i.d(t,{Z:function(){return a}});var r=i(778633);function a(e,t,i){return(t=(0,r.Z)(t))in e?Object.defineProperty(e,t,{value:i,enumerable:!0,configurable:!0,writable:!0}):e[t]=i,e}},751682:function(e,t,i){"use strict";i.d(t,{M:function(){return a}});var r=i(71016);class a extends r.T8{}a.Encryptor=class extends a{processBlock(e,t){let i=this._cipher,{blockSize:r}=i,a=this._iv,s=this._counter;a&&(this._counter=a.slice(0),s=this._counter,this._iv=void 0);let n=s.slice(0);i.encryptBlock(n,0),s[r-1]=s[r-1]+1|0;for(let i=0;i<r;i+=1)e[t+i]^=n[i]}},a.Decryptor=a.Encryptor},55175:function(e,t,i){"use strict";i.d(t,{q:function(){return P}});var r=i(486810),a=i(748066),s=i(551155),n=i(308435),o=i(200324),c=i(691127),l=i(464512),h=i(198632),d=i(756689),p=i(786179),u=i(997512),f=i(909217),m=i(273227),g=i(729025),G=i(556991),v=i(245874),D=i(995289),_=i(282249),H=i(561074),y=i(804033),T=i(61746),b=i(151807),C=i(904976);let P={blockquote:r.M,break:a.l,code:s.T,delete:n.J,emphasis:o.g,footnoteReference:c.N,heading:l.n,html:h.d,imageReference:d.p,image:p.B,inlineCode:u.Y,linkReference:f.N,link:m.p,listItem:g.q,list:G.p,paragraph:v.A,root:D.J,strong:_.f,table:H.K,tableCell:T.K,tableRow:y.R,text:b.f,thematicBreak:C.C,toml:I,yaml:I,definition:I,footnoteDefinition:I};function I(){}},496606:function(e,t,i){"use strict";i.d(t,{_:function(){return n}});var r=i(662690),a=i(849199);let s={partial:!0,tokenize:function(e,t,i){let r=this;return function(t){return null===t?i(t):(e.enter("lineEnding"),e.consume(t),e.exit("lineEnding"),a)};function a(e){return r.parser.lazy[r.now().line]?i(e):t(e)}}},n={concrete:!0,name:"codeFenced",tokenize:function(e,t,i){let n;let o=this,c={partial:!0,tokenize:function(e,t,i){let s=0;return function(t){return e.enter("lineEnding"),e.consume(t),e.exit("lineEnding"),c};function c(t){return e.enter("codeFencedFence"),(0,a.xz)(t)?(0,r.f)(e,l,"linePrefix",o.parser.constructs.disable.null.includes("codeIndented")?void 0:4)(t):l(t)}function l(t){return t===n?(e.enter("codeFencedFenceSequence"),function t(o){return o===n?(s++,e.consume(o),t):s>=h?(e.exit("codeFencedFenceSequence"),(0,a.xz)(o)?(0,r.f)(e,d,"whitespace")(o):d(o)):i(o)}(t)):i(t)}function d(r){return null===r||(0,a.Ch)(r)?(e.exit("codeFencedFence"),t(r)):i(r)}}},l=0,h=0;return function(t){return function(t){let s=o.events[o.events.length-1];return l=s&&"linePrefix"===s[1].type?s[2].sliceSerialize(s[1],!0).length:0,n=t,e.enter("codeFenced"),e.enter("codeFencedFence"),e.enter("codeFencedFenceSequence"),function t(s){return s===n?(h++,e.consume(s),t):h<3?i(s):(e.exit("codeFencedFenceSequence"),(0,a.xz)(s)?(0,r.f)(e,d,"whitespace")(s):d(s))}(t)}(t)};function d(c){return null===c||(0,a.Ch)(c)?(e.exit("codeFencedFence"),o.interrupt?t(c):e.check(s,u,G)(c)):(e.enter("codeFencedFenceInfo"),e.enter("chunkString",{contentType:"string"}),function t(s){return null===s||(0,a.Ch)(s)?(e.exit("chunkString"),e.exit("codeFencedFenceInfo"),d(s)):(0,a.xz)(s)?(e.exit("chunkString"),e.exit("codeFencedFenceInfo"),(0,r.f)(e,p,"whitespace")(s)):96===s&&s===n?i(s):(e.consume(s),t)}(c))}function p(t){return null===t||(0,a.Ch)(t)?d(t):(e.enter("codeFencedFenceMeta"),e.enter("chunkString",{contentType:"string"}),function t(r){return null===r||(0,a.Ch)(r)?(e.exit("chunkString"),e.exit("codeFencedFenceMeta"),d(r)):96===r&&r===n?i(r):(e.consume(r),t)}(t))}function u(t){return e.attempt(c,G,f)(t)}function f(t){return e.enter("lineEnding"),e.consume(t),e.exit("lineEnding"),m}function m(t){return l>0&&(0,a.xz)(t)?(0,r.f)(e,g,"linePrefix",l+1)(t):g(t)}function g(t){return null===t||(0,a.Ch)(t)?e.check(s,u,G)(t):(e.enter("codeFlowValue"),function t(i){return null===i||(0,a.Ch)(i)?(e.exit("codeFlowValue"),g(i)):(e.consume(i),t)}(t))}function G(i){return e.exit("codeFenced"),t(i)}}}},175686:function(e,t,i){"use strict";i.d(t,{r:function(){return r}});class r{constructor(){this.map=[]}add(e,t,i){(function(e,t,i,r){let a=0;if(0!==i||0!==r.length){for(;a<e.map.length;){if(e.map[a][0]===t){e.map[a][1]+=i,e.map[a][2].push(...r);return}a+=1}e.map.push([t,i,r])}})(this,e,t,i)}consume(e){if(this.map.sort(function(e,t){return e[0]-t[0]}),0===this.map.length)return;let t=this.map.length,i=[];for(;t>0;)t-=1,i.push(e.slice(this.map[t][0]+this.map[t][1]),this.map[t][2]),e.length=this.map[t][0];i.push(e.slice()),e.length=0;let r=i.pop();for(;r;){for(let t of r)e.push(t);r=i.pop()}this.map.length=0}}},896043:function(e,t,i){"use strict";i.d(t,{j:function(){return r}});function r(e){let t=String(e),i=/\r?\n|\r/g,r=i.exec(t),s=0,n=[];for(;r;)n.push(a(t.slice(s,r.index),s>0,!0),r[0]),s=r.index+r[0].length,r=i.exec(t);return n.push(a(t.slice(s),s>0,!1)),n.join("")}function a(e,t,i){let r=0,a=e.length;if(t){let t=e.codePointAt(r);for(;9===t||32===t;)r++,t=e.codePointAt(r)}if(i){let t=e.codePointAt(a-1);for(;9===t||32===t;)a--,t=e.codePointAt(a-1)}return a>r?e.slice(r,a):""}}}]);
