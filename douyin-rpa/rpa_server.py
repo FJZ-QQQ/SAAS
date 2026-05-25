@@ -32,7 +32,7 @@ def _thread_excepthook(args):
 sys.excepthook = _global_excepthook
 threading.excepthook = _thread_excepthook
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Response
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
@@ -42,6 +42,14 @@ import hmac
 import secrets
 from dotenv import load_dotenv
 from slot_manager import SlotManager
+from db_manager import (
+    DatabaseManager,
+    clear_client_auth_token,
+    get_cloud_api_base,
+    get_database_manager,
+    is_client_proxy_mode,
+    save_client_auth_token,
+)
 
 # Load .env — 兼容开发模式和打包后的 EXE 模式
 import pathlib
@@ -63,8 +71,10 @@ else:
 import os
 db_url = os.getenv("DATABASE_URL", "")
 coze_key = os.getenv("COZE_API_KEY", "")
+CLIENT_PROXY_MODE = is_client_proxy_mode()
 print(f"[RPA] DATABASE_URL loaded: {'YES' if db_url else 'NO!!!'}")
 print(f"[RPA] COZE_API_KEY loaded: {'YES' if coze_key else 'NO!!!'}")
+print(f"[RPA] CLIENT_PROXY_MODE: {'YES' if CLIENT_PROXY_MODE else 'NO'}")
 print(f"[RPA] Version: {APP_VERSION} (build {APP_BUILD})")
 
 app = FastAPI(title="Orange AI RPA Service")
@@ -76,6 +86,140 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+_CLIENT_PROXY_PATHS = {
+    "/api/login",
+    "/api/auth/check",
+    "/api/auth/logout",
+    "/api/auth/change-password",
+    "/api/account",
+    "/api/stats",
+    "/api/leads",
+    "/api/leads/export",
+    "/api/messages",
+    "/api/admin/login",
+    "/api/admin/logout",
+    "/api/admin/admins",
+    "/api/admin/merchants",
+    "/api/admin/balance",
+    "/api/admin/toggle",
+    "/api/recharge",
+}
+
+
+def _should_proxy_to_cloud(path: str) -> bool:
+    return CLIENT_PROXY_MODE and (path in _CLIENT_PROXY_PATHS or path.startswith("/api/admin/"))
+
+
+@app.middleware("http")
+async def _client_db_proxy_middleware(request: Request, call_next):
+    if not _should_proxy_to_cloud(request.url.path):
+        return await call_next(request)
+
+    import asyncio
+
+    body = await request.body()
+    headers = {}
+    for key, value in request.headers.items():
+        lower = key.lower()
+        if lower in ("authorization", "content-type", "accept"):
+            headers[key] = value
+
+    def _forward():
+        import requests
+
+        url = f"{get_cloud_api_base()}{request.url.path}"
+        if request.url.query:
+            url = f"{url}?{request.url.query}"
+        return requests.request(
+            request.method,
+            url,
+            data=body if body else None,
+            headers=headers,
+            timeout=20,
+        )
+
+    try:
+        cloud_res = await asyncio.to_thread(_forward)
+    except Exception as e:
+        return JSONResponse({"error": f"cloud api unavailable: {e}"}, status_code=502)
+
+    if cloud_res.ok:
+        try:
+            payload = cloud_res.json()
+        except Exception:
+            payload = None
+        if request.url.path == "/api/login" and isinstance(payload, dict) and payload.get("token"):
+            save_client_auth_token(payload["token"])
+        elif request.url.path == "/api/auth/check":
+            try:
+                req_payload = json.loads(body.decode("utf-8")) if body else {}
+                if req_payload.get("token"):
+                    save_client_auth_token(req_payload["token"])
+            except Exception:
+                pass
+        elif request.url.path in ("/api/auth/logout", "/api/admin/logout"):
+            clear_client_auth_token()
+    elif request.url.path == "/api/auth/check" and cloud_res.status_code == 401:
+        clear_client_auth_token()
+
+    response_headers = {}
+    for header_name in ("content-type", "content-disposition"):
+        header_value = cloud_res.headers.get(header_name)
+        if header_value:
+            response_headers[header_name] = header_value
+    return Response(
+        content=cloud_res.content,
+        status_code=cloud_res.status_code,
+        headers=response_headers,
+    )
+
+
+async def _require_valid_client_token(request: Request, owner_merchant_id: int | None = None):
+    if not CLIENT_PROXY_MODE:
+        return None
+
+    auth_header = request.headers.get("authorization", "")
+    if not auth_header.lower().startswith("bearer "):
+        clear_client_auth_token()
+        return JSONResponse({"error": "登录已过期，请重新登录"}, status_code=401)
+
+    token = auth_header.split(" ", 1)[1].strip()
+    if not token:
+        clear_client_auth_token()
+        return JSONResponse({"error": "登录已过期，请重新登录"}, status_code=401)
+
+    import asyncio
+
+    def _check():
+        import requests
+
+        return requests.post(
+            f"{get_cloud_api_base()}/api/auth/check",
+            json={"token": token},
+            timeout=10,
+        )
+
+    try:
+        cloud_res = await asyncio.to_thread(_check)
+    except Exception as e:
+        return JSONResponse({"error": f"无法连接云端服务: {e}"}, status_code=502)
+
+    if not cloud_res.ok:
+        clear_client_auth_token()
+        return JSONResponse({"error": "登录已过期，请重新登录"}, status_code=401)
+
+    try:
+        payload = cloud_res.json()
+    except Exception:
+        payload = {}
+
+    if owner_merchant_id is not None and int(payload.get("merchant_id") or 0) != int(owner_merchant_id):
+        clear_client_auth_token()
+        return JSONResponse({"error": "登录账号与当前商户不一致，请重新登录"}, status_code=403)
+
+    save_client_auth_token(token)
+    return None
 
 slot_manager = SlotManager()
 
@@ -93,10 +237,11 @@ def _parse_owner_slot(data: dict):
 @app.on_event("startup")
 async def startup_event():
     print("[RPA] Service starting...")
-    try:
-        _ensure_runtime_schema()
-    except Exception as e:
-        print(f"[RPA] runtime schema check failed: {e}")
+    if not CLIENT_PROXY_MODE:
+        try:
+            _ensure_runtime_schema()
+        except Exception as e:
+            print(f"[RPA] runtime schema check failed: {e}")
     # ★ 只加载账号记录（不打开浏览器），等用户手动点「启动」才打开
     try:
         await slot_manager.load_session_metadata()
@@ -132,6 +277,9 @@ async def bind_slot(request: Request):
     owner_merchant_id, slot_id, error = _parse_owner_slot(data)
     if error:
         return JSONResponse({"error": error}, status_code=400)
+    auth_error = await _require_valid_client_token(request, owner_merchant_id)
+    if auth_error is not None:
+        return auth_error
     try:
         result = await slot_manager.create_bind_slot(owner_merchant_id, slot_id)
         return result
@@ -156,6 +304,9 @@ async def start_slot(request: Request):
     owner_merchant_id, slot_id, error = _parse_owner_slot(data)
     if error:
         return JSONResponse({"error": error}, status_code=400)
+    auth_error = await _require_valid_client_token(request, owner_merchant_id)
+    if auth_error is not None:
+        return auth_error
     try:
         await slot_manager.start_monitoring(owner_merchant_id, slot_id)
         # Give the background task a moment to actually start
@@ -172,6 +323,9 @@ async def stop_slot(request: Request):
     owner_merchant_id, slot_id, error = _parse_owner_slot(data)
     if error:
         return JSONResponse({"error": error}, status_code=400)
+    auth_error = await _require_valid_client_token(request, owner_merchant_id)
+    if auth_error is not None:
+        return auth_error
     await slot_manager.stop_monitoring(owner_merchant_id, slot_id)
     return {"status": "success", "message": "monitoring stopped"}
 
@@ -182,6 +336,9 @@ async def delete_slot(request: Request):
     owner_merchant_id, slot_id, error = _parse_owner_slot(data)
     if error:
         return JSONResponse({"error": error}, status_code=400)
+    auth_error = await _require_valid_client_token(request, owner_merchant_id)
+    if auth_error is not None:
+        return auth_error
     await slot_manager.delete_slot(owner_merchant_id, slot_id)
     return {"status": "success", "message": "slot deleted"}
 
@@ -261,6 +418,8 @@ def _clean_db_url(url):
 
 def _get_db_conn():
     """获取一个新的数据库连接（调用方负责关闭）"""
+    if CLIENT_PROXY_MODE:
+        return None
     if not db_url:
         return None
     return psycopg2.connect(_clean_db_url(db_url))
@@ -277,6 +436,7 @@ def _ensure_runtime_schema():
                 "rpa_slot": "slot_id",
                 "customer_lead": "slot_id",
                 "chat_session": "slot_id",
+                "ai_agent": "slot_id",
             }
             missing = []
             for table, column in required.items():
@@ -297,9 +457,11 @@ def _ensure_runtime_schema():
             cur.execute("UPDATE rpa_slot SET slot_id = merchant_id WHERE slot_id IS NULL")
             cur.execute("ALTER TABLE customer_lead ADD COLUMN IF NOT EXISTS slot_id INTEGER")
             cur.execute("ALTER TABLE chat_session ADD COLUMN IF NOT EXISTS slot_id INTEGER")
+            cur.execute("ALTER TABLE ai_agent ADD COLUMN IF NOT EXISTS slot_id INTEGER")
             cur.execute("CREATE INDEX IF NOT EXISTS idx_rpa_slot_owner_slot ON rpa_slot(merchant_id, slot_id)")
             cur.execute("CREATE INDEX IF NOT EXISTS idx_customer_lead_owner_slot ON customer_lead(merchant_id, slot_id)")
             cur.execute("CREATE INDEX IF NOT EXISTS idx_chat_session_owner_slot ON chat_session(merchant_id, slot_id)")
+            cur.execute("CREATE INDEX IF NOT EXISTS idx_ai_agent_merchant_slot ON ai_agent(merchant_id, slot_id)")
         conn.commit()
         print("[RPA] runtime schema OK")
     finally:
@@ -400,9 +562,27 @@ def _require_admin(request: Request):
 def _admin_unauthorized():
     return JSONResponse({"error": "管理员登录已过期，请重新登录"}, status_code=401)
 
+def _ensure_session_schema(conn):
+    with conn.cursor() as cur:
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS merchant_session (
+                id SERIAL PRIMARY KEY,
+                merchant_id INTEGER NOT NULL,
+                token VARCHAR(128) NOT NULL UNIQUE,
+                expire_at TIMESTAMP NOT NULL,
+                created_at TIMESTAMP DEFAULT NOW()
+            )
+        """)
+        cur.execute(
+            "CREATE INDEX IF NOT EXISTS idx_merchant_session_merchant_id ON merchant_session(merchant_id)"
+        )
+    conn.commit()
+
+
 def _save_session_token(conn, merchant_id: int, token: str):
     """保存会话 token 到数据库（30天有效）"""
     try:
+        _ensure_session_schema(conn)
         with conn.cursor() as cur:
             # 先删除该商户的旧 token
             cur.execute("DELETE FROM merchant_session WHERE merchant_id = %s", (merchant_id,))
@@ -413,32 +593,14 @@ def _save_session_token(conn, merchant_id: int, token: str):
                 (merchant_id, token, expire_at, datetime.now())
             )
             conn.commit()
+        return True
     except Exception as e:
         print(f"[AUTH] save token error: {e}")
-        # 如果表不存在，自动创建
         try:
-            with conn.cursor() as cur:
-                cur.execute("""
-                    CREATE TABLE IF NOT EXISTS merchant_session (
-                        id SERIAL PRIMARY KEY,
-                        merchant_id INTEGER NOT NULL,
-                        token VARCHAR(128) NOT NULL UNIQUE,
-                        expire_at TIMESTAMP NOT NULL,
-                        created_at TIMESTAMP DEFAULT NOW()
-                    )
-                """)
-                conn.commit()
-                # 重试插入
-                expire_at = datetime.now() + __import__('datetime').timedelta(days=30)
-                with conn.cursor() as cur2:
-                    cur2.execute(
-                        "INSERT INTO merchant_session (merchant_id, token, expire_at, created_at) VALUES (%s, %s, %s, %s)",
-                        (merchant_id, token, expire_at, datetime.now())
-                    )
-                    conn.commit()
-                print("[AUTH] created merchant_session table and saved token")
-        except Exception as e2:
-            print(f"[AUTH] create table error: {e2}")
+            conn.rollback()
+        except Exception:
+            pass
+        return False
 
 def _verify_session_token(token: str) -> dict:
     """验证会话 token，返回商户信息或 None"""
@@ -446,6 +608,7 @@ def _verify_session_token(token: str) -> dict:
         conn = _get_db_conn()
         if not conn:
             return None
+        _ensure_session_schema(conn)
         with conn.cursor() as cur:
             cur.execute("""
                 SELECT s.merchant_id, m.phone, m.balance, m.status, s.expire_at
@@ -490,6 +653,189 @@ def _delete_session_token(token: str):
         print(f"[AUTH] delete token error: {e}")
 
 # ================= 运行时日志（内存） =================
+
+def _require_merchant_access(request: Request, merchant_id: int):
+    token = _get_bearer_token(request)
+    if not token:
+        return None
+    merchant = _verify_session_token(token)
+    if not merchant:
+        return None
+    if int(merchant.get("merchant_id") or 0) != int(merchant_id or 0):
+        return None
+    return merchant
+
+
+def _rpa_unauthorized():
+    return JSONResponse({"error": "merchant auth required"}, status_code=401)
+
+
+@app.get("/api/rpa/can-serve")
+async def rpa_can_serve(request: Request, merchant_id: int, slot_id: int = 0):
+    if not _require_merchant_access(request, merchant_id):
+        return _rpa_unauthorized()
+    db = DatabaseManager(db_url, merchant_id, slot_id or None)
+    db.connect()
+    try:
+        return {"status": "ok", "can_serve": db.can_serve()}
+    finally:
+        db.close()
+
+
+@app.get("/api/rpa/lead-count")
+async def rpa_lead_count(request: Request, merchant_id: int, slot_id: int = 0, by_slot: int = 0):
+    if not _require_merchant_access(request, merchant_id):
+        return _rpa_unauthorized()
+    db = DatabaseManager(db_url, merchant_id, slot_id or None)
+    db.connect()
+    try:
+        return {"status": "ok", "count": db.count_leads(by_slot=bool(by_slot))}
+    finally:
+        db.close()
+
+
+@app.get("/api/rpa/agent-config")
+async def rpa_get_agent_config(request: Request, merchant_id: int, slot_id: int = 0):
+    if not _require_merchant_access(request, merchant_id):
+        return _rpa_unauthorized()
+    db = DatabaseManager(db_url, merchant_id, slot_id or None)
+    db.connect()
+    try:
+        return {"status": "ok", "config": db.get_agent_config() or {}}
+    finally:
+        db.close()
+
+
+@app.post("/api/rpa/agent-config")
+async def rpa_save_agent_config(request: Request):
+    data = await request.json()
+    merchant_id = int(data.get("merchant_id") or 0)
+    slot_id = int(data.get("slot_id") or 0)
+    if not _require_merchant_access(request, merchant_id):
+        return _rpa_unauthorized()
+    db = DatabaseManager(db_url, merchant_id, slot_id or None)
+    db.connect()
+    try:
+        ok = db.save_agent_config(
+            data.get("nickname", ""),
+            data.get("persona", ""),
+            data.get("knowledge_base", ""),
+        )
+        return {"status": "ok" if ok else "error", "saved": bool(ok)}
+    finally:
+        db.close()
+
+
+@app.post("/api/rpa/chat-message")
+async def rpa_save_chat_message(request: Request):
+    data = await request.json()
+    merchant_id = int(data.get("merchant_id") or 0)
+    slot_id = int(data.get("slot_id") or 0)
+    if not _require_merchant_access(request, merchant_id):
+        return _rpa_unauthorized()
+    db = DatabaseManager(db_url, merchant_id, slot_id or None)
+    db.connect()
+    try:
+        ok = db.save_chat_message(
+            douyin_user_id=data.get("douyin_user_id"),
+            content=data.get("content", ""),
+            sender_type=data.get("sender_type", "user"),
+        )
+        return {"status": "ok" if ok else "error", "saved": bool(ok)}
+    finally:
+        db.close()
+
+
+@app.post("/api/rpa/lead-and-deduct")
+async def rpa_save_lead_and_deduct(request: Request):
+    data = await request.json()
+    merchant_id = int(data.get("merchant_id") or 0)
+    slot_id = int(data.get("slot_id") or 0)
+    if not _require_merchant_access(request, merchant_id):
+        return _rpa_unauthorized()
+    db = DatabaseManager(db_url, merchant_id, slot_id or None)
+    db.connect()
+    try:
+        raw_amount = data.get("amount", 1.0)
+        amount = 1.0 if raw_amount in (None, "") else float(raw_amount)
+        ok = db.save_lead_and_deduct(
+            phone=data.get("phone"),
+            wechat=data.get("wechat"),
+            douyin_user_id=data.get("douyin_user_id"),
+            amount=amount,
+        )
+        return {"status": "ok", "saved": bool(ok)}
+    finally:
+        db.close()
+
+
+@app.post("/api/rpa/slot/upsert")
+async def rpa_slot_upsert(request: Request):
+    data = await request.json()
+    merchant_id = int(data.get("merchant_id") or 0)
+    slot_id = int(data.get("slot_id") or 0)
+    if not _require_merchant_access(request, merchant_id):
+        return _rpa_unauthorized()
+    db = DatabaseManager(db_url, merchant_id, slot_id or None)
+    db.connect()
+    try:
+        db.upsert_rpa_slot(
+            data.get("status", ""),
+            douyin_nickname=data.get("douyin_nickname"),
+            session_path=data.get("session_path"),
+        )
+        return {"status": "ok"}
+    finally:
+        db.close()
+
+
+@app.post("/api/rpa/slot/status")
+async def rpa_slot_status(request: Request):
+    data = await request.json()
+    merchant_id = int(data.get("merchant_id") or 0)
+    slot_id = int(data.get("slot_id") or 0)
+    if not _require_merchant_access(request, merchant_id):
+        return _rpa_unauthorized()
+    db = DatabaseManager(db_url, merchant_id, slot_id or None)
+    db.connect()
+    try:
+        db.update_slot_status(data.get("status", ""), data.get("error_message"))
+        return {"status": "ok"}
+    finally:
+        db.close()
+
+
+@app.post("/api/rpa/slot/heartbeat")
+async def rpa_slot_heartbeat(request: Request):
+    data = await request.json()
+    merchant_id = int(data.get("merchant_id") or 0)
+    slot_id = int(data.get("slot_id") or 0)
+    if not _require_merchant_access(request, merchant_id):
+        return _rpa_unauthorized()
+    db = DatabaseManager(db_url, merchant_id, slot_id or None)
+    db.connect()
+    try:
+        db.update_slot_heartbeat()
+        return {"status": "ok"}
+    finally:
+        db.close()
+
+
+@app.post("/api/rpa/slot/delete")
+async def rpa_slot_delete(request: Request):
+    data = await request.json()
+    merchant_id = int(data.get("merchant_id") or 0)
+    slot_id = int(data.get("slot_id") or 0)
+    if not _require_merchant_access(request, merchant_id):
+        return _rpa_unauthorized()
+    db = DatabaseManager(db_url, merchant_id, slot_id or None)
+    db.connect()
+    try:
+        ok = db.delete_rpa_slot()
+        return {"status": "ok" if ok else "error", "deleted": bool(ok)}
+    finally:
+        db.close()
+
 
 _runtime_logs = []
 
@@ -574,7 +920,9 @@ async def login(request: Request):
         
         # ★ 生成并保存会话 token（30天有效）
         token = _generate_session_token()
-        _save_session_token(conn, row[0], token)
+        if not _save_session_token(conn, row[0], token):
+            conn.close()
+            return JSONResponse({"error": "登录会话保存失败，请稍后重试"}, status_code=500)
         conn.close()
         
         add_runtime_log("登录", f"商户 #{row[0]} ({phone}) 登录成功", "success")
@@ -792,20 +1140,46 @@ async def save_sensitive_words(req: dict):
 AGENT_CONFIG_DIR = os.path.join(str(_script_dir), "agent_configs")
 os.makedirs(AGENT_CONFIG_DIR, exist_ok=True)
 
-def _config_file(merchant_id: int) -> str:
-    return os.path.join(AGENT_CONFIG_DIR, f"store_{merchant_id}.json")
+def _config_file(slot_id: int, owner_merchant_id: int = 0) -> str:
+    if owner_merchant_id > 0 and slot_id > 0:
+        return os.path.join(AGENT_CONFIG_DIR, f"merchant_{owner_merchant_id}_store_{slot_id}.json")
+    return os.path.join(AGENT_CONFIG_DIR, f"store_{slot_id}.json")
 
-def _load_agent_config(merchant_id: int = 1) -> dict:
+def _to_int(value, default: int = 0) -> int:
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return default
+
+def _load_agent_config(merchant_id: int = 1, owner_merchant_id: int = 0) -> dict:
     """从本地 JSON 文件读取指定店铺的 AI 配置"""
     default = {"nickname": "", "persona": "", "knowledge_base": "", "keywords": []}
-    path = _config_file(merchant_id)
-    try:
-        if os.path.exists(path):
-            with open(path, "r", encoding="utf-8") as f:
-                return {**default, **json.load(f)}
-    except Exception as e:
-        print(f"[RPA] 读取店铺{merchant_id}配置失败: {e}")
-    # 兼容旧的全局配置文件
+    merchant_id = _to_int(merchant_id, 0)
+    owner_merchant_id = _to_int(owner_merchant_id, 0)
+    if merchant_id <= 0:
+        return default
+    if owner_merchant_id > 0:
+        candidates = [_config_file(merchant_id, owner_merchant_id)]
+    else:
+        candidates = [_config_file(merchant_id)]
+
+    for path in candidates:
+        try:
+            if os.path.exists(path):
+                with open(path, "r", encoding="utf-8") as f:
+                    config = {**default, **json.load(f)}
+                if owner_merchant_id > 0:
+                    owner_path = _config_file(merchant_id, owner_merchant_id)
+                    if path != owner_path:
+                        with open(owner_path, "w", encoding="utf-8") as f:
+                            json.dump(config, f, ensure_ascii=False, indent=2)
+                return config
+        except Exception as e:
+            print(f"[RPA] 读取店铺{merchant_id}配置失败: {e}")
+
+    # 兼容旧的全局配置文件：只允许旧调用读取；带客户账号ID时必须严格隔离。
+    if owner_merchant_id > 0 or merchant_id != 1:
+        return default
     old_file = os.path.join(str(_script_dir), "agent_config.json")
     try:
         if os.path.exists(old_file):
@@ -815,22 +1189,88 @@ def _load_agent_config(merchant_id: int = 1) -> dict:
         pass
     return default
 
-def _save_agent_config(config: dict, merchant_id: int = 1):
+def _save_agent_config(config: dict, merchant_id: int = 1, owner_merchant_id: int = 0):
     """保存指定店铺的 AI 配置到本地 JSON 文件"""
-    with open(_config_file(merchant_id), "w", encoding="utf-8") as f:
+    merchant_id = _to_int(merchant_id, 0)
+    owner_merchant_id = _to_int(owner_merchant_id, 0)
+    if merchant_id <= 0:
+        raise ValueError("missing store id")
+    with open(_config_file(merchant_id, owner_merchant_id), "w", encoding="utf-8") as f:
         json.dump(config, f, ensure_ascii=False, indent=2)
 
+def _agent_config_has_content(config: dict) -> bool:
+    return bool(
+        config.get("nickname")
+        or config.get("persona")
+        or config.get("knowledge_base")
+        or config.get("keywords")
+    )
+
+def _sync_agent_config_to_db(owner_merchant_id: int, slot_id: int, config: dict):
+    if owner_merchant_id <= 0 or slot_id <= 0 or not _agent_config_has_content(config):
+        return
+    import threading
+    def _sync_to_db():
+        try:
+            db = get_database_manager(db_url, owner_merchant_id, slot_id)
+            db.connect()
+            if db.conn:
+                db.save_agent_config(config["nickname"], config["persona"], config["knowledge_base"])
+                db.close()
+        except Exception as e:
+            print(f"[RPA] DB agent config sync failed: {e}")
+    threading.Thread(target=_sync_to_db, daemon=True).start()
+
+def _load_agent_config_from_db(owner_merchant_id: int, slot_id: int) -> dict | None:
+    if owner_merchant_id <= 0 or slot_id <= 0:
+        return None
+    try:
+        db = get_database_manager(db_url, owner_merchant_id, slot_id)
+        db.connect()
+        if not db.conn:
+            return None
+        config = db.get_agent_config()
+        db.close()
+        if not config or not _agent_config_has_content(config):
+            return None
+        return {
+            "nickname": config.get("nickname", ""),
+            "persona": config.get("persona", ""),
+            "knowledge_base": config.get("knowledge_base", ""),
+            "keywords": config.get("keywords", []),
+        }
+    except Exception as e:
+        print(f"[RPA] DB agent config load failed: {e}")
+        return None
+
 @app.get("/api/scripts")
-async def get_scripts(merchant_id: int = 1):
+async def get_scripts(merchant_id: int = 1, owner_merchant_id: int = 0, slot_id: int = 0):
     """返回指定店铺的 AI 智能体配置"""
-    config = _load_agent_config(merchant_id)
+    config_slot_id = slot_id or merchant_id
+    owner = owner_merchant_id or merchant_id
+    config = _load_agent_config(config_slot_id, owner)
+    if not _agent_config_has_content(config):
+        db_config = _load_agent_config_from_db(owner, config_slot_id)
+        if db_config:
+            config = db_config
+            _save_agent_config(config, config_slot_id, owner)
+    if slot_id:
+        _sync_agent_config_to_db(owner, config_slot_id, config)
     return config
 
 @app.post("/api/scripts")
 async def save_scripts(request: Request):
     """保存指定店铺的 AI 智能体配置"""
     data = await request.json()
-    merchant_id = data.get("merchant_id", 1)
+    posted_merchant_id = _to_int(data.get("merchant_id"), 1)
+    owner_merchant_id = _to_int(data.get("owner_merchant_id"), posted_merchant_id)
+    slot_id = _to_int(data.get("slot_id") or data.get("store_id"), 0)
+    if slot_id <= 0:
+        return JSONResponse(
+            status_code=400,
+            content={"status": "error", "error": "缺少店铺ID，请先选择店铺后再保存配置"},
+        )
+    config_slot_id = slot_id or posted_merchant_id
     config = {
         "nickname": data.get("nickname", "小橙"),
         "persona": data.get("persona", ""),
@@ -838,23 +1278,19 @@ async def save_scripts(request: Request):
         "keywords": data.get("keywords", []),
     }
     try:
-        _save_agent_config(config, merchant_id)
-        add_runtime_log("配置", f"店铺{merchant_id} AI配置已保存（昵称: {config['nickname']}）", "success")
+        _save_agent_config(config, config_slot_id, owner_merchant_id)
+        add_runtime_log("配置", f"店铺{config_slot_id} AI配置已保存（昵称: {config['nickname']}）", "success")
         
         # ★ 异步回传到远程数据库（后台线程，不阻塞响应）
         import threading
         def _sync_to_db():
             try:
-                db_url = os.getenv("DATABASE_URL", "")
-                if not db_url:
-                    return
-                from db_manager import DatabaseManager
-                db = DatabaseManager(db_url, merchant_id)
+                db = get_database_manager(db_url, owner_merchant_id, config_slot_id)
                 db.connect()
                 if db.conn:
                     db.save_agent_config(config["nickname"], config["persona"], config["knowledge_base"])
                     db.close()
-                    print(f"[RPA] ✅ 店铺{merchant_id}配置已同步到远程数据库")
+                    print(f"[RPA] agent config synced to DB for merchant {owner_merchant_id}, slot {config_slot_id}")
                 else:
                     print(f"[RPA] DB离线，跳过同步（本地配置不受影响）")
             except Exception as e:
@@ -1427,7 +1863,9 @@ async def debug_slot(merchant_id: int):
 # ================= OTA 热更新 API =================
 
 # ★ 可热更新的文件列表（核心业务逻辑文件）
-_UPDATABLE_FILES = ["rpa_server.py", "slot_manager.py", "ai_replier.py", "lead_extractor.py", "db_manager.py"]
+_SECURE_UPDATE_DIR = _script_dir / "update" / "v2"
+_SECURE_UPDATE_FILES = {"app.asar", "rpa_engine.zip"}
+_UPDATABLE_FILES = []
 
 def _file_hash(filepath: str) -> str:
     """计算文件 MD5"""
@@ -1440,6 +1878,13 @@ def _file_hash(filepath: str) -> str:
 @app.get("/api/version")
 async def get_version():
     """★ 返回当前版本号和所有可更新文件的 MD5 哈希"""
+    return {
+        "version": APP_VERSION,
+        "build": APP_BUILD,
+        "files": {},
+        "dist_zip": None,
+        "legacy_ota_disabled": True,
+    }
     # ★ OTA 急停：用于处理客户端更新重启循环等线上事故。
     # 在服务端设置环境变量 OTA_PAUSED=1，或在服务目录放置 ota_paused.flag，
     # 旧客户端会收到“无可更新内容”，从而停止反复 relaunch。
@@ -1494,11 +1939,33 @@ async def download_update_file(filename: str):
 @app.get("/api/update/dist")
 async def download_dist_zip():
     """★ 下载前端 dist.zip（整包替换）"""
+    return JSONResponse({"error": "legacy dist OTA disabled"}, status_code=410)
     from fastapi.responses import FileResponse
     dist_zip_path = _script_dir / "dist.zip"
     if not dist_zip_path.exists():
         return JSONResponse({"error": "dist.zip not found"}, status_code=404)
     return FileResponse(str(dist_zip_path), media_type="application/zip", filename="dist.zip")
+
+@app.get("/api/update/v2/manifest")
+async def download_secure_update_manifest():
+    from fastapi.responses import FileResponse
+    if os.getenv("OTA_PAUSED", "0") == "1" or (_script_dir / "ota_paused.flag").exists():
+        return {"schema": 2, "paused": True}
+    manifest_path = _SECURE_UPDATE_DIR / "manifest.json"
+    if not manifest_path.exists():
+        return JSONResponse({"error": "secure update manifest not found"}, status_code=404)
+    return FileResponse(str(manifest_path), media_type="application/json", filename="manifest.json")
+
+@app.get("/api/update/v2/file/{filename}")
+async def download_secure_update_file(filename: str):
+    from fastapi.responses import FileResponse
+    if filename not in _SECURE_UPDATE_FILES:
+        return JSONResponse({"error": "file not allowed"}, status_code=403)
+    file_path = _SECURE_UPDATE_DIR / filename
+    if not file_path.exists():
+        return JSONResponse({"error": "file not found"}, status_code=404)
+    media_type = "application/zip" if filename.endswith(".zip") else "application/octet-stream"
+    return FileResponse(str(file_path), media_type=media_type, filename=filename)
 
 
 if __name__ == "__main__":

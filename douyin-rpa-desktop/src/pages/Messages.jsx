@@ -15,6 +15,18 @@ export default function Messages({ merchantData }) {
   const messagesEndRef = useRef(null)
   const currentMid = merchantData?.merchant_id ? String(merchantData.merchant_id) : ''
 
+  const getAuthHeaders = () => {
+    let token = merchantData?.token || ''
+    if (!token) {
+      try {
+        token = JSON.parse(localStorage.getItem('gc_session') || '{}')?.token || ''
+      } catch {
+        token = ''
+      }
+    }
+    return token ? { Authorization: `Bearer ${token}` } : {}
+  }
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }
@@ -23,7 +35,7 @@ export default function Messages({ merchantData }) {
   useEffect(() => {
     const fetchStores = () => {
       const qs = currentMid ? `?owner_merchant_id=${currentMid}` : ''
-      fetch(`http://localhost:8100/status${qs}`)
+      fetch(`http://localhost:8100/status${qs}`, { headers: getAuthHeaders() })
         .then(r => r.json())
         .then(data => {
           const stores = Object.entries(data)
@@ -44,7 +56,7 @@ export default function Messages({ merchantData }) {
 
   useEffect(() => {
     const fetchMessages = () => {
-      fetch(`http://localhost:8100/api/messages?merchant_id=${currentMid || 0}`)
+      fetch(`http://localhost:8100/api/messages?merchant_id=${currentMid || 0}`, { headers: getAuthHeaders() })
         .then(r => r.json())
         .then(data => {
           const grouped = {}
@@ -88,7 +100,7 @@ export default function Messages({ merchantData }) {
       const mid = Number(current.accountId || 0)
       const res = await fetch(`http://localhost:8100/test_reply/${mid}`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
         body: JSON.stringify({ sender: current.name, text: inputText })
       })
       const result = await res.json()

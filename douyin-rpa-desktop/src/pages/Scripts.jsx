@@ -24,6 +24,7 @@ export default function Scripts({ merchantData }) {
   const chatEndRef = useRef(null)
   const chatInputRef = useRef(null)
   const chatSessionId = useRef(`test_${Date.now()}`)
+  const configRequestRef = useRef(0)
 
   // ★ 敏感词管理
   const [sensitiveWords, setSensitiveWords] = useState([])
@@ -62,29 +63,39 @@ export default function Scripts({ merchantData }) {
 
   // 加载选中店铺的配置
   const loadConfig = (storeId) => {
-    if (!storeId) {
+    const requestId = ++configRequestRef.current
+    if (!storeId || !currentMid) {
+      setNickname('')
+      setPersona('')
+      setKnowledgeBase('')
+      setKeywords([])
       setLoading(false)
       return
     }
     setLoading(true)
     setSaveMsg('')
-    fetch(`http://localhost:8100/api/scripts?merchant_id=${storeId}`)
+    fetch(`http://localhost:8100/api/scripts?merchant_id=${currentMid}&slot_id=${storeId}`)
       .then(r => r.json())
       .then(data => {
+        if (requestId !== configRequestRef.current) return
         setNickname(data.nickname || '')
         setPersona(data.persona || '')
         setKnowledgeBase(data.knowledge_base || '')
         setKeywords(data.keywords || [])
         setLoading(false)
       })
-      .catch(e => { console.error(e); setLoading(false) })
+      .catch(e => {
+        if (requestId !== configRequestRef.current) return
+        console.error(e)
+        setLoading(false)
+      })
   }
 
   useEffect(() => {
     loadConfig(selectedStore)
     setChatMessages([])
     chatSessionId.current = `test_${Date.now()}_store${selectedStore}`
-  }, [selectedStore])
+  }, [selectedStore, currentMid])
 
   // Auto-scroll chat to bottom
   useEffect(() => {
@@ -92,13 +103,23 @@ export default function Scripts({ merchantData }) {
   }, [chatMessages])
 
   const handleSave = async () => {
+    if (!selectedStore) {
+      setSaveMsg('请先选择店铺')
+      return
+    }
     setSaving(true)
     setSaveMsg('')
     try {
       const res = await fetch('http://localhost:8100/api/scripts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nickname, persona, knowledge_base: knowledgeBase, merchant_id: selectedStore })
+        body: JSON.stringify({
+          nickname,
+          persona,
+          knowledge_base: knowledgeBase,
+          merchant_id: currentMid,
+          slot_id: selectedStore,
+        })
       })
       const data = await res.json()
       if (data.status === 'ok') {
@@ -114,10 +135,14 @@ export default function Scripts({ merchantData }) {
   }
 
   const handleReset = async () => {
+    if (!selectedStore) {
+      setSaveMsg('请先选择店铺')
+      return
+    }
     if (!confirm('确定要重置为已保存的配置吗？')) return
     setLoading(true)
     try {
-      const res = await fetch(`http://localhost:8100/api/scripts?merchant_id=${selectedStore}`)
+      const res = await fetch(`http://localhost:8100/api/scripts?merchant_id=${currentMid}&slot_id=${selectedStore}`)
       const data = await res.json()
       setNickname(data.nickname || '')
       setPersona(data.persona || '')

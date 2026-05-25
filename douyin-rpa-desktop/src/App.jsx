@@ -10,6 +10,7 @@ import MyAccount from './pages/MyAccount'
 import Login from './pages/Login'
 import AdminLogin from './pages/AdminLogin'
 import AdminPanel from './pages/AdminPanel'
+import appIcon from './assets/app-icon.png'
 import './index.css'
 
 // ★ 会话管理 — 基于服务端 token（30天有效）
@@ -59,7 +60,7 @@ export default function App() {
 
   // ★ 启动时向服务端验证 token，决定是否自动登录
   useEffect(() => {
-    const checkToken = async () => {
+    const checkToken = async (retries = 5) => {
       const session = getStoredSession()
       if (!session || !session.token) {
         setChecking(false)
@@ -96,23 +97,16 @@ export default function App() {
           clearSession()
         }
       } catch {
-        // 后端还没启动，暂时用本地 session
-        if (session.merchantData) {
-          setAuthMode(session.authMode)
-          setMerchantData(session.merchantData)
+        if (retries > 0) {
+          setTimeout(() => checkToken(retries - 1), 1000)
+          return
         }
+        clearSession()
       }
       setChecking(false)
     }
 
-    // 等后端启动（最多等 5 秒）
-    const tryCheck = (retries = 5) => {
-      checkToken().catch(() => {
-        if (retries > 0) setTimeout(() => tryCheck(retries - 1), 1000)
-        else setChecking(false)
-      })
-    }
-    tryCheck()
+    checkToken()
   }, [])
 
   // 商家登录成功
@@ -215,15 +209,15 @@ export default function App() {
           fontFamily: 'Inter, system-ui, sans-serif'
         }}>
           <div style={{ textAlign: 'center' }}>
-            <div style={{
-              width: 48, height: 48, borderRadius: 16,
-              background: 'linear-gradient(135deg, #f97316, #ea580c)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              margin: '0 auto 16px',
-              animation: 'pulse 1.5s infinite',
-            }}>
-              <span style={{ fontSize: 24, color: '#fff' }}>🤖</span>
-            </div>
+            <img
+              src={appIcon}
+              alt="光宸智能客服"
+              style={{
+                width: 52, height: 52, borderRadius: 16,
+                display: 'block', margin: '0 auto 16px',
+                animation: 'pulse 1.5s infinite',
+              }}
+            />
             <p style={{ color: '#64748b', fontSize: 14 }}>正在检查登录状态...</p>
           </div>
         </div>

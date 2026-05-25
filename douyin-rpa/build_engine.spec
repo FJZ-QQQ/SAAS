@@ -3,6 +3,50 @@ import os
 import sys
 from PyInstaller.utils.hooks import collect_all
 
+def _read_env_values(env_path):
+    values = {}
+    deny_names = {
+        "DATABASE_URL",
+        "SUPABASE_URL",
+        "SUPABASE_KEY",
+        "SUPABASE_SERVICE_ROLE_KEY",
+        "PGHOST",
+        "PGPORT",
+        "PGDATABASE",
+        "PGUSER",
+        "PGPASSWORD",
+    }
+    deny_prefixes = ("DB_", "POSTGRES_", "SUPABASE_")
+    if not os.path.exists(env_path):
+        values["GUANGCHEN_CLIENT_MODE"] = "1"
+        values["GUANGCHEN_CLOUD_API"] = os.environ.get("GUANGCHEN_CLOUD_API", "http://124.223.99.238:8100")
+        values["GUANGCHEN_BACKEND_API"] = os.environ.get("GUANGCHEN_BACKEND_API", values["GUANGCHEN_CLOUD_API"])
+        return values
+    with open(env_path, "r", encoding="utf-8") as f:
+        for raw_line in f:
+            line = raw_line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            key, value = line.split("=", 1)
+            key = key.strip()
+            value = value.strip().strip('"').strip("'")
+            if key in deny_names or key.startswith(deny_prefixes):
+                continue
+            if key:
+                values[key] = value
+    values["GUANGCHEN_CLIENT_MODE"] = "1"
+    values.setdefault("GUANGCHEN_CLOUD_API", os.environ.get("GUANGCHEN_CLOUD_API", "http://124.223.99.238:8100"))
+    values.setdefault("GUANGCHEN_BACKEND_API", os.environ.get("GUANGCHEN_BACKEND_API", values["GUANGCHEN_CLOUD_API"]))
+    return values
+
+embedded_env_hook = os.path.abspath(os.path.join("build", "_embedded_env_runtime.py"))
+os.makedirs(os.path.dirname(embedded_env_hook), exist_ok=True)
+with open(embedded_env_hook, "w", encoding="utf-8") as f:
+    f.write("import os\n")
+    f.write(f"_EMBEDDED_ENV = {_read_env_values('.env')!r}\n")
+    f.write("for _key, _value in _EMBEDDED_ENV.items():\n")
+    f.write("    os.environ.setdefault(_key, _value)\n")
+
 # Playwright driver path
 playwright_path = os.path.join(
     os.path.dirname(sys.executable),
@@ -16,14 +60,12 @@ a = Analysis(
     ['rpa_server.py'],
     pathex=['.'],
     binaries=[],
-    datas=[
-        ('rpa_server.py', '.'),
-        ('ai_replier.py', '.'),
-        ('slot_manager.py', '.'),
-        ('db_manager.py', '.'),
-        ('lead_extractor.py', '.'),
-    ] + playwright_datas,
+    datas=playwright_datas,
     hiddenimports=[
+        'ai_replier',
+        'slot_manager',
+        'db_manager',
+        'lead_extractor',
         'uvicorn',
         'uvicorn.logging',
         'uvicorn.loops',
@@ -57,7 +99,7 @@ a = Analysis(
     ],
     hookspath=[],
     hooksconfig={},
-    runtime_hooks=[],
+    runtime_hooks=[embedded_env_hook],
     excludes=[],
     noarchive=False,
 )

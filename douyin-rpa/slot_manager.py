@@ -13,11 +13,12 @@ import sys
 import re
 import time
 import threading
+import json
 from datetime import datetime
 from playwright.async_api import async_playwright
 from ai_replier import AIReplier
 from lead_extractor import LeadExtractor
-from db_manager import DatabaseManager
+from db_manager import DatabaseManager, get_database_manager
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 SESSIONS_DIR = os.path.join(SCRIPT_DIR, "sessions")
@@ -42,6 +43,44 @@ def log(msg):
             f.write(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] {msg}\n")
     except:
         pass
+
+
+def _agent_config_file(owner_merchant_id: int, slot_id: int) -> str:
+    return os.path.join(SCRIPT_DIR, "agent_configs", f"merchant_{owner_merchant_id}_store_{slot_id}.json")
+
+
+def _legacy_agent_config_file(slot_id: int) -> str:
+    return os.path.join(SCRIPT_DIR, "agent_configs", f"store_{slot_id}.json")
+
+
+def load_agent_config_for_slot(owner_merchant_id: int, slot_id: int) -> dict:
+    """按客户账号+店铺读取 AI 配置，旧文件只做同店铺迁移。"""
+    cfg = {"nickname": "小橙", "persona": "", "knowledge_base": "", "keywords": []}
+    owner_merchant_id = int(owner_merchant_id or 0)
+    slot_id = int(slot_id or 0)
+    if slot_id <= 0:
+        return cfg
+
+    config_dir = os.path.join(SCRIPT_DIR, "agent_configs")
+    os.makedirs(config_dir, exist_ok=True)
+    owner_file = _agent_config_file(owner_merchant_id, slot_id) if owner_merchant_id > 0 else ""
+    if owner_file:
+        candidates = [owner_file]
+    else:
+        candidates = [_legacy_agent_config_file(slot_id)]
+        if slot_id == 1:
+            candidates.append(os.path.join(SCRIPT_DIR, "agent_config.json"))
+
+    for path in candidates:
+        if not path or not os.path.exists(path):
+            continue
+        with open(path, "r", encoding="utf-8") as f:
+            loaded = {**cfg, **json.load(f)}
+        if owner_file and path != owner_file:
+            with open(owner_file, "w", encoding="utf-8") as f:
+                json.dump(loaded, f, ensure_ascii=False, indent=2)
+        return loaded
+    return cfg
 
 
 class SlotManager:
@@ -102,7 +141,7 @@ class SlotManager:
 
     def _get_db(self, owner_merchant_id: int, slot_id: int | None = None) -> DatabaseManager:
         db_url = os.getenv("DATABASE_URL", "")
-        db = DatabaseManager(db_url, owner_merchant_id, slot_id)
+        db = get_database_manager(db_url, owner_merchant_id, slot_id)
         db.connect()
         return db
 
@@ -130,11 +169,13 @@ class SlotManager:
         try:
             db = self._get_db(owner_merchant_id, slot_id)
             if db.conn:
-                db.save_chat_message(
+                saved = db.save_chat_message(
                     douyin_user_id=sender or "unknown",
                     content=text or "",
                     sender_type="ai" if is_ai else "user"
                 )
+                if not saved:
+                    log(f"[DB] save chat message returned false: owner={owner_merchant_id}, slot={slot_id}, ai={is_ai}, sender={sender}")
         except Exception as e:
             log(f"[DB] save chat message failed: {e}")
         finally:
@@ -742,22 +783,12 @@ class SlotManager:
         
         # ★ 配置实时加载函数（每次回复时重新读取，确保修改立即生效）
         def _load_live_config():
-            cfg = {"nickname": "小橙", "persona": "", "knowledge_base": ""}
             try:
-                config_dir = os.path.join(SCRIPT_DIR, "agent_configs")
-                config_file = os.path.join(config_dir, f"store_{slot_id}.json")
-                if not os.path.exists(config_file):
-                    config_file = os.path.join(SCRIPT_DIR, "agent_config.json")
-                if os.path.exists(config_file):
-                    import json as _json
-                    with open(config_file, "r", encoding="utf-8") as f:
-                        local_config = _json.load(f)
-                        cfg = {**cfg, **local_config}
-                    log(f"[LOOP-{slot_id}] Config: nickname={cfg.get('nickname')}, persona={bool(cfg.get('persona'))}, kb_len={len(cfg.get('knowledge_base',''))}")
-                else:
-                    log(f"[LOOP-{slot_id}] No config file found, using defaults")
+                cfg = load_agent_config_for_slot(owner_merchant_id, slot_id)
+                log(f"[LOOP-{slot_id}] Config: owner={owner_merchant_id}, nickname={cfg.get('nickname')}, persona={bool(cfg.get('persona'))}, kb_len={len(cfg.get('knowledge_base',''))}")
             except Exception as e:
                 log(f"[LOOP-{slot_id}] config load error: {e}")
+                cfg = {"nickname": "小橙", "persona": "", "knowledge_base": "", "keywords": []}
             return cfg
         
         # 初始加载一次（用于日志确认）
@@ -1343,6 +1374,245 @@ class SlotManager:
         import random
         await asyncio.sleep(random.uniform(0.05, 0.15))
 
+    async def _send_reply_to_current_conversation(self, page, cdp, sender: str, text: str) -> bool:
+        """把回复发到当前打开的抖音会话；只有确认发送后才返回 True。"""
+        reply_text = (text or "").strip()
+        if not reply_text:
+            log(f"[SEND-{sender}] empty reply, skip")
+            return False
+
+        text_js = json.dumps(reply_text, ensure_ascii=False)
+        fragment = reply_text[: min(18, len(reply_text))]
+        fragment_js = json.dumps(fragment, ensure_ascii=False)
+
+        find_editor_js = '''(() => {
+            const els = Array.from(document.querySelectorAll('textarea, input[type="text"], [contenteditable="true"], div[contenteditable]'));
+            const visible = (el) => {
+                const r = el.getBoundingClientRect();
+                const style = window.getComputedStyle(el);
+                return r.width > 80 && r.height >= 16 && r.height < 260 &&
+                    r.x > 260 && r.y > 260 &&
+                    style.visibility !== 'hidden' && style.display !== 'none' &&
+                    !el.disabled && el.getAttribute('aria-disabled') !== 'true';
+            };
+            const badText = /搜索|Search|昵称|手机号|验证码/;
+            const scored = els
+                .filter(visible)
+                .map((el) => {
+                    const r = el.getBoundingClientRect();
+                    const ph = el.getAttribute('placeholder') || '';
+                    const aria = el.getAttribute('aria-label') || '';
+                    let score = r.y + r.x / 10;
+                    if (/私信|回复|发送|输入|Enter|回车/.test(ph + aria)) score += 800;
+                    if (badText.test(ph + aria)) score -= 1500;
+                    return { el, r, score, ph, aria };
+                })
+                .sort((a, b) => b.score - a.score);
+            const picked = scored[0];
+            if (!picked) return JSON.stringify({ ok: false, reason: 'no_editor' });
+            window.__gc_reply_editor = picked.el;
+            return JSON.stringify({
+                ok: true,
+                x: picked.r.x + Math.min(picked.r.width / 2, 40),
+                y: picked.r.y + Math.min(picked.r.height / 2, 24),
+                tag: picked.el.tagName,
+                placeholder: picked.ph
+            });
+        })()'''
+
+        try:
+            r = await cdp.send("Runtime.evaluate", {
+                "expression": find_editor_js,
+                "returnByValue": True,
+                "timeout": 5000,
+            })
+            editor_info = json.loads(r.get("result", {}).get("value", '{"ok":false}'))
+        except Exception as e:
+            log(f"[SEND-{sender}] find editor failed: {e}")
+            return False
+
+        if not editor_info.get("ok"):
+            log(f"[SEND-{sender}] editor not found: {editor_info.get('reason')}")
+            return False
+
+        try:
+            await page.mouse.click(float(editor_info["x"]), float(editor_info["y"]))
+            await asyncio.sleep(0.12)
+            await page.keyboard.press("Control+A")
+            await asyncio.sleep(0.05)
+            await page.keyboard.press("Backspace")
+            await asyncio.sleep(0.05)
+            try:
+                await page.keyboard.insert_text(reply_text)
+            except Exception:
+                await page.keyboard.type(reply_text, delay=8)
+        except Exception as e:
+            log(f"[SEND-{sender}] keyboard insert failed: {e}")
+
+        verify_editor_js = f'''(() => {{
+            const el = window.__gc_reply_editor;
+            if (!el) return JSON.stringify({{ ok: false, value: '' }});
+            const value = ((el.value !== undefined ? el.value : '') || el.innerText || el.textContent || '').trim();
+            return JSON.stringify({{ ok: value.includes({fragment_js}), value: value.slice(0, 80) }});
+        }})()'''
+
+        async def _editor_has_reply() -> bool:
+            try:
+                vr = await cdp.send("Runtime.evaluate", {
+                    "expression": verify_editor_js,
+                    "returnByValue": True,
+                    "timeout": 3000,
+                })
+                data = json.loads(vr.get("result", {}).get("value", '{"ok":false}'))
+                return bool(data.get("ok"))
+            except Exception as e:
+                log(f"[SEND-{sender}] verify editor failed: {e}")
+                return False
+
+        has_text = await _editor_has_reply()
+        if not has_text:
+            inject_js = f'''(() => {{
+                const el = window.__gc_reply_editor;
+                const text = {text_js};
+                if (!el) return JSON.stringify({{ ok: false, reason: 'lost_editor' }});
+                el.focus();
+                const tag = el.tagName.toLowerCase();
+                if (tag === 'textarea' || tag === 'input') {{
+                    const proto = tag === 'textarea' ? window.HTMLTextAreaElement.prototype : window.HTMLInputElement.prototype;
+                    const setter = Object.getOwnPropertyDescriptor(proto, 'value')?.set;
+                    if (setter) setter.call(el, text);
+                    else el.value = text;
+                }} else {{
+                    const sel = window.getSelection();
+                    const range = document.createRange();
+                    range.selectNodeContents(el);
+                    sel.removeAllRanges();
+                    sel.addRange(range);
+                    document.execCommand('delete', false, null);
+                    document.execCommand('insertText', false, text);
+                    if (!((el.innerText || el.textContent || '').trim())) {{
+                        el.textContent = text;
+                    }}
+                }}
+                el.dispatchEvent(new InputEvent('input', {{ bubbles: true, inputType: 'insertText', data: text }}));
+                el.dispatchEvent(new Event('change', {{ bubbles: true }}));
+                const value = ((el.value !== undefined ? el.value : '') || el.innerText || el.textContent || '').trim();
+                return JSON.stringify({{ ok: value.includes({fragment_js}), value: value.slice(0, 80) }});
+            }})()'''
+            try:
+                ir = await cdp.send("Runtime.evaluate", {
+                    "expression": inject_js,
+                    "returnByValue": True,
+                    "timeout": 5000,
+                })
+                inject_result = json.loads(ir.get("result", {}).get("value", '{"ok":false}'))
+                has_text = bool(inject_result.get("ok"))
+            except Exception as e:
+                log(f"[SEND-{sender}] js insert failed: {e}")
+                has_text = False
+
+        if not has_text:
+            log(f"[SEND-{sender}] reply text was not inserted, abort")
+            return False
+
+        await asyncio.sleep(0.25)
+        find_send_button_js = '''(() => {
+            const editor = window.__gc_reply_editor;
+            const er = editor ? editor.getBoundingClientRect() : { x: 300, y: 500, width: 0, height: 0 };
+            const visible = (el) => {
+                const r = el.getBoundingClientRect();
+                const style = window.getComputedStyle(el);
+                return r.width > 0 && r.height > 0 && r.width < 180 && r.height < 90 &&
+                    r.x > er.x && r.y > er.y - 120 && r.y < er.y + er.height + 180 &&
+                    style.visibility !== 'hidden' && style.display !== 'none';
+            };
+            const nodes = Array.from(document.querySelectorAll('button, [role="button"], div, span'));
+            const candidates = nodes
+                .filter(visible)
+                .map((el) => {
+                    const r = el.getBoundingClientRect();
+                    const text = (el.innerText || el.textContent || '').trim();
+                    const label = `${text} ${el.getAttribute('aria-label') || ''} ${el.getAttribute('title') || ''}`;
+                    let score = r.x + r.y / 10;
+                    if (/发送/.test(label)) score += 2000;
+                    if (el.tagName.toLowerCase() === 'button') score += 300;
+                    return { el, r, label, score };
+                })
+                .filter((x) => /发送/.test(x.label))
+                .sort((a, b) => b.score - a.score);
+            const picked = candidates[0];
+            if (!picked) return JSON.stringify({ ok: false });
+            return JSON.stringify({
+                ok: true,
+                x: picked.r.x + picked.r.width / 2,
+                y: picked.r.y + picked.r.height / 2,
+                label: picked.label.slice(0, 30)
+            });
+        })()'''
+
+        clicked_button = False
+        try:
+            br = await cdp.send("Runtime.evaluate", {
+                "expression": find_send_button_js,
+                "returnByValue": True,
+                "timeout": 3000,
+            })
+            btn = json.loads(br.get("result", {}).get("value", '{"ok":false}'))
+            if btn.get("ok"):
+                await page.mouse.click(float(btn["x"]), float(btn["y"]))
+                clicked_button = True
+                log(f"[SEND-{sender}] clicked send button")
+        except Exception as e:
+            log(f"[SEND-{sender}] click send button failed: {e}")
+
+        if not clicked_button:
+            try:
+                await page.keyboard.press("Enter")
+                log(f"[SEND-{sender}] send button not found, pressed Enter")
+            except Exception as e:
+                log(f"[SEND-{sender}] Enter send failed: {e}")
+                return False
+
+        await asyncio.sleep(0.9)
+        verify_sent_js = f'''(() => {{
+            const fragment = {fragment_js};
+            const editor = window.__gc_reply_editor;
+            const editorValue = editor ? (((editor.value !== undefined ? editor.value : '') || editor.innerText || editor.textContent || '').trim()) : '';
+            let bubbleFound = false;
+            for (const el of document.querySelectorAll('*')) {{
+                if (el.childElementCount > 0) continue;
+                const text = (el.innerText || el.textContent || '').trim();
+                if (!text || !text.includes(fragment)) continue;
+                const r = el.getBoundingClientRect();
+                if (r.x > document.body.clientWidth * 0.45 && r.y > 120 && r.width > 20 && r.height > 10) {{
+                    bubbleFound = true;
+                    break;
+                }}
+            }}
+            return JSON.stringify({{
+                ok: bubbleFound || !editorValue.includes(fragment),
+                bubbleFound,
+                editorStillHasReply: editorValue.includes(fragment),
+                editorValue: editorValue.slice(0, 80)
+            }});
+        }})()'''
+
+        try:
+            sr = await cdp.send("Runtime.evaluate", {
+                "expression": verify_sent_js,
+                "returnByValue": True,
+                "timeout": 5000,
+            })
+            sent = json.loads(sr.get("result", {}).get("value", '{"ok":false}'))
+            if sent.get("ok"):
+                log(f"[SEND-{sender}] send verified: bubble={sent.get('bubbleFound')}")
+                return True
+            log(f"[SEND-{sender}] send not verified, editor still has reply={sent.get('editorStillHasReply')}")
+            return False
+        except Exception as e:
+            log(f"[SEND-{sender}] verify send failed: {e}")
+            return False
+
     async def _process_one_conversation(self, page, cdp, conv, owner_merchant_id, slot_id, ai, config, processed, sent_messages, sender_cooldown, warmup_done):
         """处理单个会话：预热模式只记录（不点击），正常模式才点击进入回复"""
         import json as _json
@@ -1479,22 +1749,25 @@ class SlotManager:
                         processed.pop(sender, None)
                     await self._soft_return()
                     return
+            except PermissionError as e:
+                log(f"[AUTH] {e}")
+                slot = self.slots.get(slot_id)
+                if slot is not None:
+                    slot["status"] = "error"
+                    slot["_last_error"] = str(e)
+                if old_processed_state is not None:
+                    processed[sender] = old_processed_state
+                else:
+                    processed.pop(sender, None)
+                await self._soft_return()
+                return
             except Exception as e:
                 log(f"[DB] billing check error (ignored, proceeding): {e}")
             
             # 4. AI 回复 — ★ 每次回复前重新加载配置 + 超时保护
             try:
-                import json as _json2
-                config_dir = os.path.join(SCRIPT_DIR, "agent_configs")
-                config_file = os.path.join(config_dir, f"store_{slot_id}.json")
-                if not os.path.exists(config_file):
-                    config_file = os.path.join(SCRIPT_DIR, "agent_config.json")
-                if os.path.exists(config_file):
-                    with open(config_file, "r", encoding="utf-8") as f:
-                        config = _json2.load(f)
-                    log(f"[STEP5-{sender}] config loaded: nickname={config.get('nickname')}, persona={bool(config.get('persona'))}")
-                else:
-                    log(f"[STEP5-{sender}] no config file, using defaults")
+                config = load_agent_config_for_slot(owner_merchant_id, slot_id)
+                log(f"[STEP5-{sender}] config loaded: owner={owner_merchant_id}, slot={slot_id}, nickname={config.get('nickname')}, persona={bool(config.get('persona'))}")
             except Exception as e:
                 log(f"[STEP5-{sender}] config load error: {e}")
             nickname = config.get('nickname', '小橙')
@@ -1517,126 +1790,17 @@ class SlotManager:
             if '_msg_start_time' in dir():
                 self._today_stats["response_times"].append(round(time.time() - _msg_start_time, 2))
             
-            # 5. 用 JS 直接写入文字并发送（确保 React 状态同步）
-            escaped_reply = reply.replace('\\', '\\\\').replace("'", "\\'").replace('\n', '\\n')
-            
-            send_all_js = f'''(() => {{
-                // 找到编辑器 — 三级查找
-                const allEls = document.querySelectorAll('textarea, [contenteditable="true"], input[type="text"], div[contenteditable]');
-                let editor = null;
-                
-                // 第1级：通过 placeholder 精确匹配
-                for (const el of allEls) {{
-                    const ph = (el.getAttribute('placeholder') || '').toLowerCase();
-                    if (ph.includes('回车') || ph.includes('发送') || ph.includes('私信') || ph.includes('输入') || ph.includes('enter')) {{
-                        const r = el.getBoundingClientRect();
-                        if (r.width > 30 && r.height > 10) {{
-                            editor = el;
-                            break;
-                        }}
-                    }}
-                }}
-                
-                // 第2级：通过位置查找（右侧面板下方的可编辑区域）
-                if (!editor) {{
-                    for (const el of allEls) {{
-                        const r = el.getBoundingClientRect();
-                        if (r.x > 300 && r.y > 300 && r.width > 50 && r.height > 10 && r.height < 200) {{
-                            editor = el;
-                        }}
-                    }}
-                }}
-                
-                // 第3级：查找所有 contenteditable 或 textarea（最宽松）
-                if (!editor) {{
-                    const editors = document.querySelectorAll('[contenteditable="true"], textarea');
-                    for (const el of editors) {{
-                        const r = el.getBoundingClientRect();
-                        if (r.x > 300 && r.width > 30 && r.height > 5) {{
-                            editor = el;
-                            break;
-                        }}
-                    }}
-                }}
-                if (!editor) return 'no_editor';
-                
-                // 聚焦并清空
-                editor.focus();
-                
-                const text = '{escaped_reply}';
-                
-                if (editor.tagName.toLowerCase() === 'textarea' || editor.tagName.toLowerCase() === 'input') {{
-                    // textarea/input: 直接设置 value 并触发事件
-                    const nativeInputValueSetter = Object.getOwnPropertyDescriptor(
-                        window.HTMLTextAreaElement.prototype, 'value'
-                    )?.set || Object.getOwnPropertyDescriptor(
-                        window.HTMLInputElement.prototype, 'value'
-                    )?.set;
-                    if (nativeInputValueSetter) {{
-                        nativeInputValueSetter.call(editor, text);
-                    }} else {{
-                        editor.value = text;
-                    }}
-                    editor.dispatchEvent(new Event('input', {{ bubbles: true }}));
-                    editor.dispatchEvent(new Event('change', {{ bubbles: true }}));
-                }} else {{
-                    // contenteditable: 用 execCommand 写入
-                    editor.innerHTML = '';
-                    editor.focus();
-                    document.execCommand('selectAll', false, null);
-                    document.execCommand('insertText', false, text);
-                    editor.dispatchEvent(new Event('input', {{ bubbles: true }}));
-                }}
-                
-                // 等一下再点发送按钮
-                return 'text_inserted';
-            }})()'''
-            
-            r = await cdp.send("Runtime.evaluate", {
-                "expression": send_all_js,
-                "returnByValue": True
-            })
-            insert_result = r.get("result", {}).get("value", "error")
-            
-            if insert_result == 'no_editor':
-                log(f"[POLL] editor not found for {sender}")
+            # 5. 发送到抖音。发送失败时不写入 AI 消息，避免软件显示“已回复”但实际没发出。
+            send_ok = await self._send_reply_to_current_conversation(page, cdp, sender, reply)
+            if not send_ok:
+                log(f"[POLL] ❌ reply send failed for {sender}, rollback state")
                 if old_processed_state is not None:
                     processed[sender] = old_processed_state
                 else:
                     processed.pop(sender, None)
                 await self._soft_return()
                 return
-            
-            log(f"[POLL] text inserted via JS for {sender}")
-            import random
-            await asyncio.sleep(0.15)  # ★ 极速等 React 状态更新
-            
-            # 点击发送按钮
-            send_btn_js = '''(() => {
-                const btns = document.querySelectorAll('*');
-                for (const b of btns) {
-                    const t = (b.innerText || '').trim();
-                    const r = b.getBoundingClientRect();
-                    if (t === '发送' && r.x > 500 && r.y > 500 && r.width < 100) {
-                        b.click();
-                        return 'clicked';
-                    }
-                }
-                return 'not_found';
-            })()'''
-            
-            r2 = await cdp.send("Runtime.evaluate", {
-                "expression": send_btn_js,
-                "returnByValue": True
-            })
-            btn_result = r2.get("result", {}).get("value", "error")
-            
-            if btn_result == 'clicked':
-                log(f"[POLL] ✅ sent reply to {sender} (JS+button): {reply[:40]}")
-            else:
-                # 兜底：用 Enter
-                await page.keyboard.press("Enter")
-                log(f"[POLL] ✅ sent reply to {sender} (JS+Enter): {reply[:40]}")
+            log(f"[POLL] ✅ sent reply to {sender}: {reply[:40]}")
             
             # 记录防回声 + 冷却
             sent_messages.add(reply[:30])

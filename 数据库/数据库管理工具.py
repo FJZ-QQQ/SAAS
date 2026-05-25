@@ -6,6 +6,7 @@ import tkinter as tk
 from tkinter import ttk, messagebox, simpledialog
 import psycopg2
 import sys
+import os
 import hashlib
 import secrets
 
@@ -21,6 +22,7 @@ class DatabaseManager:
     def __init__(self, root):
         self.root = root
         self.root.title("光宸智能客服 - 数据库管理工具")
+        self.set_window_icon()
         self.root.geometry("1000x650")
         self.root.configure(bg="#1e1e2e")
         
@@ -31,6 +33,17 @@ class DatabaseManager:
         self.setup_styles()
         self.create_ui()
         self.connect_db()
+
+    def set_window_icon(self):
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        icon_path = os.path.abspath(os.path.join(base_dir, "..", "douyin-rpa-desktop", "build", "icon.png"))
+        if not os.path.exists(icon_path):
+            return
+        try:
+            self._icon_image = tk.PhotoImage(file=icon_path)
+            self.root.iconphoto(True, self._icon_image)
+        except Exception:
+            pass
         
     def setup_styles(self):
         style = ttk.Style()
@@ -102,6 +115,14 @@ class DatabaseManager:
             cur = self.conn.cursor()
             cur.execute("ALTER TABLE merchant ALTER COLUMN password_hash TYPE TEXT")
             cur.execute("ALTER TABLE admin_user ALTER COLUMN password TYPE TEXT")
+            cur.execute("""
+                SELECT 1 FROM information_schema.columns
+                WHERE table_name = 'ai_agent' AND column_name = 'slot_id'
+                LIMIT 1
+            """)
+            if not cur.fetchone():
+                cur.execute("ALTER TABLE ai_agent ADD COLUMN IF NOT EXISTS slot_id INTEGER")
+                cur.execute("CREATE INDEX IF NOT EXISTS idx_ai_agent_merchant_slot ON ai_agent(merchant_id, slot_id)")
             cur.close()
         except Exception:
             # 当前线上账号没有改表权限；密码哈希已控制在 varchar(100) 内，可正常写入。

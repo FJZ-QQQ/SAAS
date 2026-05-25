@@ -9,14 +9,27 @@ export default function Dashboard({ merchantData }) {
   const [stats, setStats] = useState({})
   const [loading, setLoading] = useState(true)
 
+  const getAuthHeaders = () => {
+    let token = merchantData?.token || ''
+    if (!token) {
+      try {
+        token = JSON.parse(localStorage.getItem('gc_session') || '{}')?.token || ''
+      } catch {
+        token = ''
+      }
+    }
+    return token ? { Authorization: `Bearer ${token}` } : {}
+  }
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         const mid = merchantData?.merchant_id || 0
+        const headers = getAuthHeaders()
         const [accRes, statusRes, statsRes] = await Promise.all([
-          fetch(`http://localhost:8100/api/account?merchant_id=${mid}`),
-          fetch(`http://localhost:8100/status?owner_merchant_id=${mid}`),
-          fetch(`http://localhost:8100/api/stats?merchant_id=${mid}`),
+          fetch(`http://localhost:8100/api/account?merchant_id=${mid}`, { headers }),
+          fetch(`http://localhost:8100/status?owner_merchant_id=${mid}`, { headers }),
+          fetch(`http://localhost:8100/api/stats?merchant_id=${mid}`, { headers }),
         ])
         const accData = await accRes.json()
         const statusData = await statusRes.json()

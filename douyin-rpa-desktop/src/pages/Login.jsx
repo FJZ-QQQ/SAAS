@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { Bot, Phone, Lock, ArrowRight, KeyRound } from 'lucide-react'
+import { Phone, Lock, ArrowRight, KeyRound } from 'lucide-react'
+import appIcon from '../assets/app-icon.png'
 
 export default function Login({ onLogin, onAdminLogin }) {
   const [phone, setPhone] = useState('')
@@ -53,15 +54,15 @@ export default function Login({ onLogin, onAdminLogin }) {
         border: '1px solid rgba(255,255,255,0.6)'
       }}>
         <div style={{ textAlign: 'center', marginBottom: 36 }}>
-          <div style={{
-            width: 64, height: 64, borderRadius: 20,
-            background: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            margin: '0 auto 20px',
-            boxShadow: '0 10px 20px rgba(249, 115, 22, 0.3)'
-          }}>
-            <Bot color="white" size={36} />
-          </div>
+          <img
+            src={appIcon}
+            alt="光宸智能客服"
+            style={{
+              width: 72, height: 72, borderRadius: 20,
+              display: 'block', margin: '0 auto 20px',
+              boxShadow: '0 10px 20px rgba(87, 100, 242, 0.24)'
+            }}
+          />
           <h1 style={{ fontSize: 28, fontWeight: 800, color: '#1e293b', marginBottom: 8 }}>光宸智能客服</h1>
           <p style={{ color: '#64748b', fontSize: 14 }}>智能抖音获客系统 · 手机号和密码登录</p>
         </div>

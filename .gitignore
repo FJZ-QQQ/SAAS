@@ -1,0 +1,41 @@
+# Secrets
+.env
+*.env
+secrets/
+secure_update/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+pip-log.txt
+pip-delete-this-directory.txt
+.venv/
+.env/
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Build outputs
+dist/
+dist.zip
+build/
+release/
+*.spec
+
+# Temporary files
+.last_update_signature.json
+测试安装/
+install.sh
+rpa_test_stdout.txt
+rpa_test_stderr.txt
+.DS_Store
+Thumbs.db

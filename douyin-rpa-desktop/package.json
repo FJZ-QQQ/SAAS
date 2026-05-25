@@ -16,13 +16,14 @@
   "build": {
     "appId": "com.guangchen.douyin-rpa",
     "productName": "光宸智能客服",
-    "asar": false,
+    "asar": true,
     "directories": {
       "output": "release"
     },
     "files": [
       "dist/**/*",
-      "electron/**/*"
+      "electron/**/*",
+      "build/icon.png"
     ],
     "extraResources": [
       {
@@ -31,10 +32,6 @@
         "filter": [
           "**/*"
         ]
-      },
-      {
-        "from": "../douyin-rpa/.env",
-        "to": "rpa_engine/.env"
       }
     ],
     "win": {

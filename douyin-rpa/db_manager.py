@@ -2,8 +2,222 @@
 橙子AI - 数据库对接模块
 """
 import psycopg2
+import json
+import os
+import requests
+from pathlib import Path
 from urllib.parse import urlparse, parse_qs, urlencode, urlunparse
 from datetime import datetime
+
+DEFAULT_CLOUD_API = "http://124.223.99.238:8100"
+
+
+def is_client_proxy_mode() -> bool:
+    return os.getenv("GUANGCHEN_CLIENT_MODE") == "1"
+
+
+def get_cloud_api_base() -> str:
+    return (os.getenv("GUANGCHEN_BACKEND_API") or os.getenv("GUANGCHEN_CLOUD_API") or DEFAULT_CLOUD_API).rstrip("/")
+
+
+def _client_session_file() -> Path:
+    base = os.getenv("APPDATA")
+    root = Path(base) if base else Path.home()
+    return root / "光宸智能客服" / "client-session.json"
+
+
+def save_client_auth_token(token: str) -> None:
+    if not token:
+        return
+    path = _client_session_file()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps({"token": token}, ensure_ascii=False), encoding="utf-8")
+
+
+def clear_client_auth_token() -> None:
+    try:
+        _client_session_file().unlink()
+    except FileNotFoundError:
+        pass
+    except Exception as e:
+        print(f"[CloudDB] clear token failed: {e}")
+
+
+def get_client_auth_token() -> str:
+    try:
+        data = json.loads(_client_session_file().read_text(encoding="utf-8"))
+        return data.get("token", "") or ""
+    except Exception:
+        return ""
+
+
+def cloud_request(method: str, path: str, *, params=None, json_data=None, timeout: int = 8):
+    url = f"{get_cloud_api_base()}{path}"
+    headers = {"Content-Type": "application/json"}
+    token = get_client_auth_token()
+    if token:
+        headers["Authorization"] = f"Bearer {token}"
+    return requests.request(
+        method,
+        url,
+        params=params,
+        json=json_data,
+        headers=headers,
+        timeout=timeout,
+    )
+
+
+class CloudDatabaseManager:
+    """Client-side DB adapter: never connects to Postgres; it calls cloud APIs."""
+
+    def __init__(self, merchant_id: int, slot_id: int | None = None):
+        self.merchant_id = merchant_id
+        self.slot_id = slot_id
+        self.conn = True
+
+    def connect(self):
+        self.conn = True
+
+    def close(self):
+        pass
+
+    def _params(self, extra=None):
+        params = {"merchant_id": self.merchant_id}
+        if self.slot_id is not None:
+            params["slot_id"] = self.slot_id
+        if extra:
+            params.update(extra)
+        return params
+
+    def _post(self, path: str, payload: dict, timeout: int = 8) -> dict:
+        try:
+            res = cloud_request("POST", path, json_data=payload, timeout=timeout)
+            if res.status_code == 401:
+                clear_client_auth_token()
+                raise PermissionError("商户登录已过期，请退出后重新登录")
+            if not res.ok:
+                print(f"[CloudDB] POST {path} failed: {res.status_code} {res.text[:200]}")
+                return {}
+            return res.json() if res.content else {}
+        except PermissionError:
+            raise
+        except Exception as e:
+            print(f"[CloudDB] POST {path} error: {e}")
+            return {}
+
+    def _get(self, path: str, params=None, timeout: int = 8) -> dict:
+        try:
+            res = cloud_request("GET", path, params=params, timeout=timeout)
+            if res.status_code == 401:
+                clear_client_auth_token()
+                raise PermissionError("商户登录已过期，请退出后重新登录")
+            if not res.ok:
+                print(f"[CloudDB] GET {path} failed: {res.status_code} {res.text[:200]}")
+                return {}
+            return res.json() if res.content else {}
+        except PermissionError:
+            raise
+        except Exception as e:
+            print(f"[CloudDB] GET {path} error: {e}")
+            return {}
+
+    def get_merchant_balance(self) -> float:
+        data = self._get("/api/account", {"merchant_id": self.merchant_id})
+        try:
+            return float(data.get("balance", 0) or 0)
+        except Exception:
+            return 0.0
+
+    def get_agent_config(self) -> dict | None:
+        data = self._get("/api/rpa/agent-config", self._params())
+        config = data.get("config") if isinstance(data, dict) else None
+        return config if config else None
+
+    def save_agent_config(self, nickname: str, persona: str, knowledge_base: str):
+        data = self._post("/api/rpa/agent-config", {
+            "merchant_id": self.merchant_id,
+            "slot_id": self.slot_id,
+            "nickname": nickname,
+            "persona": persona,
+            "knowledge_base": knowledge_base,
+        })
+        return data.get("status") == "ok"
+
+    def save_chat_message(self, douyin_user_id=None, content="", sender_type="user"):
+        if not content:
+            return False
+        data = self._post("/api/rpa/chat-message", {
+            "merchant_id": self.merchant_id,
+            "slot_id": self.slot_id,
+            "douyin_user_id": douyin_user_id,
+            "content": content,
+            "sender_type": sender_type,
+        })
+        return data.get("status") == "ok"
+
+    def save_lead(self, phone=None, wechat=None, douyin_user_id=None, source="douyin_dm"):
+        return self.save_lead_and_deduct(phone=phone, wechat=wechat, douyin_user_id=douyin_user_id, amount=0)
+
+    def save_lead_and_deduct(self, phone=None, wechat=None, douyin_user_id=None, amount=1.0):
+        data = self._post("/api/rpa/lead-and-deduct", {
+            "merchant_id": self.merchant_id,
+            "slot_id": self.slot_id,
+            "phone": phone,
+            "wechat": wechat,
+            "douyin_user_id": douyin_user_id,
+            "amount": amount,
+        }, timeout=12)
+        return bool(data.get("saved"))
+
+    def deduct_balance(self, amount=1.0):
+        return False
+
+    def count_leads(self, by_slot: bool = False) -> int:
+        data = self._get("/api/rpa/lead-count", self._params({"by_slot": int(bool(by_slot))}))
+        try:
+            return int(data.get("count", 0) or 0)
+        except Exception:
+            return 0
+
+    def can_serve(self) -> bool:
+        data = self._get("/api/rpa/can-serve", self._params())
+        return bool(data.get("can_serve"))
+
+    def upsert_rpa_slot(self, status, douyin_nickname=None, session_path=None):
+        self._post("/api/rpa/slot/upsert", {
+            "merchant_id": self.merchant_id,
+            "slot_id": self.slot_id,
+            "status": status,
+            "douyin_nickname": douyin_nickname,
+            "session_path": session_path,
+        })
+
+    def update_slot_status(self, status, error_message=None):
+        self._post("/api/rpa/slot/status", {
+            "merchant_id": self.merchant_id,
+            "slot_id": self.slot_id,
+            "status": status,
+            "error_message": error_message,
+        })
+
+    def update_slot_heartbeat(self):
+        self._post("/api/rpa/slot/heartbeat", {
+            "merchant_id": self.merchant_id,
+            "slot_id": self.slot_id,
+        })
+
+    def delete_rpa_slot(self):
+        data = self._post("/api/rpa/slot/delete", {
+            "merchant_id": self.merchant_id,
+            "slot_id": self.slot_id,
+        })
+        return data.get("status") == "ok"
+
+
+def get_database_manager(database_url: str, merchant_id: int, slot_id: int | None = None):
+    if is_client_proxy_mode():
+        return CloudDatabaseManager(merchant_id, slot_id)
+    return DatabaseManager(database_url, merchant_id, slot_id)
 
 
 class DatabaseManager:
@@ -63,13 +277,39 @@ class DatabaseManager:
         except Exception:
             return 0.0
 
-    def get_agent_config(self) -> dict | None:
+    def _ensure_ai_agent_slot_schema(self) -> bool:
         try:
             with self.conn.cursor() as cur:
                 cur.execute(
-                    'SELECT nickname, persona, knowledge_base FROM ai_agent WHERE merchant_id = %s',
-                    (self.merchant_id,)
+                    """SELECT 1 FROM information_schema.columns
+                       WHERE table_name = 'ai_agent' AND column_name = 'slot_id'
+                       LIMIT 1"""
                 )
+                if cur.fetchone():
+                    return True
+                cur.execute('ALTER TABLE ai_agent ADD COLUMN IF NOT EXISTS slot_id INTEGER')
+                cur.execute('CREATE INDEX IF NOT EXISTS idx_ai_agent_merchant_slot ON ai_agent(merchant_id, slot_id)')
+            return True
+        except Exception as e:
+            print(f"[DB] ensure ai_agent slot schema failed: {e}")
+            return False
+
+    def get_agent_config(self) -> dict | None:
+        try:
+            has_slot = self._ensure_ai_agent_slot_schema() if self.slot_id is not None else False
+            with self.conn.cursor() as cur:
+                if has_slot:
+                    cur.execute(
+                        '''SELECT nickname, persona, knowledge_base FROM ai_agent
+                           WHERE merchant_id = %s AND COALESCE(slot_id, 0) = COALESCE(%s, 0)
+                           ORDER BY id DESC LIMIT 1''',
+                        (self.merchant_id, self.slot_id)
+                    )
+                else:
+                    cur.execute(
+                        'SELECT nickname, persona, knowledge_base FROM ai_agent WHERE merchant_id = %s ORDER BY id DESC LIMIT 1',
+                        (self.merchant_id,)
+                    )
                 row = cur.fetchone()
                 if row:
                     return {"nickname": row[0], "persona": row[1], "knowledge_base": row[2]}
@@ -83,20 +323,39 @@ class DatabaseManager:
         if not self.conn:
             return False
         try:
+            has_slot = self._ensure_ai_agent_slot_schema() if self.slot_id is not None else False
             with self.conn.cursor() as cur:
-                cur.execute('SELECT id FROM ai_agent WHERE merchant_id = %s', (self.merchant_id,))
-                row = cur.fetchone()
-                if row:
+                if has_slot:
                     cur.execute(
-                        'UPDATE ai_agent SET nickname = %s, persona = %s, knowledge_base = %s WHERE id = %s',
-                        (nickname, persona, knowledge_base, row[0])
+                        'SELECT id FROM ai_agent WHERE merchant_id = %s AND COALESCE(slot_id, 0) = COALESCE(%s, 0) ORDER BY id DESC LIMIT 1',
+                        (self.merchant_id, self.slot_id)
                     )
                 else:
-                    cur.execute(
-                        'INSERT INTO ai_agent (merchant_id, nickname, persona, knowledge_base, created_at) VALUES (%s, %s, %s, %s, %s)',
-                        (self.merchant_id, nickname, persona, knowledge_base, datetime.now())
-                    )
-            print(f"[DB] ✅ agent config synced to DB for merchant {self.merchant_id}")
+                    cur.execute('SELECT id FROM ai_agent WHERE merchant_id = %s ORDER BY id DESC LIMIT 1', (self.merchant_id,))
+                row = cur.fetchone()
+                if row:
+                    if has_slot:
+                        cur.execute(
+                            'UPDATE ai_agent SET slot_id = %s, nickname = %s, persona = %s, knowledge_base = %s WHERE id = %s',
+                            (self.slot_id, nickname, persona, knowledge_base, row[0])
+                        )
+                    else:
+                        cur.execute(
+                            'UPDATE ai_agent SET nickname = %s, persona = %s, knowledge_base = %s WHERE id = %s',
+                            (nickname, persona, knowledge_base, row[0])
+                        )
+                else:
+                    if has_slot:
+                        cur.execute(
+                            'INSERT INTO ai_agent (merchant_id, slot_id, nickname, persona, knowledge_base, created_at) VALUES (%s, %s, %s, %s, %s, %s)',
+                            (self.merchant_id, self.slot_id, nickname, persona, knowledge_base, datetime.now())
+                        )
+                    else:
+                        cur.execute(
+                            'INSERT INTO ai_agent (merchant_id, nickname, persona, knowledge_base, created_at) VALUES (%s, %s, %s, %s, %s)',
+                            (self.merchant_id, nickname, persona, knowledge_base, datetime.now())
+                        )
+            print(f"[DB] agent config synced to DB for merchant {self.merchant_id}, slot {self.slot_id}")
             return True
         except Exception as e:
             print(f"[DB] save_agent_config failed: {e}")

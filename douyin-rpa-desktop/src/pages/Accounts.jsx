@@ -13,6 +13,37 @@ export default function Accounts({ merchantData }) {
 
   const currentMid = merchantData?.merchant_id ? String(merchantData.merchant_id) : ''
 
+  const getAuthHeaders = () => {
+    let token = merchantData?.token || ''
+    if (!token) {
+      try {
+        token = JSON.parse(localStorage.getItem('gc_session') || '{}')?.token || ''
+      } catch {
+        token = ''
+      }
+    }
+    return token ? { Authorization: `Bearer ${token}` } : {}
+  }
+
+  const handleAuthExpired = (message = '登录已过期，请重新登录') => {
+    localStorage.removeItem('gc_session')
+    alert(message)
+    window.location.reload()
+  }
+
+  const ensureAuthedResponse = async (res) => {
+    if (res.status !== 401 && res.status !== 403) return true
+    let message = '登录已过期，请重新登录'
+    try {
+      const data = await res.json()
+      message = data.error || data.message || message
+    } catch {
+      // keep default message
+    }
+    handleAuthExpired(message)
+    return false
+  }
+
   const nextSlotId = () => {
     const used = new Set(Object.keys(liveAccounts).map(id => Number(id)).filter(Boolean))
     let next = 1
@@ -29,7 +60,9 @@ export default function Accounts({ merchantData }) {
     const fetchStatus = async () => {
       try {
         const qs = currentMid ? `?owner_merchant_id=${currentMid}` : ''
-        const res = await fetch(`http://localhost:8100/status${qs}`)
+        const res = await fetch(`http://localhost:8100/status${qs}`, {
+          headers: getAuthHeaders()
+        })
         const data = await res.json()
         setLiveAccounts(data)
       } catch (e) {
@@ -71,9 +104,10 @@ export default function Accounts({ merchantData }) {
     try {
       const res = await fetch('http://localhost:8100/slot/bind', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
         body: JSON.stringify({ owner_merchant_id: Number(currentMid), slot_id: Number(bindMid) })
       })
+      if (!(await ensureAuthedResponse(res))) return
       const data = await res.json()
       if (!res.ok || data.status === 'error') {
         setAddError(data.error || data.message || '绑定失败')
@@ -101,9 +135,10 @@ export default function Accounts({ merchantData }) {
     try {
       const res = await fetch('http://localhost:8100/slot/start', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
         body: JSON.stringify({ owner_merchant_id: Number(currentMid), slot_id: Number(mid) })
       })
+      if (!(await ensureAuthedResponse(res))) return
       if (!res.ok) throw new Error((await res.json()).error || '启动请求失败')
     } catch (e) {
       console.error('启动失败:', e)
@@ -115,9 +150,10 @@ export default function Accounts({ merchantData }) {
     try {
       const res = await fetch('http://localhost:8100/slot/stop', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
         body: JSON.stringify({ owner_merchant_id: Number(currentMid), slot_id: Number(mid) })
       })
+      if (!(await ensureAuthedResponse(res))) return
       if (!res.ok) throw new Error((await res.json()).error || '停止请求失败')
     } catch (e) {
       console.error('停止失败:', e)
@@ -130,9 +166,10 @@ export default function Accounts({ merchantData }) {
     try {
       const res = await fetch('http://localhost:8100/slot/delete', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...getAuthHeaders() },
         body: JSON.stringify({ owner_merchant_id: Number(currentMid), slot_id: Number(mid) })
       })
+      if (!(await ensureAuthedResponse(res))) return
       if (!res.ok) throw new Error((await res.json()).error || '删除请求失败')
     } catch (e) {
       console.error('删除失败:', e)

@@ -7,8 +7,20 @@ export default function Leads({ merchantData }) {
   const [searchTerm, setSearchTerm] = useState('')
   const mid = merchantData?.merchant_id || 0
 
+  const getAuthHeaders = () => {
+    let token = merchantData?.token || ''
+    if (!token) {
+      try {
+        token = JSON.parse(localStorage.getItem('gc_session') || '{}')?.token || ''
+      } catch {
+        token = ''
+      }
+    }
+    return token ? { Authorization: `Bearer ${token}` } : {}
+  }
+
   const fetchLeads = () => {
-    fetch(`http://localhost:8100/api/leads?merchant_id=${mid}`)
+    fetch(`http://localhost:8100/api/leads?merchant_id=${mid}`, { headers: getAuthHeaders() })
       .then(r => r.json())
       .then(data => { setLeads(data); setLoading(false) })
       .catch(e => { console.error(e); setLoading(false) })

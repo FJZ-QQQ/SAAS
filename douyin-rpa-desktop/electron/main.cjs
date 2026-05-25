@@ -8,6 +8,12 @@ const isDev = !app.isPackaged
 let mainWindow = null
 let tray = null
 let pythonProcess = null
+const CLOUD_API = process.env.GUANGCHEN_CLOUD_API || 'http://124.223.99.238:8100'
+const BACKEND_API = process.env.GUANGCHEN_BACKEND_API || 'http://124.223.99.238:8100'
+
+function getAppIconPath() {
+  return path.join(__dirname, '../build/icon.png')
+}
 
 // 启动后台 RPA 引擎
 function startPythonServer() {
@@ -23,7 +29,7 @@ function startPythonServer() {
     console.log(`[Electron] 开发模式启动: ${pythonExecutable} "${scriptPath}"`)
     pythonProcess = spawn(pythonExecutable, [scriptPath], {
       cwd: exeCwd,
-      env: { ...process.env, PYTHONUNBUFFERED: '1', PYTHONIOENCODING: 'utf-8' },
+      env: { ...process.env, PYTHONUNBUFFERED: '1', PYTHONIOENCODING: 'utf-8', GUANGCHEN_CLOUD_API: CLOUD_API, GUANGCHEN_BACKEND_API: BACKEND_API },
       shell: false
     })
   } else {
@@ -32,7 +38,7 @@ function startPythonServer() {
     console.log(`[Electron] 生产模式(EXE): "${exeCandidate}"`)
     pythonProcess = spawn(exeCandidate, [], {
       cwd: path.join(process.resourcesPath, 'rpa_engine'),
-      env: { ...process.env, PYTHONUNBUFFERED: '1', PYTHONIOENCODING: 'utf-8' },
+      env: { ...process.env, PYTHONUNBUFFERED: '1', PYTHONIOENCODING: 'utf-8', GUANGCHEN_CLIENT_MODE: '1', GUANGCHEN_CLOUD_API: CLOUD_API, GUANGCHEN_BACKEND_API: BACKEND_API },
       shell: false
     })
   }
@@ -81,7 +87,8 @@ function createWindow() {
     minWidth: 1100,
     minHeight: 700,
     title: '光宸智能客服 - 抖音智能客服助手',
-    icon: path.join(__dirname, '../build/icon.png'),
+    icon: getAppIconPath(),
+    autoHideMenuBar: true,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
@@ -92,6 +99,7 @@ function createWindow() {
     show: false,
     titleBarStyle: 'default',
   })
+  mainWindow.setMenu(null)
 
   // 加载页面
   if (isDev) {
@@ -120,7 +128,7 @@ function createWindow() {
 
 function createTray() {
   // 创建一个简单的托盘图标（16x16 橙色圆形）
-  const icon = nativeImage.createEmpty()
+  const icon = nativeImage.createFromPath(getAppIconPath())
   tray = new Tray(icon)
 
   const contextMenu = Menu.buildFromTemplate([
@@ -270,10 +278,14 @@ function cleanupOnExit() {
 }
 
 // ★ OTA 热更新：启动时从云端拉取最新的 Python 后端文件
-const CLOUD_API = process.env.GUANGCHEN_CLOUD_API || 'http://124.223.99.238:8100'
+const ENABLE_LEGACY_SOURCE_OTA = process.env.GUANGCHEN_ENABLE_LEGACY_SOURCE_OTA === '1'
 
 async function checkForUpdates() {
   if (isDev) return  // 开发模式不自动更新
+  if (!ENABLE_LEGACY_SOURCE_OTA) {
+    console.log('[Update] legacy source OTA disabled in protected build')
+    return
+  }
   
   const sendStatus = (msg, type='info', progress=null) => {
     if (mainWindow && mainWindow.webContents) {
@@ -547,6 +559,242 @@ async function checkForUpdates() {
   }
 }
 
+function _canonicalJson(value) {
+  if (Array.isArray(value)) {
+    return `[${value.map(_canonicalJson).join(',')}]`
+  }
+  if (value && typeof value === 'object') {
+    return `{${Object.keys(value).sort().map((key) => `${JSON.stringify(key)}:${_canonicalJson(value[key])}`).join(',')}}`
+  }
+  return JSON.stringify(value)
+}
+
+function _sha256File(filePath) {
+  const fs = require('fs')
+  const crypto = require('crypto')
+  if (!fs.existsSync(filePath)) return ''
+  return crypto.createHash('sha256').update(fs.readFileSync(filePath)).digest('hex')
+}
+
+function _psQuote(value) {
+  return `'${String(value).replace(/'/g, "''")}'`
+}
+
+function _downloadBuffer(url, timeout = 30000) {
+  return new Promise((resolve, reject) => {
+    const target = new URL(url)
+    const client = target.protocol === 'https:' ? require('https') : require('http')
+    const req = client.get(url, { timeout }, (res) => {
+      if (res.statusCode !== 200) {
+        res.resume()
+        reject(new Error(`HTTP ${res.statusCode}`))
+        return
+      }
+      const chunks = []
+      res.on('data', (chunk) => chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk)))
+      res.on('end', () => resolve(Buffer.concat(chunks)))
+    })
+    req.on('error', reject)
+    req.on('timeout', () => {
+      req.destroy()
+      reject(new Error('timeout'))
+    })
+  })
+}
+
+function _verifySecureManifest(manifest) {
+  const fs = require('fs')
+  const crypto = require('crypto')
+  if (manifest?.paused) return { paused: true }
+  if (!manifest?.payload || manifest.signature_alg !== 'ed25519' || !manifest.signature) {
+    throw new Error('invalid manifest')
+  }
+  const publicKeyPath = path.join(__dirname, 'update_public_key.pem')
+  const publicKey = fs.readFileSync(publicKeyPath, 'utf-8')
+  const payloadData = Buffer.from(_canonicalJson(manifest.payload), 'utf-8')
+  const signature = Buffer.from(manifest.signature, 'base64')
+  const ok = crypto.verify(null, payloadData, publicKey, signature)
+  if (!ok) throw new Error('manifest signature verification failed')
+  return {
+    payload: manifest.payload,
+    signature: crypto.createHash('sha256').update(manifest.signature).digest('hex'),
+  }
+}
+
+function _writeSecureUpdaterScript(options) {
+  const fs = require('fs')
+  const script = `
+$ErrorActionPreference = 'Stop'
+$parentPid = ${process.pid}
+$deadline = (Get-Date).AddSeconds(45)
+while ((Get-Process -Id $parentPid -ErrorAction SilentlyContinue) -and ((Get-Date) -lt $deadline)) {
+  Start-Sleep -Milliseconds 500
+}
+Start-Sleep -Seconds 1
+
+$exePath = ${_psQuote(options.exePath)}
+$appTarget = ${_psQuote(options.appTarget)}
+$appNew = ${_psQuote(options.appNew)}
+$appBackup = ${_psQuote(options.appBackup)}
+$engineTarget = ${_psQuote(options.engineTarget)}
+$engineZip = ${_psQuote(options.engineZip)}
+$engineTmp = ${_psQuote(options.engineTmp)}
+$engineBackup = ${_psQuote(options.engineBackup)}
+$stateFile = ${_psQuote(options.stateFile)}
+$successState = ${_psQuote(options.successState)}
+$failedState = ${_psQuote(options.failedState)}
+
+try {
+  if (Test-Path -LiteralPath $appNew) {
+    if (Test-Path -LiteralPath $appTarget) {
+      Copy-Item -LiteralPath $appTarget -Destination $appBackup -Force
+    }
+    Copy-Item -LiteralPath $appNew -Destination $appTarget -Force
+  }
+
+  if (Test-Path -LiteralPath $engineZip) {
+    if (Test-Path -LiteralPath $engineTmp) {
+      Remove-Item -LiteralPath $engineTmp -Recurse -Force
+    }
+    Expand-Archive -LiteralPath $engineZip -DestinationPath $engineTmp -Force
+    if (Test-Path -LiteralPath $engineBackup) {
+      Remove-Item -LiteralPath $engineBackup -Recurse -Force
+    }
+    if (Test-Path -LiteralPath $engineTarget) {
+      Move-Item -LiteralPath $engineTarget -Destination $engineBackup -Force
+    }
+    Move-Item -LiteralPath $engineTmp -Destination $engineTarget -Force
+  }
+
+  Copy-Item -LiteralPath $successState -Destination $stateFile -Force
+} catch {
+  try {
+    if (Test-Path -LiteralPath $appBackup) {
+      Copy-Item -LiteralPath $appBackup -Destination $appTarget -Force
+    }
+    if ((Test-Path -LiteralPath $engineBackup) -and !(Test-Path -LiteralPath $engineTarget)) {
+      Move-Item -LiteralPath $engineBackup -Destination $engineTarget -Force
+    }
+    Copy-Item -LiteralPath $failedState -Destination $stateFile -Force
+  } catch {}
+}
+
+Start-Process -FilePath $exePath
+`
+  fs.writeFileSync(options.scriptPath, script, 'utf-8')
+}
+
+async function checkForSecureUpdates() {
+  if (isDev) return
+  const fs = require('fs')
+  const crypto = require('crypto')
+  const sendStatus = (msg, type='info', progress=null) => {
+    if (mainWindow && mainWindow.webContents) {
+      mainWindow.webContents.send('update-status', { msg, type, progress })
+    }
+  }
+
+  try {
+    const manifestBuffer = await _downloadBuffer(`${CLOUD_API}/api/update/v2/manifest`, 8000)
+    const manifest = JSON.parse(manifestBuffer.toString('utf-8'))
+    const verified = _verifySecureManifest(manifest)
+    if (verified.paused) {
+      console.log('[SecureUpdate] update paused by server')
+      return
+    }
+    const payload = verified.payload
+    const signature = verified.signature
+    const artifacts = payload.artifacts || {}
+    const appInfo = artifacts.app_asar
+    const engineInfo = artifacts.rpa_engine
+    if (!appInfo?.filename || !appInfo?.sha256 || !engineInfo?.filename || !engineInfo?.sha256) {
+      throw new Error('manifest missing artifacts')
+    }
+
+    const userData = app.getPath('userData')
+    const stateFile = path.join(userData, 'secure-update-state.json')
+    let state = {}
+    try {
+      state = JSON.parse(fs.readFileSync(stateFile, 'utf-8'))
+    } catch {}
+    if (state.failedSignature === signature) {
+      console.log('[SecureUpdate] previous attempt failed, skip same package')
+      return
+    }
+
+    const appTarget = path.join(process.resourcesPath, 'app.asar')
+    const engineTarget = path.join(process.resourcesPath, 'rpa_engine')
+    const appMatches = _sha256File(appTarget) === appInfo.sha256
+    const engineMatches = state.appliedSignature === signature && state.rpaEngineSha256 === engineInfo.sha256
+    if (appMatches && engineMatches) {
+      console.log('[SecureUpdate] already up to date')
+      return
+    }
+
+    sendStatus('发现新版本，正在安全下载更新包...', 'info')
+    const updateDir = path.join(userData, 'secure-updates', signature)
+    fs.mkdirSync(updateDir, { recursive: true })
+    const appNew = path.join(updateDir, 'app.asar')
+    const engineZip = path.join(updateDir, 'rpa_engine.zip')
+
+    const appBuffer = await _downloadBuffer(`${CLOUD_API}/api/update/v2/file/${encodeURIComponent(appInfo.filename)}`, 60000)
+    const appHash = crypto.createHash('sha256').update(appBuffer).digest('hex')
+    if (appHash !== appInfo.sha256) throw new Error('app.asar sha256 mismatch')
+    fs.writeFileSync(appNew, appBuffer)
+
+    const engineBuffer = await _downloadBuffer(`${CLOUD_API}/api/update/v2/file/${encodeURIComponent(engineInfo.filename)}`, 120000)
+    const engineHash = crypto.createHash('sha256').update(engineBuffer).digest('hex')
+    if (engineHash !== engineInfo.sha256) throw new Error('rpa_engine.zip sha256 mismatch')
+    fs.writeFileSync(engineZip, engineBuffer)
+
+    const successState = path.join(updateDir, 'success-state.json')
+    const failedState = path.join(updateDir, 'failed-state.json')
+    fs.writeFileSync(successState, JSON.stringify({
+      appliedSignature: signature,
+      version: payload.version,
+      build: payload.build,
+      appAsarSha256: appInfo.sha256,
+      rpaEngineSha256: engineInfo.sha256,
+      updatedAt: new Date().toISOString(),
+    }, null, 2), 'utf-8')
+    fs.writeFileSync(failedState, JSON.stringify({
+      failedSignature: signature,
+      version: payload.version,
+      build: payload.build,
+      failedAt: new Date().toISOString(),
+    }, null, 2), 'utf-8')
+
+    const stamp = new Date().toISOString().replace(/[:.]/g, '-')
+    const scriptPath = path.join(updateDir, 'apply-update.ps1')
+    _writeSecureUpdaterScript({
+      exePath: process.execPath,
+      appTarget,
+      appNew,
+      appBackup: path.join(process.resourcesPath, `app.asar.bak.${stamp}`),
+      engineTarget,
+      engineZip,
+      engineTmp: path.join(updateDir, 'rpa_engine.new'),
+      engineBackup: path.join(process.resourcesPath, `rpa_engine.bak.${stamp}`),
+      stateFile,
+      successState,
+      failedState,
+      scriptPath,
+    })
+
+    sendStatus('更新包校验通过，正在重启应用更新...', 'success')
+    spawn('powershell.exe', ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', scriptPath], {
+      detached: true,
+      stdio: 'ignore',
+      windowsHide: true,
+    }).unref()
+    setTimeout(() => {
+      app.quit()
+    }, 1000)
+  } catch (e) {
+    console.log(`[SecureUpdate] skipped: ${e.message}`)
+  }
+}
+
 app.whenReady().then(async () => {
   // ★ 优化启动速度：先显示窗口，再后台处理
 
@@ -561,7 +809,7 @@ app.whenReady().then(async () => {
   startPythonServer()
   
   // 4. OTA 更新放后台（不阻塞界面和后端启动）
-  checkForUpdates().catch(e => {
+  checkForSecureUpdates().catch(e => {
     console.log(`[Update] 后台更新检查失败（不影响使用）: ${e.message}`)
   })
 })
